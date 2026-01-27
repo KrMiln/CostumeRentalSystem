@@ -1,0 +1,89 @@
+@model IEnumerable<CostumeRentalSystem.Models.Costume>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Костюми";
+    var categories = ViewBag.Categories as SelectList;
+}
+
+<h1 class="mb-3">Костюми</h1>
+
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label" for="searchName">Име на костюм</label>
+        <input type="text" name="searchName" id="searchName" value="@ViewBag.SearchName" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="categoryId">Категория</label>
+        <select name="categoryId" id="categoryId" class="form-select" asp-items="categories">
+            <option value="">-- всички --</option>
+        </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="onlyAvailable" id="onlyAvailable" value="true" @(ViewBag.OnlyAvailable ? "checked" : "") />
+            <label class="form-check-label" for="onlyAvailable">
+                Само налични
+            </label>
+        </div>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Търси</button>
+    </div>
+</form>
+
+@if (User.IsInRole("Administrator") || User.IsInRole("Employee"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Нов костюм</a>
+    </p>
+}
+
+<table class="table table-striped table-hover shadow-sm rounded bg-white">
+    <thead>
+        <tr>
+            <th>Име</th>
+            <th>Категория</th>
+            <th>Размер</th>
+            <th>Цена на ден</th>
+            <th>Наличност</th>
+            <th>Снимка</th>
+            <th class="text-end">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Category?.Name</td>
+            <td>@item.Size</td>
+            <td>@item.PricePerDay.ToString("0.00") лв.</td>
+            <td>
+                @if (item.IsAvailable)
+                {
+                    <span class="badge bg-success">Наличен</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Зает</span>
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl" alt="@item.Name" class="img-thumbnail costume-thumb" />
+                }
+            </td>
+            <td class="text-end">
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Детайли</a>
+                @if (User.IsInRole("Administrator") || User.IsInRole("Employee"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Редакция</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Изтриване</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

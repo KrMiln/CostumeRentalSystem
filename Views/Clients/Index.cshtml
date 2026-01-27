@@ -1,0 +1,59 @@
+@model IEnumerable<CostumeRentalSystem.Models.Client>
+@{
+    ViewData["Title"] = "Клиенти";
+}
+
+<h1 class="mb-3">Клиенти</h1>
+
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label" for="searchName">Име</label>
+        <input type="text" name="searchName" id="searchName" value="@ViewBag.SearchName" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label" for="searchPhone">Телефон</label>
+        <input type="text" name="searchPhone" id="searchPhone" value="@ViewBag.SearchPhone" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label" for="searchEmail">Имейл</label>
+        <input type="text" name="searchEmail" id="searchEmail" value="@ViewBag.SearchEmail" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Търси</button>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-person-plus"></i> Нов клиент
+    </a>
+</p>
+
+<table class="table table-striped table-hover shadow-sm rounded bg-white">
+    <thead>
+        <tr>
+            <th>Име</th>
+            <th>Телефон</th>
+            <th>Имейл</th>
+            <th>Бележки</th>
+            <th class="text-end">Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Phone</td>
+            <td>@item.Email</td>
+            <td>@item.Notes</td>
+            <td class="text-end">
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Детайли</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Редакция</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Изтриване</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

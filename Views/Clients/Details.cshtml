@@ -1,0 +1,23 @@
+@model CostumeRentalSystem.Models.Client
+@{
+    ViewData["Title"] = "Детайли за клиент";
+}
+
+<h1>Детайли за клиент</h1>
+
+<div class="mt-3">
+    <dl class="row">
+        <dt class="col-sm-2">Име</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Телефон</dt>
+        <dd class="col-sm-10">@Model.Phone</dd>
+        <dt class="col-sm-2">Имейл</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+        <dt class="col-sm-2">Бележки</dt>
+        <dd class="col-sm-10">@Model.Notes</dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Назад към списъка</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редакция</a>
+

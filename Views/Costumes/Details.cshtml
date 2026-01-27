@@ -1,0 +1,46 @@
+@model CostumeRentalSystem.Models.Costume
+@{
+    ViewData["Title"] = "Детайли за костюм";
+}
+
+<h1>Детайли за костюм</h1>
+
+<div class="mt-3">
+    <dl class="row">
+        <dt class="col-sm-2">Име</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Категория</dt>
+        <dd class="col-sm-10">@Model.Category?.Name</dd>
+        <dt class="col-sm-2">Размер</dt>
+        <dd class="col-sm-10">@Model.Size</dd>
+        <dt class="col-sm-2">Цена на ден</dt>
+        <dd class="col-sm-10">@Model.PricePerDay.ToString("0.00") лв.</dd>
+        <dt class="col-sm-2">Наличност</dt>
+        <dd class="col-sm-10">
+            @if (Model.IsAvailable)
+            {
+                <span class="badge bg-success">Наличен</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">Зает</span>
+            }
+        </dd>
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <dt class="col-sm-2">Изображение</dt>
+            <dd class="col-sm-10">
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm costume-image-detail" />
+            </dd>
+        }
+        <dt class="col-sm-2">Бележки</dt>
+        <dd class="col-sm-10">@Model.Notes</dd>
+    </dl>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">Назад към списъка</a>
+@if (User.IsInRole("Administrator") || User.IsInRole("Employee"))
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Редакция</a>
+}
+

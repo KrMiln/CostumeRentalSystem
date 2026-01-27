@@ -1,0 +1,28 @@
+@model CostumeRentalSystem.Models.Rental
+@{
+    ViewData["Title"] = "Отбелязване на връщане";
+}
+
+<h1>Отбелязване на връщане</h1>
+
+<p>Сигурни ли сте, че искате да отбележите този наем като върнат?</p>
+
+<div class="mt-3">
+    <dl class="row">
+        <dt class="col-sm-2">Клиент</dt>
+        <dd class="col-sm-10">@Model.Client?.Name</dd>
+        <dt class="col-sm-2">Костюм</dt>
+        <dd class="col-sm-10">@Model.Costume?.Name</dd>
+        <dt class="col-sm-2">Дата на наемане</dt>
+        <dd class="col-sm-10">@Model.RentDate.ToShortDateString()</dd>
+        <dt class="col-sm-2">Дата на връщане</dt>
+        <dd class="col-sm-10">@Model.ReturnDate.ToShortDateString()</dd>
+    </dl>
+</div>
+
+<form asp-action="Return" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-success">Отбележи като върнат</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+</form>
+

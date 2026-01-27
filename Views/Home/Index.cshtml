@@ -1,0 +1,91 @@
+@{
+    ViewData["Title"] = "Начало";
+}
+
+<section class="hero-section mb-5">
+    <div class="hero-overlay"></div>
+    <div class="hero-content container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-white">
+                <h1 class="display-4 fw-bold mb-3">Система за наем на костюми</h1>
+                <p class="lead mb-4">
+                    Управлявайте лесно костюми, клиенти и наеми в една модерна уеб платформа.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-controller="Costumes" asp-action="Index" class="btn btn-primary btn-lg">
+                        Разгледай наличните костюми
+                    </a>
+                    <a asp-controller="Rentals" asp-action="Index" class="btn btn-outline-light btn-lg">
+                        Виж текущите наеми
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-end">
+                <div class="hero-card shadow-lg">
+                    <h5 class="text-uppercase text-muted mb-3">Бързи връзки</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <span class="badge bg-primary me-2">Администратор</span>
+                            управление на потребители и роли
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-success me-2">Служител</span>
+                            работа с клиенти, костюми и наеми
+                        </li>
+                        <li class="mb-2">
+                            <span class="badge bg-info text-dark me-2">Клиент</span>
+                            преглед на налични костюми и история на наеми
+                        </li>
+                    </ul>
+                    <p class="small text-muted mb-0">
+                        Влезте в системата, за да получите достъп до всички функционалности.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container mb-4">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="info-card shadow-sm h-100">
+                <div class="info-card-body">
+                    <h5>Управление на костюми</h5>
+                    <p class="text-muted">
+                        Добавяйте, редактирайте и организирайте костюми по категории, размер и цена на ден.
+                    </p>
+                    <a asp-controller="Costumes" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                        Към костюмите
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-card shadow-sm h-100">
+                <div class="info-card-body">
+                    <h5>Клиенти и контакти</h5>
+                    <p class="text-muted">
+                        Поддържайте актуален регистър на клиентите с телефони, имейли и бележки.
+                    </p>
+                    <a asp-controller="Clients" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                        Към клиентите
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-card shadow-sm h-100">
+                <div class="info-card-body">
+                    <h5>Наеми и статуси</h5>
+                    <p class="text-muted">
+                        Следете активни наеми, наеми за връщане днес и история на състоянията.
+                    </p>
+                    <a asp-controller="Rentals" asp-action="Index" class="btn btn-outline-primary btn-sm">
+                        Към наемите
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

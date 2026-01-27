@@ -1,0 +1,22 @@
+@model CostumeRentalSystem.Models.Category
+@{
+    ViewData["Title"] = "Изтриване на категория";
+}
+
+<h1>Изтриване на категория</h1>
+
+<h3>Сигурни ли сте, че искате да изтриете тази категория?</h3>
+
+<div class="mt-3">
+    <dl class="row">
+        <dt class="col-sm-2">Име на категория</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Изтрий</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+</form>
+

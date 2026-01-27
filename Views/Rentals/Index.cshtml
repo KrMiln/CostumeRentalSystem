@@ -1,0 +1,45 @@
+@model IEnumerable<CostumeRentalSystem.Models.Rental>
+@{
+    ViewData["Title"] = "Наеми";
+}
+
+<h1 class="mb-3">Наеми</h1>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">Нов наем</a>
+    <a asp-action="Active" class="btn btn-primary">Активни наеми</a>
+    <a asp-action="DueToday" class="btn btn-warning">За връщане днес</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Клиент</th>
+            <th>Костюм</th>
+            <th>Дата на наемане</th>
+            <th>Дата на връщане</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model)
+{
+        <tr>
+            <td>@item.Client?.Name</td>
+            <td>@item.Costume?.Name</td>
+            <td>@item.RentDate.ToShortDateString()</td>
+            <td>@item.ReturnDate.ToShortDateString()</td>
+            <td>@item.Status</td>
+            <td class="text-end">
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Детайли</a>
+                @if (item.Status == CostumeRentalSystem.Models.RentalStatus.Активен)
+                {
+                    <a asp-action="Return" asp-route-id="@item.Id" class="btn btn-sm btn-success">Отбележи като върнат</a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+

@@ -1,0 +1,28 @@
+@model CostumeRentalSystem.Models.Client
+@{
+    ViewData["Title"] = "Изтриване на клиент";
+}
+
+<h1>Изтриване на клиент</h1>
+
+<h3>Сигурни ли сте, че искате да изтриете този клиент?</h3>
+
+<div class="mt-3">
+    <dl class="row">
+        <dt class="col-sm-2">Име</dt>
+        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Телефон</dt>
+        <dd class="col-sm-10">@Model.Phone</dd>
+        <dt class="col-sm-2">Имейл</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+        <dt class="col-sm-2">Бележки</dt>
+        <dd class="col-sm-10">@Model.Notes</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Изтрий</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+</form>
+
