@@ -4,6 +4,26 @@ namespace CostumeRentalSystem.Models
 {
     public class Costume
     {
+        public enum CostumeSize
+        {
+            [Display(Name = "XS (Много малък)")]
+            XS,
+
+            [Display(Name = "S (Малък)")]
+            S,
+
+            [Display(Name = "M (Среден)")]
+            M,
+
+            [Display(Name = "L (Голям)")]
+            L,
+
+            [Display(Name = "XL (Много голям)")]
+            XL,
+
+            [Display(Name = "Детски")]
+            Kids
+        }
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Името на костюма е задължително.")]
@@ -16,9 +36,8 @@ namespace CostumeRentalSystem.Models
         public Category? Category { get; set; }
 
         [Required(ErrorMessage = "Размерът е задължителен.")]
-        [StringLength(50, ErrorMessage = "Размерът не може да надвишава 50 символа.")]
         [Display(Name = "Размер")]
-        public string Size { get; set; }
+        public CostumeSize? Size { get; set; }
 
         [Required(ErrorMessage = "Цената на ден е задължителна.")]
         [Range(0.01, 1000.00, ErrorMessage = "Цената на ден трябва да е между 0.01 и 1000.00.")]

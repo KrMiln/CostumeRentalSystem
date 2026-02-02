@@ -8,7 +8,7 @@ using CostumeRentalSystem.Models;
 
 namespace CostumeRentalSystem.Controllers;
 
-[Authorize]
+[Authorize(Roles="Administrator")]
 public class CategoriesController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -28,25 +28,6 @@ public class CategoriesController : Controller
         return View(categories);
     }
 
-    // GET: Categories/Details/5
-    [AllowAnonymous]
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return View(category);
-    }
-
     // GET: Categories/Create
     [Authorize(Roles = "Administrator")]
     public IActionResult Create()
@@ -58,7 +39,7 @@ public class CategoriesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Create([Bind("Name")] Category category)
+    public async Task<IActionResult> Create(Category category)
     {
         if (ModelState.IsValid)
         {
@@ -90,7 +71,7 @@ public class CategoriesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
+    public async Task<IActionResult> Edit(int id, Category category)
     {
         if (id != category.Id)
         {

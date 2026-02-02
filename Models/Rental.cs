@@ -5,10 +5,11 @@ namespace CostumeRentalSystem.Models
 {
     public enum RentalStatus
     {
-        Активен = 0,
-        Върнат = 1,
-        Загубен = 2,
-        Повреден = 3
+        [Display(Name = "Активен")]
+        Active,
+
+        [Display(Name = "Върнат")]
+        Returned
     }
 
     public class Rental : IValidatableObject

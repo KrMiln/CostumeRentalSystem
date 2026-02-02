@@ -1,6 +1,7 @@
 using CostumeRentalSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace CostumeRentalSystem.Data;
 
@@ -17,7 +18,7 @@ public static class SeedData
 
         await context.Database.MigrateAsync();
 
-        // Roles
+        // 1. Създаване на Роли
         string[] roles = { "Administrator", "Employee", "Client" };
         foreach (var role in roles)
         {
@@ -27,7 +28,7 @@ public static class SeedData
             }
         }
 
-        // Admin user
+        // 2. Създаване на Администратор
         var adminEmail = "admin@costumes.local";
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
         if (adminUser == null)
@@ -36,14 +37,16 @@ public static class SeedData
             {
                 UserName = adminEmail,
                 Email = adminEmail,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Name = "Главен Администратор", // Добавено поле
+                UserRole = Role.Administrator    // Добавено поле
             };
 
             await userManager.CreateAsync(adminUser, "Admin123!");
             await userManager.AddToRoleAsync(adminUser, "Administrator");
         }
 
-        // Employee user
+        // 3. Създаване на Служител
         var employeeEmail = "employee@costumes.local";
         var employeeUser = await userManager.FindByEmailAsync(employeeEmail);
         if (employeeUser == null)
@@ -52,30 +55,16 @@ public static class SeedData
             {
                 UserName = employeeEmail,
                 Email = employeeEmail,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Name = "Иван Служител", // Добавено поле
+                UserRole = Role.Employee    // Добавено поле
             };
 
             await userManager.CreateAsync(employeeUser, "Employee123!");
             await userManager.AddToRoleAsync(employeeUser, "Employee");
         }
 
-        // Client user
-        var clientEmail = "client@costumes.local";
-        var clientUser = await userManager.FindByEmailAsync(clientEmail);
-        if (clientUser == null)
-        {
-            clientUser = new ApplicationUser
-            {
-                UserName = clientEmail,
-                Email = clientEmail,
-                EmailConfirmed = true
-            };
-
-            await userManager.CreateAsync(clientUser, "Client123!");
-            await userManager.AddToRoleAsync(clientUser, "Client");
-        }
-
-        // Sample categories
+        // 4. Категории
         if (!context.Categories.Any())
         {
             context.Categories.AddRange(
@@ -86,7 +75,7 @@ public static class SeedData
             await context.SaveChangesAsync();
         }
 
-        // Sample costumes
+        // 5. Костюми
         if (!context.Costumes.Any())
         {
             var carnival = await context.Categories.FirstAsync(c => c.Name == "Карнавални");
@@ -97,47 +86,50 @@ public static class SeedData
                 {
                     Name = "Пират",
                     CategoryId = carnival.Id,
-                    Size = "M",
+                    Size = Costume.CostumeSize.M,
                     PricePerDay = 15.00m,
-                    IsAvailable = true
+                    IsAvailable = true,
+                    ImageUrl = "/images/default_pirate.jpg" // Добра практика е да имаш път
                 },
                 new Costume
                 {
                     Name = "Рицар",
                     CategoryId = historic.Id,
-                    Size = "L",
+                    Size = Costume.CostumeSize.L,
                     PricePerDay = 20.00m,
-                    IsAvailable = true
+                    IsAvailable = true,
+                    ImageUrl = "/images/default_knight.jpg"
                 }
             );
             await context.SaveChangesAsync();
         }
 
-        // Sample clients
+        // 6. Клиенти (за таблицата Clients)
         if (!context.Clients.Any())
         {
             context.Clients.AddRange(
                 new Client
                 {
                     Name = "Иван Иванов",
-                    Phone = "0888123456",
-                    Email = "ivan@example.com"
+                    PhoneNumber = "0888123456",
+                    Email = "ivan@example.com",
+                    Notes = "Редовен клиент"
                 },
                 new Client
                 {
                     Name = "Мария Петрова",
-                    Phone = "0888765432",
+                    PhoneNumber = "0888765432",
                     Email = "maria@example.com"
                 }
             );
             await context.SaveChangesAsync();
         }
 
-        // Sample rentals
+        // 7. Наеми
         if (!context.Rentals.Any())
         {
             var client = await context.Clients.FirstAsync();
-            var costume = await context.Costumes.FirstAsync();
+            var costume = await context.Costumes.FirstAsync(c => c.IsAvailable);
 
             context.Rentals.Add(new Rental
             {
@@ -145,13 +137,12 @@ public static class SeedData
                 CostumeId = costume.Id,
                 RentDate = DateTime.Today.AddDays(-1),
                 ReturnDate = DateTime.Today.AddDays(1),
-                Status = RentalStatus.Активен
+                Status = RentalStatus.Active
             });
 
+            // Автоматично маркиране на костюма като зает
             costume.IsAvailable = false;
-
             await context.SaveChangesAsync();
         }
     }
 }
-

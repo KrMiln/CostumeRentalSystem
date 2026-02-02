@@ -1,45 +1,324 @@
 @model IEnumerable<CostumeRentalSystem.Models.Rental>
 @{
-    ViewData["Title"] = "Наеми";
+    ViewData["Title"] = "Управление на наеми";
 }
 
-<h1 class="mb-3">Наеми</h1>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+        <div>
+            <h1 class="text-white fw-bold mb-0">
+                <i class="bi bi-calendar2-week me-2 text-warning"></i>Наеми
+            </h1>
+            <p class="text-muted mb-0">@(ViewData["Subtitle"] ?? "Пълен списък на активни и приключени договори")</p>
+        </div>
 
-<div class="mb-3">
-    <a asp-action="Create" class="btn btn-success">Нов наем</a>
-    <a asp-action="Active" class="btn btn-primary">Активни наеми</a>
-    <a asp-action="DueToday" class="btn btn-warning">За връщане днес</a>
+        <a asp-action="Create" class="btn btn-glow-warning px-4 py-2">
+            <span class="d-flex align-items-center fw-black">
+                <i class="bi bi-plus-circle-fill me-2 fs-5"></i>НОВ НАЕМ
+            </span>
+        </a>
+    </div>
+
+    <div class="card mb-5 glass-card border-0 shadow">
+        <div class="card-body p-4">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Търсене на клиент или костюм</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-search"></i></span>
+                        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+                               class="form-control bg-dark text-white border-secondary shadow-none" placeholder="Име на клиент, костюм..." />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-warning small fw-bold text-uppercase tracking-wider">Филтър по дата</label>
+                    <input type="date" name="searchDate" value="@ViewData["CurrentDate"]"
+                           class="form-control bg-dark text-white border-secondary shadow-none" />
+                </div>
+
+                <div class="col-md-5 d-flex gap-2">
+                    <button type="submit" class="btn btn-modern-primary flex-grow-1">
+                        <i class="bi bi-funnel-fill me-2"></i>Филтрирай
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-modern-outline-light px-3" title="Изчисти">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </a>
+
+                    <div class="vr mx-1 text-secondary opacity-25"></div>
+
+                    <div class="btn-group shadow-sm p-1 bg-black bg-opacity-25 rounded-3">
+                        <a asp-action="Active" class="btn btn-pill-filter btn-sm text-info px-3">Активни</a>
+                        <a asp-action="DueToday" class="btn btn-pill-filter btn-sm text-danger px-3">Закъснели</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card bg-dark border-secondary shadow-lg rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead class="bg-black border-bottom border-secondary">
+                    <tr class="text-muted small text-uppercase fw-bolder">
+                        <th class="ps-4 py-3">Клиент</th>
+                        <th class="py-3">Костюм</th>
+                        <th class="py-3">Период на наемане</th>
+                        <th class="py-3">Статус</th>
+                        <th class="text-end pe-4 py-3">Управление</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isOverdue = item.Status == CostumeRentalSystem.Models.RentalStatus.Active && item.ReturnDate < DateTime.Today;
+
+                        <tr class="border-bottom border-secondary-subtle @(isOverdue ? "overdue-row" : "")">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-3">@item.Client?.Name?.Substring(0, 1)</div>
+                                    <div>
+                                        <div class="fw-bold text-white">@item.Client?.Name</div>
+                                        <div class="small text-muted">ID: #RE-@item.Id.ToString("D4")</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-orange fw-medium"><i class="bi bi-mask me-2"></i>@item.Costume?.Name</span>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <span class="text-muted">От:</span> @item.RentDate.ToShortDateString() <br />
+                                    <span class="text-muted">До:</span>
+                                    <span class="@(isOverdue ? "text-danger fw-bold pulse" : "text-info")">
+                                        @item.ReturnDate.ToShortDateString()
+                                        @if (isOverdue)
+                                        {
+                                            <i class="bi bi-exclamation-circle-fill ms-1"></i>
+                                        }
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                @{
+                                    var badgeStyle = item.Status switch
+                                    {
+                                        CostumeRentalSystem.Models.RentalStatus.Active => "badge-active",
+                                        CostumeRentalSystem.Models.RentalStatus.Returned => "badge-returned",
+                                        _ => "badge-other"
+                                    };
+                                }
+                                <span class="custom-badge @badgeStyle">
+                                    <span class="dot"></span> @Html.DisplayFor(modelItem => item.Status)
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group gap-1">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-action btn-edit" title="Редактирай">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-action btn-details" title="Детайли">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-action btn-delete" title="Изтрий">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Клиент</th>
-            <th>Костюм</th>
-            <th>Дата на наемане</th>
-            <th>Дата на връщане</th>
-            <th>Статус</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model)
-{
-        <tr>
-            <td>@item.Client?.Name</td>
-            <td>@item.Costume?.Name</td>
-            <td>@item.RentDate.ToShortDateString()</td>
-            <td>@item.ReturnDate.ToShortDateString()</td>
-            <td>@item.Status</td>
-            <td class="text-end">
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Детайли</a>
-                @if (item.Status == CostumeRentalSystem.Models.RentalStatus.Активен)
-                {
-                    <a asp-action="Return" asp-route-id="@item.Id" class="btn btn-sm btn-success">Отбележи като върнат</a>
-                }
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<style>
+    :root {
+        --halloween-orange: #ff851b;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+    }
 
+    /* --- NEW & IMPROVED BUTTONS --- */
+
+    /* Glow Warning Button (New Rental) */
+    .btn-glow-warning {
+        background-color: var(--halloween-orange);
+        color: #000 !important;
+        border: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 133, 27, 0.3);
+    }
+
+        .btn-glow-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 133, 27, 0.5);
+            background-color: #ffa04d;
+        }
+
+    /* Modern Primary (Filter Button) */
+    .btn-modern-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        color: white;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .btn-modern-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
+
+    /* Modern Outline (Reset Button) */
+    .btn-modern-outline-light {
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.7);
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-modern-outline-light:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-color: white;
+        }
+
+    /* Pill Filters (Active/Due) */
+    .btn-pill-filter {
+        border: none;
+        border-radius: 8px !important;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        transition: 0.2s;
+    }
+
+        .btn-pill-filter:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+    .fw-black {
+        font-weight: 900;
+    }
+
+    /* --- EXISTING STYLES --- */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .text-orange {
+        color: var(--halloween-orange);
+    }
+
+    .tracking-wider {
+        letter-spacing: 0.05rem;
+    }
+
+    .custom-badge {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        text-transform: uppercase;
+    }
+
+        .custom-badge .dot {
+            height: 6px;
+            width: 6px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+    .badge-active {
+        background: rgba(13, 110, 253, 0.15);
+        color: #0d6efd;
+        border: 1px solid rgba(13, 110, 253, 0.3);
+    }
+
+        .badge-active .dot {
+            background: #0d6efd;
+            box-shadow: 0 0 8px #0d6efd;
+        }
+
+    .badge-returned {
+        background: rgba(25, 135, 84, 0.15);
+        color: #198754;
+        border: 1px solid rgba(25, 135, 84, 0.3);
+    }
+
+        .badge-returned .dot {
+            background: #198754;
+        }
+
+    .btn-action {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: 0.3s;
+        color: white;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-edit:hover {
+        background: #0dcaf0;
+        color: #000;
+        border-color: #0dcaf0;
+    }
+
+    .btn-details:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    .overdue-row {
+        background: rgba(220, 53, 69, 0.05) !important;
+    }
+
+    .avatar-circle {
+        width: 35px;
+        height: 35px;
+        background: #343a40;
+        border: 1px solid #495057;
+        color: var(--halloween-orange);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .pulse {
+        animation: pulse-animation 2s infinite;
+    }
+
+    .btn-delete:hover {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+        box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+    }
+
+    @@keyframes pulse-animation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+</style>

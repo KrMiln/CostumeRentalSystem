@@ -12,9 +12,9 @@ namespace CostumeRentalSystem.Models
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Телефонният номер е задължителен.")]
-        [Phone(ErrorMessage = "Невалиден телефонен номер.")]
+        [RegularExpression(@"^(\+359|0)8[789]\d{7}$", ErrorMessage = "Моля, въведете валиден български мобилен номер (напр. 08XXXXXXXX).")]
         [Display(Name = "Телефон")]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Имейл адресът е задължителен.")]
         [EmailAddress(ErrorMessage = "Невалиден имейл адрес.")]

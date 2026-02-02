@@ -1,10 +1,11 @@
-using System.Threading.Tasks;
+using CostumeRentalSystem.Data;
+using CostumeRentalSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CostumeRentalSystem.Data;
-using CostumeRentalSystem.Models;
+using System.Threading.Tasks;
+using static CostumeRentalSystem.Models.Costume;
 
 namespace CostumeRentalSystem.Controllers;
 
@@ -12,45 +13,63 @@ namespace CostumeRentalSystem.Controllers;
 public class CostumesController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public CostumesController(ApplicationDbContext context)
+    public CostumesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     // GET: Costumes
     [AllowAnonymous]
-    public async Task<IActionResult> Index(int? categoryId, bool? onlyAvailable, string searchName)
+    public async Task<IActionResult> Index(string searchName, int? categoryId, bool onlyAvailable, string size, decimal? minPrice, decimal? maxPrice)
     {
-        var query = _context.Costumes
-            .Include(c => c.Category)
-            .AsQueryable();
+        var costumesQuery = _context.Costumes.Include(c => c.Category).AsQueryable();
 
-        if (categoryId.HasValue && categoryId.Value > 0)
+        // Филтър по име
+        if (!string.IsNullOrEmpty(searchName))
+            costumesQuery = costumesQuery.Where(c => c.Name.Contains(searchName));
+
+        // Филтър по категория
+        if (categoryId.HasValue)
+            costumesQuery = costumesQuery.Where(c => c.CategoryId == categoryId);
+
+        // Филтър за наличност
+        if (onlyAvailable)
+            costumesQuery = costumesQuery.Where(c => c.IsAvailable);
+
+        if (!string.IsNullOrEmpty(size))
         {
-            query = query.Where(c => c.CategoryId == categoryId.Value);
+            // Опитваме се да превърнем стринга в стойност от Enum-а
+            if (Enum.TryParse<CostumeSize>(size, out var selectedSize))
+            {
+                costumesQuery = costumesQuery.Where(c => c.Size == selectedSize);
+            }
         }
 
-        if (onlyAvailable.HasValue && onlyAvailable.Value)
-        {
-            query = query.Where(c => c.IsAvailable);
-        }
+        // НОВО: Филтър по цена (диапазон)
+        if (minPrice.HasValue)
+            costumesQuery = costumesQuery.Where(c => c.PricePerDay >= minPrice.Value);
 
-        if (!string.IsNullOrWhiteSpace(searchName))
-        {
-            query = query.Where(c => c.Name.Contains(searchName));
-        }
+        if (maxPrice.HasValue)
+            costumesQuery = costumesQuery.Where(c => c.PricePerDay <= maxPrice.Value);
 
-        ViewBag.Categories = new SelectList(await _context.Categories.OrderBy(c => c.Name).ToListAsync(), "Id", "Name");
-        ViewBag.SelectedCategoryId = categoryId;
-        ViewBag.OnlyAvailable = onlyAvailable ?? false;
+        // Запазваме стойностите за изгледа
+        ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name", categoryId);
         ViewBag.SearchName = searchName;
+        ViewBag.OnlyAvailable = onlyAvailable;
+        ViewBag.Size = size;
+        ViewBag.MinPrice = minPrice;
+        ViewBag.MaxPrice = maxPrice;
 
-        var costumes = await query
-            .OrderBy(c => c.Name)
-            .ToListAsync();
+        // За да работи правилно Dropdown менюто в изгледа:
+        ViewBag.SizeList = new SelectList(Enum.GetValues(typeof(CostumeSize)));
 
-        return View(costumes);
+        // Запазваме избрания размер, за да остане селектиран
+        ViewBag.SelectedSize = size;
+
+        return View(await costumesQuery.ToListAsync());
     }
 
     // GET: Costumes/Details/5
@@ -85,14 +104,32 @@ public class CostumesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Create([Bind("Name,CategoryId,Size,PricePerDay,IsAvailable,Notes")] Costume costume)
+    public async Task<IActionResult> Create(Costume costume, IFormFile imageFile)
     {
+        // 1. Премахваме валидацията за ImageUrl, защото го попълваме програмно
+        ModelState.Remove("ImageUrl");
+
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            var uploadResult = await UploadImage(imageFile);
+            if (uploadResult.Success)
+            {
+                costume.ImageUrl = uploadResult.FilePath;
+            }
+            else
+            {
+                ModelState.AddModelError("imageFile", uploadResult.ErrorMessage);
+            }
+        }
+
         if (ModelState.IsValid)
         {
             _context.Add(costume);
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Костюмът е създаден успешно!";
             return RedirectToAction(nameof(Index));
         }
+
         await PopulateCategoriesDropDownList(costume.CategoryId);
         return View(costume);
     }
@@ -119,12 +156,38 @@ public class CostumesController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId,Size,PricePerDay,IsAvailable,Notes")] Costume costume)
+    public async Task<IActionResult> Edit(int id, Costume costume, IFormFile imageFile)
     {
-        if (id != costume.Id)
+        if (id != costume.Id) return NotFound();
+
+        var existingCostume = await _context.Costumes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+
+        if (imageFile != null && imageFile.Length > 0)
         {
-            return NotFound();
+            // Изтриване на старата снимка
+            if (!string.IsNullOrEmpty(existingCostume?.ImageUrl) && existingCostume.ImageUrl.StartsWith("/images/"))
+            {
+                DeleteImage(existingCostume.ImageUrl);
+            }
+
+            var uploadResult = await UploadImage(imageFile);
+            if (uploadResult.Success)
+            {
+                costume.ImageUrl = uploadResult.FilePath;
+            }
+            else
+            {
+                ModelState.AddModelError("imageFile", uploadResult.ErrorMessage);
+            }
         }
+        else
+        {
+            // Запазваме стария път, ако не е качен нов файл
+            costume.ImageUrl = existingCostume?.ImageUrl;
+        }
+
+        ModelState.Remove("imageFile");
+        ModelState.Remove("ImageUrl");
 
         if (ModelState.IsValid)
         {
@@ -132,20 +195,16 @@ public class CostumesController : Controller
             {
                 _context.Update(costume);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Костюмът е обновен успешно!";
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Costumes.Any(e => e.Id == costume.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                if (!_context.Costumes.Any(e => e.Id == costume.Id)) return NotFound();
+                else throw;
             }
             return RedirectToAction(nameof(Index));
         }
+
         await PopulateCategoriesDropDownList(costume.CategoryId);
         return View(costume);
     }
@@ -179,8 +238,15 @@ public class CostumesController : Controller
         var costume = await _context.Costumes.FindAsync(id);
         if (costume != null)
         {
+            // Delete the image file if it exists
+            if (!string.IsNullOrEmpty(costume.ImageUrl) && costume.ImageUrl.StartsWith("/images/"))
+            {
+                DeleteImage(costume.ImageUrl);
+            }
+
             _context.Costumes.Remove(costume);
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Костюмът е изтрит успешно!";
         }
         return RedirectToAction(nameof(Index));
     }
@@ -190,5 +256,72 @@ public class CostumesController : Controller
         var categoriesQuery = _context.Categories.OrderBy(c => c.Name);
         ViewBag.CategoryId = new SelectList(await categoriesQuery.ToListAsync(), "Id", "Name", selectedCategory);
     }
-}
 
+    private async Task<(bool Success, string FilePath, string ErrorMessage)> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return (false, null, "Моля изберете файл.");
+        }
+
+        // Check file size (max 5MB)
+        if (file.Length > 5 * 1024 * 1024)
+        {
+            return (false, null, "Файлът е твърде голям. Максималният размер е 5MB.");
+        }
+
+        // Check file extension
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension))
+        {
+            return (false, null, "Невалиден формат на файла. Разрешени формати: JPG, PNG, GIF, WEBP.");
+        }
+
+        try
+        {
+            // Create unique filename
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            // Create uploads directory if it doesn't exist
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "costumes");
+            Directory.CreateDirectory(uploadsFolder);
+
+            // Full file path
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Save file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Return relative path for database
+            return (true, $"/images/costumes/{fileName}", null);
+        }
+        catch (Exception ex)
+        {
+            return (false, null, $"Грешка при качване на файла: {ex.Message}");
+        }
+    }
+
+    private void DeleteImage(string imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl))
+            return;
+
+        try
+        {
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, imageUrl.TrimStart('/'));
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Грешка при изтриване на снимка: {ex.Message}");
+        }
+    }
+}

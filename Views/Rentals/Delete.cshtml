@@ -1,0 +1,67 @@
+﻿@model CostumeRentalSystem.Models.Rental
+
+@{
+    ViewData["Title"] = "Изтриване на наем";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card bg-dark border-danger shadow-lg animate__animated animate__fadeIn">
+                <div class="card-header bg-danger text-white py-3 text-center">
+                    <h3 class="mb-0"><i class="bi bi-exclamation-octagon-fill me-2"></i>Внимание!</h3>
+                </div>
+                <div class="card-body p-4 text-light">
+                    <h4 class="text-center mb-4">Сигурни ли сте, че искате да изтриете този запис?</h4>
+
+                    <div class="alert alert-secondary bg-black border-secondary text-white small">
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted text-uppercase fw-bold">ID на наема:</div>
+                            <div class="col-7">#RE-@Model.Id.ToString("D4")</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted text-uppercase fw-bold">Клиент:</div>
+                            <div class="col-7 text-info">@Model.Client?.Name</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-5 text-muted text-uppercase fw-bold">Костюм:</div>
+                            <div class="col-7 text-orange" style="color: #ff851b;">@Model.Costume?.Name</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-5 text-muted text-uppercase fw-bold">Статус:</div>
+                            <div class="col-7">
+                                <span class="badge @(Model.Status == CostumeRentalSystem.Models.RentalStatus.Active ? "bg-primary" : "bg-success")">
+                                    @Model.Status
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.Status == CostumeRentalSystem.Models.RentalStatus.Active)
+                    {
+                        <p class="text-warning small mt-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Бележка: Тъй като наемът е <strong>Активен</strong>, изтриването му автоматично ще направи костюма <strong>Наличен</strong> за други клиенти.
+                        </p>
+                    }
+
+                    <hr class="border-secondary my-4">
+
+                    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold shadow">
+                                <i class="bi bi-trash3-fill me-2"></i>ДА, ИЗТРИЙ ЗАПИСА
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-light">
+                                <i class="bi bi-x-circle me-2"></i>Отказ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

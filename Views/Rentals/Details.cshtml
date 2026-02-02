@@ -21,7 +21,7 @@
 </div>
 
 <a asp-action="Index" class="btn btn-secondary">Назад към списъка</a>
-@if (Model.Status == CostumeRentalSystem.Models.RentalStatus.Активен && (User.IsInRole("Administrator") || User.IsInRole("Employee")))
+@if (Model.Status == CostumeRentalSystem.Models.RentalStatus.Active && (User.IsInRole("Administrator") || User.IsInRole("Employee")))
 {
     <a asp-action="Return" asp-route-id="@Model.Id" class="btn btn-success">Отбележи като върнат</a>
 }

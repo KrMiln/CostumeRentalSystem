@@ -20,31 +20,33 @@ public class ClientsController : Controller
     // GET: Clients
     public async Task<IActionResult> Index(string searchName, string searchPhone, string searchEmail)
     {
-        var query = _context.Clients.AsQueryable();
+        // Започваме с базовата заявка към всички клиенти
+        var clientsQuery = _context.Clients.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(searchName))
+        // Филтър по име
+        if (!string.IsNullOrEmpty(searchName))
         {
-            query = query.Where(c => c.Name.Contains(searchName));
+            clientsQuery = clientsQuery.Where(c => c.Name.Contains(searchName));
         }
 
-        if (!string.IsNullOrWhiteSpace(searchPhone))
+        // Филтър по телефон
+        if (!string.IsNullOrEmpty(searchPhone))
         {
-            query = query.Where(c => c.Phone.Contains(searchPhone));
+            clientsQuery = clientsQuery.Where(c => c.PhoneNumber.Contains(searchPhone));
         }
 
-        if (!string.IsNullOrWhiteSpace(searchEmail))
+        // Филтър по имейл
+        if (!string.IsNullOrEmpty(searchEmail))
         {
-            query = query.Where(c => c.Email.Contains(searchEmail));
+            clientsQuery = clientsQuery.Where(c => c.Email.Contains(searchEmail));
         }
 
+        // Запазваме стойностите във ViewBag, за да останат попълнени в полетата след търсене
         ViewBag.SearchName = searchName;
         ViewBag.SearchPhone = searchPhone;
         ViewBag.SearchEmail = searchEmail;
 
-        var clients = await query
-            .OrderBy(c => c.Name)
-            .ToListAsync();
-
+        var clients = await clientsQuery.OrderBy(c => c.Name).ToListAsync();
         return View(clients);
     }
 
@@ -75,7 +77,7 @@ public class ClientsController : Controller
     // POST: Clients/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Phone,Email,Notes")] Client client)
+    public async Task<IActionResult> Create(Client client)
     {
         if (ModelState.IsValid)
         {
@@ -105,7 +107,7 @@ public class ClientsController : Controller
     // POST: Clients/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Phone,Email,Notes")] Client client)
+    public async Task<IActionResult> Edit(int id, Client client)
     {
         if (id != client.Id)
         {

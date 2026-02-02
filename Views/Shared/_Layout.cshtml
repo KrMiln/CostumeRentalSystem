@@ -1,85 +1,128 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="bg" data-bs-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Система за наем на костюми</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - MascotRent</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CostumeRentalSystem.styles.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Nosifer&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Система за наем на костюми</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-halloween shadow-lg sticky-top">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-ghost me-2 text-orange"></i><span class="fw-bold">Mascot</span>Rent
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Начало</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Начало</a>
                         </li>
-                        @if (User.IsInRole("Administrator") || User.IsInRole("Employee"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Costumes" asp-action="Index">Костюми</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Clients" asp-action="Index">Клиенти</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Rentals" asp-action="Index">Наеми</a>
-                            </li>
-                        }
-                        else if (User.IsInRole("Client"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Costumes" asp-action="Index">Костюми</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Контакти</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Costumes" asp-action="Index">Костюми</a>
-                            </li>
-                        }
 
-                        @if (User.IsInRole("Administrator"))
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Costumes" asp-action="Index">Каталог</a>
+                        </li>
+
+                        @* Контакти - достъпни за всички *@
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" asp-controller="Home" asp-action="Contact">
+                                <i class="bi bi-envelope me-1"></i> Контакти
+                            </a>
+                        </li>
+
+                        @* Админ Панел - вижда се от Admin и Employee *@
+                        @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrator") || User.IsInRole("Employee")))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Потребители</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-orange" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear-fill me-1"></i> Админ Панел
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark border-0 shadow">
+                                    <li><h6 class="dropdown-header text-uppercase small text-muted">Операции</h6></li>
+                                    <li><a class="dropdown-item" asp-controller="Rentals" asp-action="Index"><i class="bi bi-calendar-week me-2"></i>Наеми</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index"><i class="bi bi-people me-2"></i>Клиенти</a></li>
+
+                                    @* САМО за Администратор *@
+                                    @if (User.IsInRole("Administrator"))
+                                    {
+                                        <li><hr class="dropdown-divider bg-secondary"></li>
+                                        <li><a class="dropdown-item" asp-controller="Categories" asp-action="Index"><i class="bi bi-tags me-2"></i>Категории</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Users" asp-action="Index"><i class="bi bi-person-gear me-2 text-warning"></i>Потребители</a></li>
+                                    }
+                                </ul>
                             </li>
                         }
                     </ul>
-                    <partial name="_LoginPartial" />
+
+                    @* Дясна част: Акаунт и Логин *@
+                    <div class="d-flex align-items-center">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a class="btn btn-outline-warning btn-sm me-2" asp-controller="Home" asp-action="MyAccount">
+                                <i class="bi bi-person-circle me-1"></i> Моят Профил
+                            </a>
+                        }
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container main-container mt-4 mb-5">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="mt-auto py-4 text-center border-top border-secondary bg-dark">
         <div class="container">
-            &copy; 2026 - CostumeRentalSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="mb-3">
+                <a href="#" class="text-secondary me-3 fs-5"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-secondary me-3 fs-5"><i class="bi bi-instagram"></i></a>
+                <a href="#" class="text-secondary fs-5"><i class="bi bi-tiktok"></i></a>
+            </div>
+            <p class="mb-0 text-muted small">&copy; @DateTime.Now.Year MascotRent. Подгответе се за страшно парти!</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @* Универсален скрипт за Image Preview, който работи навсякъде *@
+    <script>
+        function handleImagePreview(input, imgElementId, labelId) {
+            const previewImage = document.getElementById(imgElementId);
+            const label = document.getElementById(labelId);
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (previewImage) {
+                        previewImage.src = e.target.result;
+                        // Ако е в Create таба, показваме контейнера ако е скрит
+                        const container = previewImage.parentElement;
+                        if (container && container.style.display === 'none') {
+                            container.style.display = 'block';
+                        }
+                    }
+                    if (label) {
+                        label.innerText = "Ново избрано изображение:";
+                        label.style.color = "#ff7518";
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
