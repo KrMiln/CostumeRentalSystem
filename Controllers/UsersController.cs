@@ -1,8 +1,9 @@
-using System.Threading.Tasks;
-using CostumeRentalSystem.Models;
+using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CostumeRentalSystem.Controllers;
 
@@ -18,21 +19,61 @@ public class UsersController : Controller
         _roleManager = roleManager;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? searchTerm, string? roleFilter, int page = 1)
     {
-        var users = _userManager.Users.ToList();
-        var model = new List<UserWithRolesViewModel>();
+        const int pageSize = 6;
 
+        // 1. Стартираме заявката
+        var query = _userManager.Users.AsQueryable();
+
+        // 2. Филтриране по текст (Username или Email)
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            searchTerm = searchTerm.Trim().ToLower();
+            query = query.Where(u => u.UserName.ToLower().Contains(searchTerm) ||
+                                     u.Email.ToLower().Contains(searchTerm));
+        }
+
+        // 3. Филтриране по роля (Това е по-сложно при Identity, затова използваме Join)
+        if (!string.IsNullOrWhiteSpace(roleFilter))
+        {
+            // Намираме ID-то на ролята
+            var role = await _roleManager.FindByNameAsync(roleFilter);
+            if (role != null)
+            {
+                // Взимаме само потребителите, които са в тази роля
+                query = query.Where(u => _userManager.GetUsersInRoleAsync(roleFilter).Result.Select(r => r.Id).Contains(u.Id));
+            }
+        }
+
+        // 4. Изчисляване на общия брой СЛЕД филтрацията
+        int totalItems = await query.CountAsync();
+
+        var users = await query
+            .OrderBy(u => u.UserName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var userViewModels = new List<UserViewModel>();
         foreach (var user in users)
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            model.Add(new UserWithRolesViewModel
+            userViewModels.Add(new UserViewModel
             {
                 UserId = user.Id,
-                Email = user.Email ?? string.Empty,
-                Roles = roles.ToList()
+                Username = user.UserName!,
+                Email = user.Email!,
+                Roles = (await _userManager.GetRolesAsync(user)).ToList()
             });
         }
+
+        var model = new PagedResult<UserViewModel>
+        {
+            Items = userViewModels,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
+            TotalItems = totalItems
+        };
 
         return View(model);
     }
@@ -96,12 +137,4 @@ public class UsersController : Controller
     }
 }
 
-public class UserWithRolesViewModel
-{
-    public string UserId { get; set; } = string.Empty;
-
-    public string Email { get; set; } = string.Empty;
-
-    public List<string> Roles { get; set; } = new();
-}
 

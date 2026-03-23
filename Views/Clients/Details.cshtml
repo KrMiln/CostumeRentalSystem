@@ -1,48 +1,132 @@
-@model CostumeRentalSystem.Models.Client
+@using CostumeRentalSystem.Data.Entities
+@model CostumeRentalSystem.Data.Entities.Client
 @{
     ViewData["Title"] = "Детайли за клиент";
 }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-0 spooky-card shadow-lg overflow-hidden">
-                <div class="card-header bg-dark border-bottom border-orange py-5 text-center position-relative">
-                    <div class="details-avatar mx-auto mb-3">
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom border-secondary">
+        <div>
+            <h1 class="text-white fw-bold mb-0">
+                <i class="bi bi-person-badge me-2 text-orange"></i>Профил
+            </h1>
+            <p class="text-muted mb-0">Информация и история на клиента</p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary px-4 fw-bold">
+                <i class="bi bi-arrow-left me-2"></i>НАЗАД
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-ghost-orange fw-bold px-4">
+                <i class="bi bi-pencil-square me-2"></i>РЕДАКТИРАЙ
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-4">
+            <div class="card spooky-card shadow h-100">
+                <div class="card-body text-center p-4">
+                    <div class="avatar-circle-large mx-auto mb-3">
                         @Model.Name.Substring(0, 1).ToUpper()
                     </div>
-                    <h2 class="text-white fw-bold">@Model.Name</h2>
-                    <span class="badge rounded-pill bg-orange text-dark px-3">КЛИЕНТ #@Model.Id</span>
+                    <h3 class="text-white fw-bold mb-1">@Model.Name</h3>
+                    <span class="text-orange small fw-bold text-uppercase tracking-wider">ID: #CL-@Model.Id.ToString("D4")</span>
+
+                    <hr class="border-secondary opacity-25 my-4">
+
+                    <div class="text-start">
+                        <div class="mb-3">
+                            <label class="text-muted small fw-bold text-uppercase d-block">Телефон</label>
+                            <div class="text-white"><i class="bi bi-telephone text-orange me-2"></i>@Model.PhoneNumber</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small fw-bold text-uppercase d-block">Имейл</label>
+                            <div class="text-white"><i class="bi bi-envelope text-orange me-2"></i>@Model.Email</div>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="card-body p-5">
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <h5 class="text-orange mb-3 border-bottom border-secondary pb-2">КОНТАКТИ</h5>
-                            <p class="mb-2 text-muted small text-uppercase">Телефон</p>
-                            <p class="text-white fs-5"><i class="bi bi-telephone me-2 text-orange"></i>@Model.PhoneNumber</p>
-
-                            <p class="mb-2 text-muted small text-uppercase mt-4">Имейл</p>
-                            <p class="text-white fs-5"><i class="bi bi-envelope me-2 text-orange"></i>@Model.Email</p>
-                        </div>
-
-                        <div class="col-md-6">
-                            <h5 class="text-orange mb-3 border-bottom border-secondary pb-2">ИНФОРМАЦИЯ</h5>
-                            <p class="mb-2 text-muted small text-uppercase">Бележки към архива</p>
-                            <div class="p-3 bg-black bg-opacity-50 border border-secondary text-muted rounded min-vh-10">
-                                @(string.IsNullOrEmpty(Model.Notes) ? "Няма налични бележки за този клиент." : Model.Notes)
-                            </div>
-                        </div>
+        <div class="col-xl-8">
+            <div class="card spooky-card shadow h-100">
+                <div class="card-header border-bottom border-secondary border-opacity-25 bg-transparent py-3">
+                    <h6 class="m-0 fw-bold text-orange"><i class="bi bi-sticky me-2"></i>Допълнителни бележки</h6>
+                </div>
+                <div class="card-body">
+                    <div class="p-3 rounded bg-dark bg-opacity-50 border border-secondary border-opacity-25 text-muted italic min-vh-15">
+                        @(string.IsNullOrEmpty(Model.Notes) ? "Няма записани бележки за този клиент." : Model.Notes)
                     </div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="d-flex justify-content-center gap-3 mt-5">
-                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-0">
-                            <i class="bi bi-arrow-left"></i> НАЗАД
-                        </a>
-                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-ghost-orange px-5">
-                            <i class="bi bi-pencil"></i> РЕДАКТИРАЙ
-                        </a>
-                    </div>
+        <div class="col-12">
+            <h5 class="text-white fw-bold mb-3 mt-2">
+                <i class="bi bi-clock-history text-orange me-2"></i>История на наемите
+            </h5>
+            <div class="card border-0 spooky-card shadow-lg overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr class="text-uppercase small text-muted border-bottom border-secondary">
+                                <th class="ps-4 py-3">Костюм</th>
+                                <th class="py-3">Дата на наемане</th>
+                                <th class="py-3">Дата на връщане</th>
+                                <th class="py-3">Статус</th>
+                                <th class="text-end pe-4 py-3">Детайли</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Rentals != null && Model.Rentals.Any())
+                            {
+                                foreach (var rental in Model.Rentals.OrderByDescending(r => r.RentDate))
+                                {
+                                    var isOverdue = rental.Status == RentalStatus.Active && rental.ReturnDate < DateTime.Today;
+
+                                    <tr class="border-bottom border-secondary-subtle">
+                                        <td class="ps-4">
+                                            <span class="text-orange fw-medium">@rental.Costume?.Name</span>
+                                            <div class="small text-muted" style="font-size: 0.7rem;">ID: #RE-@rental.Id.ToString("D4")</div>
+                                        </td>
+                                        <td class="small">@rental.RentDate.ToShortDateString()</td>
+                                        <td>
+                                            <div class="small @(isOverdue ? "text-danger fw-bold pulse" : "text-info")">
+                                                @rental.ReturnDate.ToShortDateString()
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var (badgeClass, statusText) = rental.Status switch
+                                                {
+                                                    RentalStatus.Active => ("badge-active", "Нает"),
+                                                    RentalStatus.Returned => ("badge-returned", "Върнат"),
+                                                    RentalStatus.Lost => ("badge-lost", "Изгубен"),
+                                                    RentalStatus.Damaged => ("badge-damaged", "Повреден"),
+                                                    _ => ("badge-other", "Друго")
+                                                };
+                                            }
+                                            <span class="custom-badge @badgeClass">
+                                                <span class="dot"></span> @statusText
+                                            </span>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <a asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.Id" class="btn btn-sm btn-outline-light">
+                                                <i class="bi bi-eye"></i> Разгледай
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="py-5 text-center text-muted">Няма регистрирани наеми.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -50,63 +134,141 @@
 </div>
 
 <style>
+    :root {
+        --halloween-orange: #ff851b;
+        --witch-purple: #8e44ad;
+    }
+
     .text-orange {
-        color: #ff851b !important;
+        color: var(--halloween-orange) !important;
     }
 
-    .bg-orange {
-        background-color: #ff851b !important;
+    .tracking-wider {
+        letter-spacing: 1px;
     }
 
-    .border-orange {
-        border-color: #ff851b !important;
+    .min-vh-15 {
+        min-height: 150px;
     }
 
+    .italic {
+        font-style: italic;
+    }
+
+    /* Копиране на стиловете от вашия Index */
     .spooky-card {
-        background: rgba(20, 20, 20, 0.95);
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 0px;
-    }
-
-    .spooky-input {
-        background-color: #1a1a1a !important;
-        border: 1px solid #333 !important;
-        color: white !important;
-        border-radius: 0px;
-    }
-
-        .spooky-input:focus {
-            border-color: #ff851b !important;
-            box-shadow: 0 0 10px rgba(255, 133, 27, 0.2);
-        }
-
-    .details-avatar {
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, #ff851b, #8e44ad);
-        color: black;
-        font-size: 3rem;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 0 30px rgba(255, 133, 27, 0.4);
-        border: 4px solid #121212;
+        border-radius: 12px;
     }
 
     .btn-ghost-orange {
         background: transparent;
-        color: #ff851b !important;
-        border: 2px solid #ff851b;
-        border-radius: 0px;
+        color: var(--halloween-orange) !important;
+        border: 2px solid var(--halloween-orange);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
     }
 
         .btn-ghost-orange:hover {
-            background: #ff851b;
+            background: var(--halloween-orange);
             color: #000 !important;
-            box-shadow: 0 0 15px #ff851b;
+            box-shadow: 0 0 15px var(--halloween-orange);
         }
+
+    .avatar-circle-large {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #6f42c1, var(--witch-purple));
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        box-shadow: 0 0 20px rgba(111, 66, 193, 0.3);
+        border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* Статус значки */
+    .custom-badge {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        text-transform: uppercase;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+        .custom-badge .dot {
+            height: 6px;
+            width: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+    .badge-active {
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+    }
+
+        .badge-active .dot {
+            background: #0d6efd;
+            box-shadow: 0 0 5px #0d6efd;
+        }
+
+    .badge-returned {
+        background: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+        .badge-returned .dot {
+            background: #198754;
+        }
+
+    .badge-lost {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+        .badge-lost .dot {
+            background: #dc3545;
+            box-shadow: 0 0 5px #dc3545;
+        }
+
+    .badge-damaged {
+        background: rgba(142, 68, 173, 0.15);
+        color: #a34dff;
+    }
+
+        .badge-damaged .dot {
+            background: #a34dff;
+            box-shadow: 0 0 8px #a34dff;
+        }
+
+    .pulse {
+        animation: pulse-animation 2s infinite;
+    }
+
+    @@keyframes pulse-animation {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
 </style>

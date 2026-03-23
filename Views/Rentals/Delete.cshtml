@@ -1,4 +1,4 @@
-﻿@model CostumeRentalSystem.Models.Rental
+﻿@model Rental
 
 @{
     ViewData["Title"] = "Изтриване на наем";
@@ -30,24 +30,34 @@
                         <div class="row">
                             <div class="col-5 text-muted text-uppercase fw-bold">Статус:</div>
                             <div class="col-7">
-                                <span class="badge @(Model.Status == CostumeRentalSystem.Models.RentalStatus.Active ? "bg-primary" : "bg-success")">
-                                    @Model.Status
+                                @{
+                                    var (statusClass, statusName) = Model.Status switch
+                                    {
+                                        RentalStatus.Active => ("bg-primary", "Нает"),
+                                        RentalStatus.Returned => ("bg-success", "Върнат"),
+                                        RentalStatus.Lost => ("bg-danger", "Изгубен"),
+                                        RentalStatus.Damaged => ("bg-warning text-dark", "Повреден"),
+                                        _ => ("bg-secondary", "Друго")
+                                    };
+                                }
+                                <span class="badge @statusClass">
+                                    @statusName
                                 </span>
                             </div>
                         </div>
                     </div>
 
-                    @if (Model.Status == CostumeRentalSystem.Models.RentalStatus.Active)
+                    @if (Model.Status == RentalStatus.Active)
                     {
                         <p class="text-warning small mt-3">
                             <i class="bi bi-info-circle me-1"></i>
-                            Бележка: Тъй като наемът е <strong>Активен</strong>, изтриването му автоматично ще направи костюма <strong>Наличен</strong> за други клиенти.
+                            Бележка: Тъй като наемът е <strong>Нает</strong>, изтриването му автоматично ще направи костюма <strong>Наличен</strong> за други клиенти.
                         </p>
                     }
 
                     <hr class="border-secondary my-4">
 
-                    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
 

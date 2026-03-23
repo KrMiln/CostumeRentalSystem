@@ -1,9 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
 using CostumeRentalSystem.Data;
-using CostumeRentalSystem.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Data.Seed;
+using CostumeRentalSystem.Services;
+using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<ICostumeService, CostumeService>();
+builder.Services.AddScoped<IRentalService, RentalService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 

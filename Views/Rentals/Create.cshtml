@@ -1,85 +1,99 @@
-@model CostumeRentalSystem.Models.Rental
+@model RentalFormViewModel
 @{
     ViewData["Title"] = "Нов наем";
 }
 
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <div class="page-title-area">
-            <h6 class="text-orange text-uppercase tracking-widest fw-bold mb-1" style="font-size: 0.7rem; opacity: 0.8;">Система за управление</h6>
-            <h2 class="text-white fw-light mb-0">Регистрация на <span class="fw-bold">Договор</span></h2>
-        </div>
-        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small p-0 hover-white">
-            <i class="bi bi-arrow-left me-1"></i> Обратно към списъка
-        </a>
-    </div>
-
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <form asp-action="Create" method="post" class="rental-form">
-                <div class="glass-panel p-4 p-md-5">
+                @* Скрити полета за Model Binder-а *@
+                <input type="hidden" asp-for="PricePerDay" />
+                <input type="hidden" asp-for="CostumeName" />
+                <input type="hidden" asp-for="CostumeImagePath" />
 
+                <div class="glass-panel p-4 p-md-5">
                     <div class="row g-5">
+                        @* ЛЯВА КОЛОНА: Основна информация *@
                         <div class="col-lg-6">
                             <h5 class="section-title mb-4">Информация за наема</h5>
+
+                            @* Валидация за целия модел *@
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
 
                             <div class="custom-input-group mb-4">
                                 <label asp-for="ClientId" class="custom-label">Клиент</label>
                                 <div class="input-wrapper">
-                                    <select asp-for="ClientId" class="custom-control" asp-items="ViewBag.ClientId">
-                                        <option value="" disabled selected>Изберете клиент...</option>
+                                    <select asp-for="ClientId" class="custom-control select-search" asp-items="ViewBag.ClientId">
+                                        <option value="">Изберете клиент...</option>
                                     </select>
-                                    <i class="bi bi-person-check icon-indicator"></i>
                                 </div>
-                                <span asp-validation-for="ClientId" class="text-danger x-small"></span>
+                                <div class="validation-placeholder">
+                                    <span asp-validation-for="ClientId" class="text-danger x-small"></span>
+                                </div>
                             </div>
 
                             <div class="custom-input-group mb-0">
                                 <label asp-for="CostumeId" class="custom-label">Костюм</label>
                                 <div class="input-wrapper">
-                                    <select asp-for="CostumeId" class="custom-control" asp-items="ViewBag.CostumeId">
-                                        <option value="" disabled selected>Изберете артикул...</option>
+                                    <select asp-for="CostumeId" class="custom-control select-search" asp-items="ViewBag.CostumeId">
+                                        <option value="">Изберете артикул...</option>
                                     </select>
-                                    <i class="bi bi-mask icon-indicator"></i>
                                 </div>
-                                <span asp-validation-for="CostumeId" class="text-danger x-small"></span>
+                                <div class="validation-placeholder">
+                                    <span asp-validation-for="CostumeId" class="text-danger x-small"></span>
+                                </div>
                             </div>
                         </div>
 
+                        @* ДЯСНА КОЛОНА: Период и Статус *@
                         <div class="col-lg-6">
-                            <h5 class="section-title mb-4">Период и Статус</h5>
+                            <h5 class="section-title mb-4">Период и Актуализация</h5>
 
                             <div class="row g-3">
                                 <div class="col-sm-6">
-                                    <div class="custom-input-group mb-4">
-                                        <label asp-for="RentDate" class="custom-label">От дата</label>
-                                        <input asp-for="RentDate" class="custom-control date-input" type="date" />
-                                        <span asp-validation-for="RentDate" class="text-danger x-small"></span>
+                                    <div class="custom-input-group mb-0">
+                                        <label asp-for="StartDate" class="custom-label">От дата</label>
+                                        <input asp-for="StartDate" class="custom-control date-input" type="date" />
+                                        <div class="validation-placeholder">
+                                            <span asp-validation-for="StartDate" class="text-danger x-small"></span>
+                                        </div>
                                     </div>
                                 </div>
+
                                 <div class="col-sm-6">
-                                    <div class="custom-input-group mb-4">
-                                        <label asp-for="ReturnDate" class="custom-label">До дата</label>
-                                        <input asp-for="ReturnDate" class="custom-control date-input highlight" type="date" />
-                                        <span asp-validation-for="ReturnDate" class="text-danger x-small"></span>
+                                    <div class="custom-input-group mb-0">
+                                        <label asp-for="EndDate" class="custom-label">До дата</label>
+                                        <input asp-for="EndDate" class="custom-control date-input highlight" type="date" />
+                                        <div class="validation-placeholder">
+                                            <span asp-validation-for="EndDate" class="text-danger x-small"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="custom-input-group mb-0">
+                            <div class="custom-input-group mt-4 mb-0">
                                 <label asp-for="Status" class="custom-label">Статус на наема</label>
                                 <div class="input-wrapper">
-                                    <select asp-for="Status" class="custom-control"
-                                            asp-items="Html.GetEnumSelectList<CostumeRentalSystem.Models.RentalStatus>()"></select>
-                                    <i class="bi bi-activity icon-indicator"></i>
+                                    @* Визуален прочит на статуса *@
+                                    <input type="text" class="custom-control" value="Нает" readonly style="opacity: 0.7; cursor: not-allowed; padding-right: 40px;" />
+                                    <i class="bi bi-lock-fill icon-indicator"></i>
+
+                                    @* Реална стойност за изпращане *@
+                                    <input type="hidden" asp-for="Status" value="@((int)RentalStatus.Active)" />
                                 </div>
+                                <div class="validation-placeholder"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-actions mt-5 pt-4 border-top border-white border-opacity-10 text-end">
+                    @* Бутони *@
+                    <div class="form-actions mt-5 pt-4 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small hover-white fw-bold p-0">
+                            <i class="bi bi-arrow-left me-1"></i> Назад
+                        </a>
                         <button type="submit" class="btn-submit-main">
-                            СЪЗДАЙ ДОГОВОР <i class="bi bi-plus-lg ms-2"></i>
+                            <i class="bi bi-check2-circle me-2"></i>ЗАПАЗИ
                         </button>
                     </div>
                 </div>
@@ -89,127 +103,150 @@
 </div>
 
 <style>
-    /* Базови цветове за синхрон с темата */
     :root {
         --theme-orange: #ff851b;
         --theme-glass: rgba(255, 255, 255, 0.02);
-        --theme-border: rgba(255, 255, 255, 0.08);
-        --theme-input-bg: rgba(0, 0, 0, 0.2);
+        --theme-border: rgba(255, 255, 255, 0.12);
+        --theme-input-bg: #121212;
     }
 
-    /* Glass Panel: Същият като в Index страницата */
+    /* Основен панел */
     .glass-panel {
         background: var(--theme-glass);
         backdrop-filter: blur(12px);
         border: 1px solid var(--theme-border);
         border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
-    .section-title {
-        color: white;
-        font-size: 0.9rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.9;
-        display: flex;
-        align-items: center;
+    /* Контроли */
+    .custom-control {
+        width: 100%;
+        background: var(--theme-input-bg) !important;
+        border: 1px solid var(--theme-border);
+        color: #fff !important;
+        padding: 12px 15px;
+        border-radius: 10px;
+        outline: none;
     }
 
-        .section-title::before {
-            content: "";
-            width: 15px;
-            height: 2px;
-            background: var(--theme-orange);
-            margin-right: 10px;
-        }
-
-    /* Inputs: Рафинирани за тъмна тема */
     .custom-label {
         font-size: 0.7rem;
-        color: #777;
+        color: #aaa;
         font-weight: 800;
         text-transform: uppercase;
         margin-bottom: 8px;
         display: block;
     }
 
-    .input-wrapper {
-        position: relative;
+    /* Заглавия */
+    .section-title {
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
         display: flex;
         align-items: center;
     }
 
-    .custom-control {
-        width: 100%;
-        background: var(--theme-input-bg);
-        border: 1px solid var(--theme-border);
-        color: #ddd;
-        padding: 12px 15px;
-        border-radius: 10px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        outline: none;
-    }
-
-        .custom-control:focus {
-            border-color: var(--theme-orange);
-            background: rgba(0,0,0,0.4);
-            color: white;
+        .section-title::before {
+            content: "";
+            width: 12px;
+            height: 2px;
+            background: var(--theme-orange);
+            margin-right: 10px;
         }
 
-    .icon-indicator {
-        position: absolute;
-        right: 15px;
-        color: #444;
-        pointer-events: none;
-    }
-
-    .date-input.highlight {
-        border-color: rgba(255, 133, 27, 0.3);
-    }
-
-    /* Button: Акцент без да доминира */
+    /* Бутон за запис */
     .btn-submit-main {
         background: var(--theme-orange);
         border: none;
         color: black;
-        padding: 12px 40px;
+        padding: 12px 35px;
         border-radius: 10px;
         font-weight: 900;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
         transition: all 0.3s;
     }
 
         .btn-submit-main:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(255, 133, 27, 0.2);
-            background: #ffa04d;
+            box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
         }
 
-    /* Utility */
-    .tracking-widest {
-        letter-spacing: 3px;
+    /* Подравняване и икони */
+    .input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .icon-indicator {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--theme-orange);
+        pointer-events: none;
+        z-index: 10;
+        opacity: 0.8;
+    }
+
+    .validation-placeholder {
+        min-height: 20px; /* Фиксира височината, за да не се мести формата при грешка */
+        margin-top: 4px;
     }
 
     .x-small {
-        font-size: 0.7rem;
-        margin-top: 5px;
-        display: block;
+        font-size: 0.75rem;
     }
 
-    .hover-white:hover {
-        color: white !important;
-    }
-
-    ::-webkit-calendar-picker-indicator {
-        filter: invert(0.8);
+    /* Оранжев календар за Chrome/Edge/Safari */
+    .date-input::-webkit-calendar-picker-indicator {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
         cursor: pointer;
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Select2 Стилизация */
+    .select2-container--default .select2-selection--single {
+        background-color: var(--theme-input-bg) !important;
+        border: 1px solid var(--theme-border) !important;
+        border-radius: 10px !important;
+        height: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #fff !important;
+            padding-left: 15px !important;
+            line-height: 50px !important;
+        }
+
+    .select2-dropdown {
+        background-color: #1a1a1a !important;
+        border: 1px solid var(--theme-orange) !important;
+    }
+
+    .select2-results__option--highlighted[aria-selected] {
+        background-color: var(--theme-orange) !important;
+        color: #000 !important;
     }
 </style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.select-search').select2({
+                width: '100%',
+                placeholder: "Изберете..."
+            });
+        });
+    </script>
 }

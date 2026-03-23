@@ -96,6 +96,31 @@ footer {
     margin-top: auto; /* Push footer to bottom */
 }
 
+/* Премахваме синия цвят и добавяме плавен преход */
+.footer-links li a {
+    color: #6c757d !important; /* Сиво (text-muted) */
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    padding: 3px 0;
+}
+
+    /* Стил при посочване (Hover) */
+    .footer-links li a:hover {
+        color: var(--theme-orange, #ff851b) !important; /* Оранжево */
+        transform: translateX(5px); /* Леко помръдване надясно */
+        text-shadow: 0 0 8px rgba(255, 133, 27, 0.5); /* Лек призрачен сияен ефект */
+    }
+
+/* Стилизиране на иконките в контактите, за да са в тон */
+.icon-box i {
+    color: var(--theme-orange, #ff851b);
+}
+
+.tracking-widest {
+    letter-spacing: 2px;
+}
+
 /* =========================================
    4. CARDS & CONTAINERS
    ========================================= */
@@ -296,4 +321,68 @@ footer {
 
 .sticky-top {
     z-index: 1050 !important;
+}
+
+/* Halloween / Costume Theme Gradients */
+.bg-halloween-purple {
+    background: linear-gradient(135deg, #4a148c, #7b1fa2); /* Deep Purple */
+    color: white;
+}
+
+.bg-halloween-orange {
+    background: linear-gradient(135deg, #e65100, #ff9800); /* Pumpkin Orange */
+    color: white;
+}
+
+.btn-halloween-orange {
+    background-color: #ff6d00;
+    border-color: #e65100;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .btn-halloween-orange:hover {
+        background-color: #e65100;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(230, 81, 0, 0.4);
+        color: white;
+    }
+
+.btn-halloween-purple {
+    background-color: #6a1b9a;
+    border-color: #4a148c;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .btn-halloween-purple:hover {
+        background-color: #4a148c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(74, 20, 140, 0.4);
+        color: white;
+    }
+
+.form-floating input:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 0.25rem rgba(255, 152, 0, 0.25);
+}
+
+/* Styling for the password toggle button */
+.input-group-text-halloween {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 152, 0, 0.3) !important;
+    border-left: none !important; /* Merge with the input */
+    color: rgba(255, 152, 0, 0.8) !important;
+    cursor: pointer;
+}
+
+    .input-group-text-halloween:hover {
+        color: #ff9800 !important;
+    }
+
+/* Fix for floating label when inside input-group */
+.input-group > .form-floating {
+    flex: 1 1 auto;
 }

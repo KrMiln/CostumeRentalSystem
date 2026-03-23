@@ -1,7 +1,8 @@
-@model IEnumerable<CostumeRentalSystem.Models.Costume>
+@using CostumeRentalSystem.ViewModels.Rentals
+@model CostumeIndexViewModel
+
 @{
     ViewData["Title"] = "Каталог Костюми";
-    var categories = ViewBag.Categories as SelectList;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -14,6 +15,7 @@
     }
 </div>
 
+@* ФИЛТРИРАЩА СЕКЦИЯ *@
 <div class="card border-0 mb-5 spooky-card rounded-4">
     <div class="card-body p-4">
         <form method="get" class="row g-3">
@@ -21,54 +23,60 @@
                 <label class="form-label text-muted fw-bold small">Търсене по име</label>
                 <div class="input-group">
                     <span class="input-group-text bg-dark border-secondary text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="searchName" value="@ViewBag.SearchName" class="form-control bg-dark text-white border-secondary" placeholder="Напр. Батман..." />
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label text-muted fw-bold small">Категория</label>
-                <select name="categoryId" class="form-select bg-dark text-white border-secondary" asp-items="categories">
-                    <option value="">-- Всички Категории --</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label text-muted fw-bold small">Размер</label>
-                <select name="size" class="form-select bg-dark text-white border-secondary">
-                    <option value="">-- Всички --</option>
-                    @foreach (var s in Enum.GetValues(typeof(CostumeRentalSystem.Models.Costume.CostumeSize)))
-                    {
-                        <option value="@s" selected="@(ViewBag.SelectedSize == s.ToString() ? "selected" : null)">@s</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <div class="form-check mb-2">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" name="onlyAvailable" id="onlyAvailable" value="true" @(ViewBag.OnlyAvailable ? "checked" : "") />
-                    <label class="form-check-label fw-semibold text-light" for="onlyAvailable">Само свободни</label>
+                    <input type="text" asp-for="SearchName" class="form-control bg-dark text-white border-secondary" placeholder="Дракула..." />
                 </div>
             </div>
 
             <div class="col-md-3">
-                <label class="form-label text-muted fw-bold small">Мин. цена</label>
-                <input type="number" step="0.01" name="minPrice" value="@ViewBag.MinPrice" class="form-control bg-dark text-white border-secondary" placeholder="0.00" />
+                <label class="form-label text-muted fw-bold small">Категория</label>
+                <select asp-for="CategoryId" class="form-select bg-dark text-white border-secondary" asp-items="Model.Categories">
+                    <option value="">-- Всички категории --</option>
+                </select>
             </div>
-            <div class="col-md-3">
-                <label class="form-label text-muted fw-bold small">Макс. цена</label>
-                <input type="number" step="0.01" name="maxPrice" value="@ViewBag.MaxPrice" class="form-control bg-dark text-white border-secondary" placeholder="100.00" />
+
+            <div class="col-md-2">
+                <label class="form-label text-muted fw-bold small">Размер</label>
+                <select asp-for="SelectedSize" class="form-select bg-dark text-white border-secondary shadow-none" asp-items="Model.SizeList">
+                    <option value="">-- Всички --</option>
+                </select>
             </div>
-            <div class="col-md-6 d-flex align-items-end gap-2">
-                <button type="submit" class="btn btn-outline-light px-4 rounded-3 flex-grow-1">
-                    <i class="bi bi-filter me-1"></i> Приложи
-                </button>
-                <a asp-action="Index" class="btn btn-outline-secondary rounded-3 px-3">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </a>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input class="form-check-input bg-dark border-secondary" type="checkbox" asp-for="OnlyAvailable" id="onlyAvailable" />
+                    <label class="form-check-label fw-semibold text-light" for="onlyAvailable">Само налични</label>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-end mt-1">
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small">Мин. цена</label>
+                    <input type="number" step="0.01" min="0" asp-for="MinPrice" placeholder="0.00"
+                           class="form-control bg-dark text-white border-secondary" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-muted fw-bold small">Макс. цена</label>
+                    <input type="number" step="0.01" min="0" asp-for="MaxPrice" placeholder="100.00"
+                           class="form-control bg-dark text-white border-secondary" />
+                </div>
+
+                <div class="col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-ghost-white px-4 rounded-3 flex-grow-1">
+                        <i class="bi bi-search me-2"></i> Приложи
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-3 px-3">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </a>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
+@* СПИСЪК С КОСТЮМИ *@
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-    @foreach (var item in Model)
+    @foreach (var item in Model.Costumes)
     {
         <div class="col">
             <div class="card h-100 spooky-card border-0 rounded-4 overflow-hidden position-relative costume-card">
@@ -80,9 +88,9 @@
                 </div>
 
                 <div class="card-img-wrapper ratio ratio-4x3 bg-black overflow-hidden">
-                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                    @if (!string.IsNullOrWhiteSpace(item.ImagePath))
                     {
-                        <img src="@item.ImageUrl" alt="@item.Name" class="w-100 h-100 object-fit-cover transition-img" loading="lazy"
+                        <img src="@item.ImagePath" alt="@item.Name" class="w-100 h-100 object-fit-cover transition-img" loading="lazy"
                              onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=Липсва+снимка';" />
                     }
                     else
@@ -121,9 +129,16 @@
                         </a>
                         @if (User.IsInRole("Administrator"))
                         {
-                            <div class="btn-group btn-group-sm">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-dark border-secondary">Редактирай</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-dark border-secondary text-danger">Изтрий</a>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id"
+                                   class="btn btn-halloween-edit btn-sm flex-fill">
+                                    <i class="bi bi-pencil-square me-1"></i> Редактирай
+                                </a>
+
+                                <a asp-action="Delete" asp-route-id="@item.Id"
+                                   class="btn btn-halloween-delete btn-sm flex-fill">
+                                    <i class="bi bi-trash3 me-1"></i> Изтрий
+                                </a>
                             </div>
                         }
                     </div>
@@ -133,7 +148,7 @@
     }
 </div>
 
-@if (!Model.Any())
+@if (!Model.Costumes.Any())
 {
     <div class="text-center py-5">
         <i class="bi bi-emoji-dizzy fs-1 text-muted opacity-25"></i>
@@ -142,14 +157,10 @@
     </div>
 }
 
-@section Scripts {
-    <script>
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    </script>
-}
+@* ПАГИНАЦИЯ *@
+<div class="mt-4">
+    <partial name="_PaginationPartial" model="Model.Pagination" />
+</div>
 
 <style>
     .transition-img {
@@ -166,4 +177,61 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
+    .btn-halloween-edit {
+        background: rgba(255, 133, 27, 0.1);
+        border: 1px solid var(--theme-orange);
+        color: var(--theme-orange) !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+        .btn-halloween-edit:hover {
+            background: rgba(255, 133, 27, 0.3) !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(255, 133, 27, 0.4);
+        }
+
+    .btn-halloween-delete {
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid #dc3545;
+        color: #dc3545 !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+        .btn-halloween-delete:hover {
+            background: #dc3545;
+            color: white !important;
+            box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+        }
+
+    .btn-ghost-white {
+        background: transparent;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        font-weight: 600;
+        transition: all 0.25s ease-in-out;
+        border-radius: 8px; /* Matches your card design */
+    }
+
+        .btn-ghost-white:hover {
+            background: #ffffff !important; /* Becomes solid white */
+            color: #000000 !important; /* Text becomes black */
+            border-color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-ghost-white:active {
+            background: #e0e0e0 !important; /* Slightly grey when pressed */
+            transform: translateY(0);
+        }
+
+        /* Optional: Make the icon change color too */
+        .btn-ghost-white:hover i {
+            color: #000000;
+        }
 </style>

@@ -11,7 +11,7 @@ namespace CostumeRentalSystem.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "ImageUrl",
+                name: "ImageFile",
                 table: "Costumes",
                 type: "nvarchar(500)",
                 maxLength: 500,
@@ -22,7 +22,7 @@ namespace CostumeRentalSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ImageUrl",
+                name: "ImageFile",
                 table: "Costumes");
         }
     }

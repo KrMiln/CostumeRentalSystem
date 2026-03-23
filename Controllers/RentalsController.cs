@@ -1,256 +1,212 @@
+using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using CostumeRentalSystem.Data;
-using CostumeRentalSystem.Models;
 
 namespace CostumeRentalSystem.Controllers;
 
-[Authorize(Roles = "Administrator,Employee")]
+[Authorize(Roles = "Administrator,Employee,Client")]
 public class RentalsController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IRentalService _rentalService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public RentalsController(ApplicationDbContext context)
+    public RentalsController(IRentalService rentalService, UserManager<ApplicationUser> userManager)
     {
-        _context = context;
+        _rentalService = rentalService;
+        _userManager = userManager;
     }
 
-    // Списък с всички наеми (История)
-    public async Task<IActionResult> Index(string searchString, DateTime? searchDate)
-    {
-        // Започваме с базовата заявка
-        var rentalsQuery = _context.Rentals
-            .Include(r => r.Client)
-            .Include(r => r.Costume)
-            .AsQueryable();
+    // --- READ OPERATIONS ---
 
-        // Филтър по текст (Име на клиент или Костюм)
-        if (!string.IsNullOrEmpty(searchString))
+    [Authorize(Roles = "Administrator,Employee")]
+    public async Task<IActionResult> Index(RentalIndexViewModel model, int page = 1)
+    {
+        const int pageSize = 6;
+
+        // 1. Валидация на датите (подобно на MinPrice > MaxPrice)
+        if (model.StartDate.HasValue && model.EndDate.HasValue && model.StartDate > model.EndDate)
         {
-            rentalsQuery = rentalsQuery.Where(r =>
-                r.Client.Name.Contains(searchString) ||
-                r.Costume.Name.Contains(searchString));
+            TempData["Error"] = "Началната дата не може да бъде след крайната дата!";
+
+            // Изчистваме проблемните филтри, за да не се зацикли в грешката
+            model.StartDate = null;
+            model.EndDate = null;
         }
 
-        // Филтър по дата (проверява и двете колони - наемане и връщане)
-        if (searchDate.HasValue)
-        {
-            rentalsQuery = rentalsQuery.Where(r =>
-                r.RentDate.Date == searchDate.Value.Date ||
-                r.ReturnDate.Date == searchDate.Value.Date);
-        }
+        // 2. Извикваме услугата (тя ще работи с изчистените дати, ако е имало грешка)
+        var pagedResult = await _rentalService.GetFilteredRentalsAsync(
+            model.SearchString, model.StartDate, model.EndDate, model.Status, page, pageSize);
 
-        var rentals = await rentalsQuery.OrderByDescending(r => r.RentDate).ToListAsync();
-
-        // Запазваме въведеното от потребителя, за да остане в полетата след търсене
-        ViewData["CurrentFilter"] = searchString;
-        ViewData["CurrentDate"] = searchDate?.ToString("yyyy-MM-dd");
-
-        return View(rentals);
-    }
-
-    // Само текущо активни наеми
-    public async Task<IActionResult> Active()
-    {
-        var rentals = await _context.Rentals
-            .Include(r => r.Client)
-            .Include(r => r.Costume)
-            .Where(r => r.Status == RentalStatus.Active)
-            .OrderBy(r => r.ReturnDate)
-            .ToListAsync();
-        ViewData["Subtitle"] = "Активни наеми";
-        return View("Index", rentals);
-    }
-
-    // Наеми, които трябва да се върнат днес или са закъснели
-    public async Task<IActionResult> DueToday()
-    {
-        var today = DateTime.Today;
-        var rentals = await _context.Rentals
-            .Include(r => r.Client)
-            .Include(r => r.Costume)
-            .Where(r => r.Status == RentalStatus.Active && r.ReturnDate.Date <= today)
-            .OrderBy(r => r.ReturnDate)
-            .ToListAsync();
-        ViewData["Subtitle"] = "Дължими днес или закъснели";
-        return View("Index", rentals);
-    }
-
-    // GET: Зареждане на страницата за нов наем
-    public async Task<IActionResult> Create()
-    {
-        await PopulateDropDowns();
-
-        var model = new Rental
-        {
-            RentDate = DateTime.Today,
-            ReturnDate = DateTime.Today.AddDays(1),
-            Status = RentalStatus.Active
-        };
+        // 3. Мапване на резултатите към модела
+        model.Rentals = pagedResult.Items;
+        model.Pagination = pagedResult.ToPaginationConfig("Rentals", nameof(Index), model.ToRouteValues());
 
         return View(model);
     }
 
-    // POST: Запис на новия наем в базата
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Rental rental)
+    [Authorize(Roles = "Client")]
+    public async Task<IActionResult> MyRentals(int page = 1)
     {
-        if (ModelState.IsValid)
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        const int pageSize = 5;
+        var pagedResult = await _rentalService.GetFilteredRentalsByEmailAsync(user.Email!, page, pageSize);
+
+        // Подаваме пагинираните данни директно към View-то
+        ViewData["Pagination"] = pagedResult.ToPaginationConfig("Rentals", nameof(MyRentals), new());
+
+        return View(pagedResult.Items);
+    }
+
+    public async Task<IActionResult> Details(int? id)
+    {
+        if (id == null) return NotFound();
+
+        var rental = await _rentalService.GetRentalByIdAsync(id.Value);
+        if (rental == null) return NotFound();
+
+        if (User.IsInRole("Client"))
         {
-            var costume = await _context.Costumes.FindAsync(rental.CostumeId);
-
-            if (costume == null || !costume.IsAvailable)
-            {
-                ModelState.AddModelError("", "Избраният костюм в момента не е наличен.");
-            }
-            else
-            {
-                // Основна логика: Маркираме костюма като зает
-                costume.IsAvailable = false;
-                rental.Status = RentalStatus.Active;
-
-                _context.Add(rental);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            var user = await _userManager.GetUserAsync(User);
+            if (rental.Client?.Email != user?.Email) return Forbid();
         }
 
-        await PopulateDropDowns(rental.ClientId, rental.CostumeId);
         return View(rental);
     }
 
-    // GET: Rentals/Edit/5
+    // --- CREATE OPERATIONS ---
+
+    [Authorize(Roles = "Administrator,Employee")]
+    public async Task<IActionResult> Create(int? costumeId)
+    {
+        var model = new RentalFormViewModel { CostumeId = costumeId ?? 0 };
+        await PopulateDropDowns(null, model.CostumeId);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Administrator,Employee")]
+    public async Task<IActionResult> Create(RentalFormViewModel model)
+    {
+        if (model.EndDate <= model.StartDate)
+            ModelState.AddModelError("EndDate", "Датата на връщане трябва да е след датата на наемане.");
+
+        if (ModelState.IsValid)
+        {
+            var result = await _rentalService.CreateRentalAsync(MapToEntity(model));
+
+            if (result.Success)
+            {
+                TempData["Success"] = "Наемът беше създаден успешно!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError("", result.ErrorMessage);
+        }
+
+        await PopulateDropDowns(model.ClientId, model.CostumeId);
+        return View(model);
+    }
+
+    // --- UPDATE OPERATIONS ---
+
+    [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
 
-        var rental = await _context.Rentals.FindAsync(id);
+        var rental = await _rentalService.GetRentalByIdAsync(id.Value);
         if (rental == null) return NotFound();
 
-        // Тук позволяваме да се виждат ВСИЧКИ костюми, 
-        // защото текущият костюм на този наем е маркиран като "зает"
-        ViewBag.ClientId = new SelectList(_context.Clients.OrderBy(c => c.Name), "Id", "Name", rental.ClientId);
-        ViewBag.CostumeId = new SelectList(_context.Costumes.OrderBy(c => c.Name), "Id", "Name", rental.CostumeId);
-
-        // Добавяме статусите в ViewBag за падащото меню
-        ViewBag.Statuses = new SelectList(Enum.GetValues(typeof(RentalStatus)));
-
-        return View(rental);
+        var model = MapToViewModel(rental);
+        await PopulateDropDowns(model.ClientId, model.CostumeId);
+        return View(model);
     }
 
-    // POST: Rentals/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,ClientId,CostumeId,RentDate,ReturnDate,Status")] Rental rental)
+    [Authorize(Roles = "Administrator,Employee")]
+    public async Task<IActionResult> Edit(int id, RentalFormViewModel model)
     {
-        if (id != rental.Id) return NotFound();
+        if (id != model.Id) return NotFound();
 
         if (ModelState.IsValid)
         {
-            try
+            var result = await _rentalService.UpdateRentalAsync(MapToEntity(model));
+
+            if (result.Success)
             {
-                // Вземаме оригиналния наем от базата (без проследяване), за да видим дали костюмът е сменен
-                var oldRental = await _context.Rentals.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
-
-                // Ако костюмът е сменен или статусът е променен на Returned
-                if (oldRental.CostumeId != rental.CostumeId || rental.Status == RentalStatus.Returned)
-                {
-                    var oldCostume = await _context.Costumes.FindAsync(oldRental.CostumeId);
-                    if (oldCostume != null) oldCostume.IsAvailable = true;
-
-                    if (rental.Status == RentalStatus.Active)
-                    {
-                        var newCostume = await _context.Costumes.FindAsync(rental.CostumeId);
-                        if (newCostume != null) newCostume.IsAvailable = false;
-                    }
-                }
-
-                _context.Update(rental);
-                await _context.SaveChangesAsync();
+                TempData["Success"] = "Промените по наема бяха запазени!";
+                return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Rentals.Any(e => e.Id == rental.Id)) return NotFound();
-                else throw;
-            }
-            return RedirectToAction(nameof(Index));
+
+            ModelState.AddModelError("", result.ErrorMessage);
         }
 
-        ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Name", rental.ClientId);
-        ViewBag.CostumeId = new SelectList(_context.Costumes, "Id", "Name", rental.CostumeId);
-        return View(rental);
+        await PopulateDropDowns(model.ClientId, model.CostumeId);
+        return View(model);
     }
 
-    // GET: Rentals/Delete/5
+    // --- DELETE OPERATIONS ---
+
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
 
-        var rental = await _context.Rentals
-            .Include(r => r.Client)
-            .Include(r => r.Costume)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (rental == null) return NotFound();
-
-        return View(rental);
+        var rental = await _rentalService.GetRentalByIdAsync(id.Value);
+        return rental == null ? NotFound() : View(rental);
     }
 
-    [HttpPost, ActionName("DeleteConfirmed")]
+    [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var rental = await _context.Rentals
-            .Include(r => r.Costume)
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-        if (rental != null)
-        {
-            // Освобождаваме костюма, ако наемът е бил активен
-            if (rental.Status == RentalStatus.Active && rental.Costume != null)
-            {
-                rental.Costume.IsAvailable = true;
-            }
-
-            _context.Rentals.Remove(rental);
-            await _context.SaveChangesAsync();
-        }
+        var result = await _rentalService.DeleteRentalAsync(id);
+        if (result.Success)
+            TempData["Success"] = "Наемът беше изтрит успешно!";
+        else
+            TempData["Error"] = result.ErrorMessage;
 
         return RedirectToAction(nameof(Index));
     }
 
-    // Детайли за конкретен наем
-    public async Task<IActionResult> Details(int? id)
+    // --- PRIVATE HELPERS ---
+
+    private async Task PopulateDropDowns(int? selectedClient = null, int? selectedCostume = null)
     {
-        if (id == null) return NotFound();
-
-        var rental = await _context.Rentals
-            .Include(r => r.Client)
-            .Include(r => r.Costume)
-            .ThenInclude(c => c.Category)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (rental == null) return NotFound();
-
-        return View(rental);
+        ViewBag.ClientId = new SelectList(await _rentalService.GetClientsAsync(), "Id", "Name", selectedClient);
+        ViewBag.CostumeId = new SelectList(await _rentalService.GetAvailableCostumesAsync(selectedCostume), "Id", "Name", selectedCostume);
     }
 
-    // Помощен метод за пълнене на Dropdown менютата
-    private async Task PopulateDropDowns(object selectedClient = null, object selectedCostume = null)
+    private Rental MapToEntity(RentalFormViewModel model) => new Rental
     {
-        var clients = await _context.Clients.OrderBy(c => c.Name).ToListAsync();
-        // Показваме само костюми, които са маркирани като "Налични"
-        var availableCostumes = await _context.Costumes
-            .Where(c => c.IsAvailable)
-            .OrderBy(c => c.Name)
-            .ToListAsync();
+        Id = model.Id,
+        ClientId = model.ClientId,
+        CostumeId = model.CostumeId,
+        RentDate = model.StartDate,
+        ReturnDate = model.EndDate,
+        Status = model.Status
+    };
 
-        ViewBag.ClientId = new SelectList(clients, "Id", "Name", selectedClient);
-        ViewBag.CostumeId = new SelectList(availableCostumes, "Id", "Name", selectedCostume);
-    }
+    private RentalFormViewModel MapToViewModel(Rental entity) => new RentalFormViewModel
+    {
+        Id = entity.Id,
+        ClientId = entity.ClientId,
+        ClientName = entity.Client?.Name,
+        CostumeId = entity.CostumeId,
+        CostumeName = entity.Costume?.Name,
+        CostumeImagePath = entity.Costume?.ImagePath,
+        PricePerDay = entity.Costume?.PricePerDay ?? 0,
+        StartDate = entity.RentDate,
+        EndDate = entity.ReturnDate,
+        Status = entity.Status
+    };
 }

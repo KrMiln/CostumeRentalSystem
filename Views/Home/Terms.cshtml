@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Условия и FAQ";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5 pb-4 position-relative">
+        <h1 class="display-2 fw-black text-white mb-3">
+            УСЛОВИЯ <span class="text-outline">&</span> <span class="text-orange">ВЪПРОСИ</span>
+        </h1>
+        <div class="mx-auto bg-orange opacity-25" style="width: 2px; height: 50px;"></div>
+    </div>
+
+    <div class="row align-items-center mb-6 g-5">
+        <div class="col-lg-6 order-lg-1">
+            <div class="pe-lg-4">
+                <h2 class="fw-bold text-white mb-4 border-start border-orange border-4 ps-3">ПРАВИЛА НА НАЕМАНЕ</h2>
+
+                <p class="text-muted mb-4">
+                    <strong>1. Период на владение:</strong> Всеки наш костюм е ваш за период от 24 часа. Трансформацията започва от момента на подписване на приемо-предавателния протокол. Всяко закъснение нарушава графика на следващия клиент, затова налагаме такса от 10 лв. за всеки просрочен час. Моля, спазвайте уговорените часове, за да не се превърне празникът ви в кошмар.
+                </p>
+                <p class="text-muted mb-4">
+                    <strong>2. Финансов залог:</strong> Депозитът е задължително условие за наемане. Той служи като застраховка за нашите уникални реквизити. Сумата се оставя в брой при вземане на костюма и се възстановява в пълен размер при връщането му, при условие че няма необратими повреди, липсващи части или неспазени хигиенни норми.
+                </p>
+                <p class="text-muted mb-4">
+                    <strong>3. Поддръжка и грижа:</strong> Ние поемаме отговорността за магическото пречистване (прането). Забранено е третирането на костюмите с домашни перални машини, ютии или агресивни химикали. Ако костюмът се изцапа по време на партито, просто го върнете така – нашите специалисти знаят как да отстранят петната, без да повредят тъканите.
+                </p>
+                <p class="text-muted">
+                    <strong>4. Резервация и отказ:</strong> Резервацията се счита за валидна след потвърждение от наша страна. Можете да се откажете от наема до 48 часа преди датата. При по-късен отказ, капарото не се възстановява, тъй като костюмът е бил блокиран за вашето събитие.
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-6 order-lg-2">
+            <div class="photo-frame p-2 rounded-5 rotate-3">
+                <img src="https://images.unsplash.com/photo-1601830976337-e32f60eba315?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                     class="img-fluid rounded-5 shadow-lg grayscale-hover" alt="Costume Room">
+            </div>
+        </div>
+    </div>
+
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6 order-lg-2">
+            <div class="ps-lg-4">
+                <h2 class="fw-bold text-white mb-4 border-start border-purple border-4 ps-3">ЧЕСТО ЗАДАВАНИ ВЪПРОСИ</h2>
+
+                <div class="faq-minimal-list">
+                    <div class="faq-item-simple mb-4">
+                        <h6 class="text-orange fw-bold mb-1">Как да запазя костюм онлайн?</h6>
+                        <p class="small text-muted">Изберете модел от каталога, изберете дата и натиснете "Резервирай". Наш агент ще се свърже с вас за финално потвърждение.</p>
+                    </div>
+
+                    <div class="faq-item-simple mb-4">
+                        <h6 class="text-orange fw-bold mb-1">Мога ли да наема само аксесоар?</h6>
+                        <p class="small text-muted">Да, предлагаме маски, оръжия и перуки под наем отделно, ако не се нуждаете от пълен костюм.</p>
+                    </div>
+
+                    <div class="faq-item-simple mb-4">
+                        <h6 class="text-orange fw-bold mb-1">Предлагате ли доставка?</h6>
+                        <p class="small text-muted">В момента работим само с лично вземане от магазина ни, за да гарантираме перфектната проба на костюма.</p>
+                    </div>
+
+                    <div class="faq-item-simple">
+                        <h6 class="text-orange fw-bold mb-1">Какво става, ако скъсам костюма?</h6>
+                        <p class="small text-muted">Не се плашете – донесете го. Ако повредата е поправима, удържаме малка такса за ремонт от депозита.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+            <div class="photo-frame p-2 rounded-5 rotate-n3">
+                <img src="https://images.unsplash.com/photo-1508361001413-7a9dca21d08a?q=80&w=1000&auto=format&fit=crop"
+                     class="img-fluid rounded-5 shadow-lg grayscale-hover" alt="Halloween Mask">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --theme-orange: #ff851b;
+        --witch-purple: #6f42c1;
+    }
+
+    .fw-black { font-weight: 900; }
+    .ls-5 { letter-spacing: 5px; }
+    .mb-6 { margin-bottom: 7rem; }
+
+    .text-outline {
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Рамки за снимки */
+    .photo-frame {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: transform 0.5s ease;
+    }
+
+    .rotate-3 { transform: rotate(3deg); }
+    .rotate-n3 { transform: rotate(-3deg); }
+
+    .photo-frame:hover {
+        transform: rotate(0) scale(1.02);
+        border-color: var(--theme-orange);
+    }
+
+    .grayscale-hover {
+        filter: grayscale(0.5);
+        transition: filter 0.5s;
+    }
+    .photo-frame:hover .grayscale-hover {
+        filter: grayscale(0);
+    }
+
+    /* FAQ стилистика */
+    .faq-item-simple {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 15px;
+    }
+
+    /* Step-blob от Home страницата */
+    .step-blob {
+        background: rgba(255, 133, 27, 0.1);
+        color: var(--theme-orange);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .border-purple { border-color: var(--witch-purple) !important; }
+
+    @@media (max-width: 991px) {
+        .rotate-3, .rotate-n3 { transform: rotate(0); }
+        .mb-6 { margin-bottom: 4rem; }
+        .display-2 { font-size: 3rem; }
+    }
+</style>

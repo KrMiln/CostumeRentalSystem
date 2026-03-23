@@ -1,0 +1,184 @@
+﻿@using System.Globalization
+@using CostumeRentalSystem.Data.Entities
+@model IEnumerable<Rental>
+
+@{
+    ViewData["Title"] = "Моите наеми";
+    var pagination = ViewBag.Pagination as PaginationViewModel;
+    var bgCulture = new CultureInfo("bg-BG");
+}
+
+<div class="container py-5">
+    <div class="d-flex align-items-end justify-content-between mb-5">
+        <div>
+            <h6 class="text-orange text-uppercase tracking-widest fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 2px;">Личен Кабинет</h6>
+            <h2 class="display-5 text-white fw-bold mb-0">История на <span class="text-orange">наемите</span></h2>
+        </div>
+        <div class="text-end d-none d-md-block">
+            <span class="badge bg-glass text-light px-3 py-2 rounded-pill border border-secondary">
+                <i class="bi bi-person-circle me-2"></i> @User.Identity?.Name
+            </span>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                string statusText = item.Status switch
+                {
+                    RentalStatus.Active => "Нает",
+                    RentalStatus.Returned => "Върнат",
+                    RentalStatus.Damaged => "Повреден",
+                    RentalStatus.Lost => "Изгубен",
+                    _ => item.Status.ToString()
+                };
+
+                <div class="col-12">
+                    <div class="rental-card glass-panel overflow-hidden position-relative">
+                        <div class="row g-0 h-100">
+                            @* Снимка *@
+                            <div class="col-md-3 col-4">
+                                <div class="position-relative h-100 w-100">
+                                    @if (!string.IsNullOrEmpty(item.Costume.ImagePath))
+                                    {
+                                        <img src="@item.Costume.ImagePath" alt="@item.Costume.Name" class="rental-img" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rental-img-placeholder h-100">
+                                            <i class="bi bi-mask display-6"></i>
+                                        </div>
+                                    }
+                                    @* СТАТУСЪТ Е ПРЕМАХНАТ ОТТУК *@
+                                </div>
+                            </div>
+
+                            @* Информация *@
+                            <div class="col-md-9 col-8 p-4 d-flex flex-column justify-content-between h-100">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="overflow-hidden">
+                                        <h4 class="text-white mb-1 fw-bold text-truncate" style="max-width: 400px;">@item.Costume.Name</h4>
+                                        <p class="text-muted small mb-0">Код: #RTL-@item.Id.ToString("D4")</p>
+                                    </div>
+                                    <a asp-controller="Costumes" asp-action="Details" asp-route-id="@item.CostumeId"
+                                       class="btn btn-outline-orange btn-sm rounded-pill px-4 flex-shrink-0">
+                                        Детайли
+                                    </a>
+                                </div>
+
+                                <div class="row align-items-center border-top border-white-10 pt-3 mt-3">
+                                    <div class="col-6 col-md-3">
+                                        <label class="text-muted d-block small text-uppercase" style="font-size: 0.65rem;">Взето на</label>
+                                        <span class="text-white fw-bold small">@item.RentDate.ToString("dd MMM yyyy", bgCulture)</span>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <label class="text-muted d-block small text-uppercase" style="font-size: 0.65rem;">Връщане</label>
+                                        <span class="text-white fw-bold small">@item.ReturnDate.ToString("dd MMM yyyy", bgCulture)</span>
+                                    </div>
+                                </div>
+
+                                @* НОВИЯТ СТАТУС В ДОЛНИЯ ДЕСЕН ЪГЪЛ *@
+                                <div class="status-corner status-badge-@item.Status.ToString().ToLower()">
+                                    @statusText
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<div class="mt-5">
+    <partial name="_PaginationPartial" model="pagination" />
+</div>
+
+<style>
+    .rental-card {
+        height: 200px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        transition: transform 0.3s ease;
+        position: relative; /* Важно за позиционирането на статуса */
+    }
+
+    /* Нов стил за позиционирането в ъгъла */
+    .status-corner {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 6px 20px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-top-left-radius: 15px; /* Заобляне само от вътрешния ъгъл */
+        border-bottom-right-radius: 20px; /* Трябва да съвпада с радиуса на картата */
+        box-shadow: -2px -2px 10px rgba(0,0,0,0.2);
+    }
+
+    .rental-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+    }
+
+    /* Цветове за статусите */
+    .status-badge-active {
+        background: #0d6efd;
+        color: white;
+    }
+
+    .status-badge-returned {
+        background: #198754;
+        color: white;
+    }
+
+    .status-badge-damaged {
+        background: #ffc107;
+        color: black;
+    }
+
+    .status-badge-lost {
+        background: #dc3545;
+        color: white;
+    }
+
+    /* Останалите помощни стилове */
+    .rental-img-placeholder {
+        height: 200px;
+        background: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ff851b;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+    }
+
+    .text-orange {
+        color: #ff851b !important;
+    }
+
+    .border-white-10 {
+        border-color: rgba(255,255,255,0.1) !important;
+    }
+
+    .btn-outline-orange {
+        color: #ff851b;
+        border-color: #ff851b;
+    }
+
+        .btn-outline-orange:hover {
+            background-color: #ff851b;
+            color: #000;
+        }
+</style>

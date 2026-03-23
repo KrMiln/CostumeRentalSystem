@@ -1,6 +1,6 @@
-@model IEnumerable<CostumeRentalSystem.Models.Costume>
+@model HomeViewModel
 @{
-    ViewData["Title"] = "Добре дошли в Ада";
+    ViewData["Title"] = "Добре дошли";
 }
 
 <div class="hero-section rounded-4 p-5 mb-5 text-center text-lg-start position-relative overflow-hidden">
@@ -27,28 +27,28 @@
             </div>
         </div>
     </div>
-    <div class="position-absolute bottom-0 end-0 p-5 opacity-25 d-none d-lg-block">
-        <i class="bi bi-emoji-grimace display-1 text-white"></i>
-    </div>
 </div>
 
 <div class="row g-4 mb-5 text-center">
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            <h2 class="display-4 fw-bold text-orange">@ViewBag.TotalCostumes</h2>
+            @* ИЗПОЛЗВАМЕ МОДЕЛА ВМЕСТО VIEWBAG *@
+            <h2 class="display-4 fw-bold text-orange">@Model.TotalCostumes</h2>
             <p class="text-uppercase small letter-spacing-2 mb-0">Общо Костюма</p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            <h2 class="display-4 fw-bold text-success">@ViewBag.AvailableCount</h2>
+            @* ИЗПОЛЗВАМЕ МОДЕЛА ВМЕСТО VIEWBAG *@
+            <h2 class="display-4 fw-bold text-success">@Model.AvailableCount</h2>
             <p class="text-uppercase small letter-spacing-2 mb-0">Свободни Сега</p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            <h2 class="display-4 fw-bold text-purple">24/7</h2>
-            <p class="text-uppercase small letter-spacing-2 mb-0">Онлайн Резервации</p>
+            @* МОЖЕШ ДА ДОБАВИШ И КЛИЕНТИТЕ ТУК, АКО ЖЕЛАЕШ *@
+            <h2 class="display-4 fw-bold text-purple">@Model.TotalClients</h2>
+            <p class="text-uppercase small letter-spacing-2 mb-0">Наши Клиенти</p>
         </div>
     </div>
 </div>
@@ -61,16 +61,16 @@
 </div>
 
 <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
-    @if (Model != null && Model.Any())
+    @if (Model.FeaturedCostumes != null && Model.FeaturedCostumes.Any())
     {
-        @foreach (var item in Model)
+        @foreach (var item in Model.FeaturedCostumes)
         {
             <div class="col">
                 <div class="card h-100 spooky-card border-0 rounded-4 overflow-hidden">
                     <div class="ratio ratio-4x3 bg-dark">
-                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
                         {
-                            <img src="@item.ImageUrl" class="object-fit-cover w-100 h-100" alt="@item.Name" loading="lazy" />
+                            <img src="@item.ImagePath" class="object-fit-cover w-100 h-100" alt="@item.Name" loading="lazy" />
                         }
                         else
                         {
@@ -82,7 +82,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="badge bg-purple text-white">@item.Category?.Name</span>
-                            <span class="fw-bold text-orange">@item.PricePerDay.ToString("F0") лв.</span>
+                            <span class="fw-bold text-orange">@item.PricePerDay.ToString("F2") лв.</span>
                         </div>
                         <h5 class="card-title fw-bold">@item.Name</h5>
                         <p class="card-text small text-muted text-truncate-2">
@@ -104,26 +104,27 @@
     }
 </div>
 
-<div class="row g-4 mb-5">
-    <div class="col-md-6">
-        <div class="h-100 p-5 rounded-4 bg-dark border border-secondary border-opacity-25">
-            <h3><i class="bi bi-geo-alt-fill text-danger me-2"></i>Къде сме?</h3>
-            <p class="text-muted mt-3">
-                Нашият магазин се намира в центъра на града, точно до старото гробище... шегуваме се!
-                Намираме се на удобно място с паркинг.
-            </p>
-            <ul class="list-unstyled mt-4 text-muted">
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Проба на място</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Професионално почистване</li>
-                <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Гъвкави условия</li>
-            </ul>
-        </div>
+@* СЕКЦИЯТА "КАК ДА НАЕМЕШ" И <STYLE> ОСТАВАТ СЪЩИТЕ *@
+
+<div class="py-5 my-5 border-top border-white border-opacity-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-white">Как да наемеш?</h2>
     </div>
-    <div class="col-md-6">
-        <div class="h-100 rounded-4 overflow-hidden shadow-lg" style="min-height: 300px; background-image: url('https://images.unsplash.com/photo-1545622081-3091bd670c53?q=80&w=1000&auto=format&fit=crop'); background-size: cover;">
-            <div class="h-100 w-100 d-flex align-items-center justify-content-center bg-black bg-opacity-50">
-                <span class="text-white fw-bold fs-4 border border-light px-4 py-2">ЗАПОВЯДАЙТЕ</span>
-            </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="step-blob mb-4 mx-auto"><i class="bi bi-search fs-2"></i></div>
+            <h5 class="fw-bold">Избери костюм</h5>
+            <p class="text-muted small px-lg-5">Разгледай каталога и избери перфектната визия за твоето събитие.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-blob mb-4 mx-auto"><i class="bi bi-calendar-event fs-2"></i></div>
+            <h5 class="fw-bold">Резервирай</h5>
+            <p class="text-muted small px-lg-5">Избери дати и попълни данните си. Ние ще подготвим всичко за теб.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-blob mb-4 mx-auto"><i class="bi bi-mask fs-2"></i></div>
+            <h5 class="fw-bold">Парти време!</h5>
+            <p class="text-muted small px-lg-5">Вземи костюма от магазина и бъди звездата на вечерта.</p>
         </div>
     </div>
 </div>
@@ -138,5 +139,97 @@
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+
+    :root {
+        --theme-orange: #ff851b;
+        --witch-purple: #6f42c1;
+    }
+
+    /* Анимация за героя */
+    .bi-emoji-grimace {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+        0%, 100%
+
+    {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(8deg);
+    }
+
+    }
+
+    /* Блобове за стъпките */
+    .step-blob {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 133, 27, 0.1);
+        color: var(--theme-orange);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.5s ease;
+    }
+
+    /* Социални линкове */
+    .social-link {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border-radius: 50%;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+        .social-link:hover {
+            background: var(--theme-orange);
+            color: black;
+            transform: translateY(-3px);
+        }
+
+    /* Ховър ефект за картите с костюми */
+    .spooky-card {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
+    }
+
+        .spooky-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(255, 133, 27, 0.15) !important;
+        }
+
+    .testimonial-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+        .testimonial-card:hover {
+            background: rgba(111, 66, 193, 0.05); /* Леко лилаво */
+            border-color: var(--witch-purple);
+        }
+
+    /* Стил за акордеона */
+    .accordion-button:not(.collapsed) {
+        background-color: transparent;
+        color: var(--theme-orange);
+        box-shadow: none;
+    }
+
+    .accordion-button::after {
+        filter: invert(1); /* Прави стрелката на акордеона бяла */
+    }
+
+    .italic {
+        font-style: italic;
     }
 </style>

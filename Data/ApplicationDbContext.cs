@@ -1,6 +1,8 @@
+using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using CostumeRentalSystem.Models;
+using System.Reflection.Emit;
 
 namespace CostumeRentalSystem.Data
 {
@@ -16,13 +18,20 @@ namespace CostumeRentalSystem.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<Rental> Rentals { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+            // 1. Уникален Имейл и Телефон за Клиент
+            modelBuilder.Entity<Client>()
+                .HasIndex(c => c.Email).IsUnique();
+
+            modelBuilder.Entity<Client>()
+                .HasIndex(c => c.PhoneNumber).IsUnique();
+
+            // 2. Уникално име на Категория
+            modelBuilder.Entity<Category>()
+                .HasIndex(cat => cat.Name).IsUnique();
         }
     }
 }

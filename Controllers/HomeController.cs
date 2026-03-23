@@ -1,68 +1,109 @@
-using CostumeRentalSystem.Data; 
 using CostumeRentalSystem.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore; 
 using System.Diagnostics;
+using MimeKit;
 
 namespace CostumeRentalSystem.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICostumeService _costumeService;
+    private readonly IClientService _clientService;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public HomeController(ICostumeService costumeService, IClientService clientService)
     {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
+        _costumeService = costumeService;
+        _clientService = clientService;
     }
 
     public async Task<IActionResult> Index()
     {
-        // Взимаме малко статистика за началната страница
-        ViewBag.TotalCostumes = await _context.Costumes.CountAsync();
-        ViewBag.AvailableCount = await _context.Costumes.CountAsync(c => c.IsAvailable);
+        // 1. Взимаме само 3-те най-нови костюма за секция "Представени"
+        var featuredPaged = await _costumeService.GetFilteredCostumesAsync(
+            null, null, false, null, null, null, 1, 3);
 
-        // Взимаме 3 случайни налични костюма за секция "Препоръчани"
-        // (Guid.NewGuid() е трик за разбъркване в SQL)
-        var featuredCostumes = await _context.Costumes
-            .Where(c => c.IsAvailable)
-            .OrderBy(c => Guid.NewGuid())
-            .Take(3)
-            .Include(c => c.Category)
-            .ToListAsync();
+        // 2. Взимаме статистика за наличните костюми (специфична заявка)
+        // Ако още нямаш GetCountAsync, това е временно решение:
+        var availablePaged = await _costumeService.GetFilteredCostumesAsync(
+            null, null, true, null, null, null, 1, 1);
 
-        return View(featuredCostumes);
+        // 3. Взимаме общия брой клиенти
+        var clientsResult = await _clientService.GetFilteredClientsAsync(null, null, null, 1, 1);
+
+        var viewModel = new HomeViewModel
+        {
+            FeaturedCostumes = featuredPaged.Items,
+            TotalCostumes = featuredPaged.TotalItems,
+            AvailableCount = availablePaged.TotalItems,
+            TotalClients = clientsResult.TotalItems
+        };
+
+        return View(viewModel);
     }
 
     public IActionResult Contact()
     {
-        return View();
+        return View(new ContactFormModel());
     }
 
-    [Authorize]
-    public async Task<IActionResult> MyAccount()
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Contact(ContactFormModel model)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return NotFound();
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        try
+        {
+            var email = new MimeMessage();
+            // Тези данни са само за теста в Mailtrap
+            email.From.Add(new MailboxAddress("Тестов Потребител", model.Email));
+            email.To.Add(new MailboxAddress("Админ", "admin@costume-shop.com"));
+            email.Subject = model.Subject ?? "Ново съобщение";
 
-        // Изпращаме данните към изгледа чрез ViewBag
-        ViewBag.Email = user.Email;
-        ViewBag.Username = user.UserName;
-        ViewBag.Id = user.Id;
-        ViewBag.Roles = roles; // Списък с ролите (Admin, Client и т.н.)
+            email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = $@"
+                <div style='font-family: Arial; padding: 20px; border: 1px solid #8e44ad;'>
+                    <h2 style='color: #8e44ad;'>Ново запитване</h2>
+                    <p><strong>От:</strong> {model.Name}</p>
+                    <p><strong>Имейл:</strong> {model.Email}</p>
+                    <hr>
+                    <p>{model.Message}</p>
+                </div>"
+            };
 
-        return View();
+            using (var client = new MailKit.Net.Smtp.SmtpClient())
+            {
+                // Използваме Host и Port 2525 от твоята снимка
+                await client.ConnectAsync("sandbox.smtp.mailtrap.io", 2525, MailKit.Security.SecureSocketOptions.StartTls);
+
+                // Твоят Username от снимката: d5a237b1d366ad
+                // Паролата ти завършва на da99 (виж я в Mailtrap и я постави цялата тук)
+                await client.AuthenticateAsync("d5a237b1d366ad", "78c9ee15a8da99");
+
+                await client.SendAsync(email);
+                await client.DisconnectAsync(true);
+            }
+
+            TempData["Success"] = "Съобщението е изпратено успешно!";
+            ViewBag.IsSent = true;
+            ModelState.Clear(); // Изчистваме полетата на формата, за да не стоят старите данни
+            return View(new ContactFormModel());
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", "Грешка при изпращане: " + ex.Message);
+            return View(model);
+        }
     }
 
-    public IActionResult Privacy()
+    public IActionResult Terms()
     {
         return View();
     }

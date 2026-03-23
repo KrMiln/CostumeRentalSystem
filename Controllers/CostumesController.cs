@@ -1,327 +1,206 @@
-using CostumeRentalSystem.Data;
-using CostumeRentalSystem.Models;
+using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.ViewModels;
+using CostumeRentalSystem.ViewModels.Rentals;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using static CostumeRentalSystem.Models.Costume;
+using static CostumeRentalSystem.Data.Entities.Costume;
 
 namespace CostumeRentalSystem.Controllers;
 
 [Authorize]
 public class CostumesController : Controller
 {
-    private readonly ApplicationDbContext _context;
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly ICostumeService _costumeService;
 
-    public CostumesController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+    public CostumesController(ICostumeService costumeService)
     {
-        _context = context;
-        _webHostEnvironment = webHostEnvironment;
+        _costumeService = costumeService;
     }
 
-    // GET: Costumes
+    // --- READ OPERATIONS ---
+
     [AllowAnonymous]
-    public async Task<IActionResult> Index(string searchName, int? categoryId, bool onlyAvailable, string size, decimal? minPrice, decimal? maxPrice)
+    public async Task<IActionResult> Index(CostumeIndexViewModel model, int page = 1)
     {
-        var costumesQuery = _context.Costumes.Include(c => c.Category).AsQueryable();
+        const int pageSize = 8;
 
-        // Филтър по име
-        if (!string.IsNullOrEmpty(searchName))
-            costumesQuery = costumesQuery.Where(c => c.Name.Contains(searchName));
-
-        // Филтър по категория
-        if (categoryId.HasValue)
-            costumesQuery = costumesQuery.Where(c => c.CategoryId == categoryId);
-
-        // Филтър за наличност
-        if (onlyAvailable)
-            costumesQuery = costumesQuery.Where(c => c.IsAvailable);
-
-        if (!string.IsNullOrEmpty(size))
+        // 1. Валидация на филтрите
+        if (model.MinPrice > model.MaxPrice)
         {
-            // Опитваме се да превърнем стринга в стойност от Enum-а
-            if (Enum.TryParse<CostumeSize>(size, out var selectedSize))
-            {
-                costumesQuery = costumesQuery.Where(c => c.Size == selectedSize);
-            }
+            TempData["Error"] = "Минималната цена не може да бъде по-висока от максималната!";
+            model.MinPrice = null;
+            model.MaxPrice = null;
+
+            ModelState.Remove(nameof(model.MinPrice));
+            ModelState.Remove(nameof(model.MaxPrice));
         }
 
-        // НОВО: Филтър по цена (диапазон)
-        if (minPrice.HasValue)
-            costumesQuery = costumesQuery.Where(c => c.PricePerDay >= minPrice.Value);
+        CostumeSize? selectedSize = null;
+        if (!string.IsNullOrEmpty(model.SelectedSize) && Enum.TryParse<CostumeSize>(model.SelectedSize, out var parsedSize))
+            selectedSize = parsedSize;
 
-        if (maxPrice.HasValue)
-            costumesQuery = costumesQuery.Where(c => c.PricePerDay <= maxPrice.Value);
+        // 2. Използваме оптимизираната услуга (връща PagedResult)
+        var pagedResult = await _costumeService.GetFilteredCostumesAsync(
+            model.SearchName, model.CategoryId, model.OnlyAvailable, selectedSize, model.MinPrice, model.MaxPrice, page, pageSize);
 
-        // Запазваме стойностите за изгледа
-        ViewBag.Categories = new SelectList(_context.Categories, "Id", "Name", categoryId);
-        ViewBag.SearchName = searchName;
-        ViewBag.OnlyAvailable = onlyAvailable;
-        ViewBag.Size = size;
-        ViewBag.MinPrice = minPrice;
-        ViewBag.MaxPrice = maxPrice;
+        // 3. Мапване на резултатите към модела
+        model.Costumes = pagedResult.Items;
+        model.Pagination = pagedResult.ToPaginationConfig("Costumes", nameof(Index), model.ToRouteValues());
 
-        // За да работи правилно Dropdown менюто в изгледа:
-        ViewBag.SizeList = new SelectList(Enum.GetValues(typeof(CostumeSize)));
+        // 4. Подготовка на Dropdowns
+        model.Categories = new SelectList(await _costumeService.GetCategoriesAsync(), "Id", "Name", model.CategoryId);
+        model.SizeList = new SelectList(Enum.GetValues(typeof(CostumeSize)));
 
-        // Запазваме избрания размер, за да остане селектиран
-        ViewBag.SelectedSize = size;
-
-        return View(await costumesQuery.ToListAsync());
+        return View(model);
     }
 
-    // GET: Costumes/Details/5
-    [AllowAnonymous]
     public async Task<IActionResult> Details(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var costume = await _context.Costumes
-            .Include(c => c.Category)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (costume == null)
-        {
-            return NotFound();
-        }
-
-        return View(costume);
+        var costume = await _costumeService.GetByIdAsync(id.Value);
+        return costume == null ? NotFound() : View(costume);
     }
 
-    // GET: Costumes/Create
+    // --- CREATE OPERATIONS ---
+
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Create()
     {
-        await PopulateCategoriesDropDownList();
-        return View();
+        var model = new CostumeFormViewModel
+        {
+            Categories = await GetCategoriesSelectList()
+        };
+        return View(model);
     }
 
-    // POST: Costumes/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Create(Costume costume, IFormFile imageFile)
+    public async Task<IActionResult> Create(CostumeFormViewModel model)
     {
-        // 1. Премахваме валидацията за ImageUrl, защото го попълваме програмно
-        ModelState.Remove("ImageUrl");
-
-        if (imageFile != null && imageFile.Length > 0)
-        {
-            var uploadResult = await UploadImage(imageFile);
-            if (uploadResult.Success)
-            {
-                costume.ImageUrl = uploadResult.FilePath;
-            }
-            else
-            {
-                ModelState.AddModelError("imageFile", uploadResult.ErrorMessage);
-            }
-        }
-
         if (ModelState.IsValid)
         {
-            _context.Add(costume);
-            await _context.SaveChangesAsync();
-            TempData["Success"] = "Костюмът е създаден успешно!";
-            return RedirectToAction(nameof(Index));
+            var costume = MapToEntity(model);
+            var result = await _costumeService.CreateAsync(costume, model.ImageFile);
+
+            if (result.Success)
+            {
+                TempData["Success"] = "Костюмът е създаден успешно!";
+                return RedirectToAction(nameof(Index));
+            }
+            ModelState.AddModelError("", result.ErrorMessage);
         }
 
-        await PopulateCategoriesDropDownList(costume.CategoryId);
-        return View(costume);
+        model.Categories = await GetCategoriesSelectList(model.CategoryId);
+        return View(model);
     }
 
-    // GET: Costumes/Edit/5
+    // --- UPDATE OPERATIONS ---
+
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Edit(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var costume = await _context.Costumes.FindAsync(id);
-        if (costume == null)
-        {
-            return NotFound();
-        }
-        await PopulateCategoriesDropDownList(costume.CategoryId);
-        return View(costume);
+        var costume = await _costumeService.GetByIdAsync(id.Value);
+        if (costume == null) return NotFound();
+
+        var model = MapToViewModel(costume);
+        model.Categories = await GetCategoriesSelectList(costume.CategoryId);
+
+        return View(model);
     }
 
-    // POST: Costumes/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
-    public async Task<IActionResult> Edit(int id, Costume costume, IFormFile imageFile)
+    public async Task<IActionResult> Edit(int id, CostumeFormViewModel model)
     {
-        if (id != costume.Id) return NotFound();
-
-        var existingCostume = await _context.Costumes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-
-        if (imageFile != null && imageFile.Length > 0)
-        {
-            // Изтриване на старата снимка
-            if (!string.IsNullOrEmpty(existingCostume?.ImageUrl) && existingCostume.ImageUrl.StartsWith("/images/"))
-            {
-                DeleteImage(existingCostume.ImageUrl);
-            }
-
-            var uploadResult = await UploadImage(imageFile);
-            if (uploadResult.Success)
-            {
-                costume.ImageUrl = uploadResult.FilePath;
-            }
-            else
-            {
-                ModelState.AddModelError("imageFile", uploadResult.ErrorMessage);
-            }
-        }
-        else
-        {
-            // Запазваме стария път, ако не е качен нов файл
-            costume.ImageUrl = existingCostume?.ImageUrl;
-        }
-
-        ModelState.Remove("imageFile");
-        ModelState.Remove("ImageUrl");
+        if (id != model.Id) return NotFound();
 
         if (ModelState.IsValid)
         {
-            try
+            var costume = MapToEntity(model);
+            var result = await _costumeService.UpdateAsync(costume, model.ImageFile);
+
+            if (result.Success)
             {
-                _context.Update(costume);
-                await _context.SaveChangesAsync();
                 TempData["Success"] = "Костюмът е обновен успешно!";
+                return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Costumes.Any(e => e.Id == costume.Id)) return NotFound();
-                else throw;
-            }
-            return RedirectToAction(nameof(Index));
+            ModelState.AddModelError("", result.ErrorMessage);
         }
 
-        await PopulateCategoriesDropDownList(costume.CategoryId);
-        return View(costume);
+        model.Categories = await GetCategoriesSelectList(model.CategoryId);
+        return View(model);
     }
 
-    // GET: Costumes/Delete/5
+    // --- DELETE OPERATIONS ---
+
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(int? id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        if (id == null) return NotFound();
 
-        var costume = await _context.Costumes
-            .Include(c => c.Category)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (costume == null)
-        {
-            return NotFound();
-        }
-
-        return View(costume);
+        var costume = await _costumeService.GetByIdAsync(id.Value);
+        return costume == null ? NotFound() : View(costume);
     }
 
-    // POST: Costumes/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var costume = await _context.Costumes.FindAsync(id);
-        if (costume != null)
-        {
-            // Delete the image file if it exists
-            if (!string.IsNullOrEmpty(costume.ImageUrl) && costume.ImageUrl.StartsWith("/images/"))
-            {
-                DeleteImage(costume.ImageUrl);
-            }
+        var result = await _costumeService.DeleteAsync(id);
 
-            _context.Costumes.Remove(costume);
-            await _context.SaveChangesAsync();
-            TempData["Success"] = "Костюмът е изтрит успешно!";
+        if (!result.Success)
+        {
+            TempData["Error"] = result.ErrorMessage;
+            return RedirectToAction(nameof(Index));
         }
+
+        TempData["Success"] = "Костюмът е изтрит успешно!";
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task PopulateCategoriesDropDownList(object selectedCategory = null)
+    // --- HELPERS ---
+
+    private async Task<SelectList> GetCategoriesSelectList(object? selected = null)
     {
-        var categoriesQuery = _context.Categories.OrderBy(c => c.Name);
-        ViewBag.CategoryId = new SelectList(await categoriesQuery.ToListAsync(), "Id", "Name", selectedCategory);
+        var categories = await _costumeService.GetCategoriesAsync();
+        return new SelectList(categories, "Id", "Name", selected);
     }
 
-    private async Task<(bool Success, string FilePath, string ErrorMessage)> UploadImage(IFormFile file)
+    private Costume MapToEntity(CostumeFormViewModel model)
     {
-        if (file == null || file.Length == 0)
+        return new Costume
         {
-            return (false, null, "Моля изберете файл.");
-        }
-
-        // Check file size (max 5MB)
-        if (file.Length > 5 * 1024 * 1024)
-        {
-            return (false, null, "Файлът е твърде голям. Максималният размер е 5MB.");
-        }
-
-        // Check file extension
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        if (!allowedExtensions.Contains(extension))
-        {
-            return (false, null, "Невалиден формат на файла. Разрешени формати: JPG, PNG, GIF, WEBP.");
-        }
-
-        try
-        {
-            // Create unique filename
-            var fileName = $"{Guid.NewGuid()}{extension}";
-
-            // Create uploads directory if it doesn't exist
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "costumes");
-            Directory.CreateDirectory(uploadsFolder);
-
-            // Full file path
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            // Save file
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            // Return relative path for database
-            return (true, $"/images/costumes/{fileName}", null);
-        }
-        catch (Exception ex)
-        {
-            return (false, null, $"Грешка при качване на файла: {ex.Message}");
-        }
+            Id = model.Id,
+            Name = model.Name,
+            CategoryId = model.CategoryId,
+            Size = model.Size ?? CostumeSize.M,
+            PricePerDay = model.PricePerDay,
+            IsAvailable = model.IsAvailable,
+            Notes = model.Notes,
+            ImagePath = model.ExistingImagePath
+        };
     }
 
-    private void DeleteImage(string imageUrl)
+    private CostumeFormViewModel MapToViewModel(Costume entity)
     {
-        if (string.IsNullOrEmpty(imageUrl))
-            return;
-
-        try
+        return new CostumeFormViewModel
         {
-            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, imageUrl.TrimStart('/'));
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Грешка при изтриване на снимка: {ex.Message}");
-        }
+            Id = entity.Id,
+            Name = entity.Name,
+            CategoryId = entity.CategoryId,
+            Size = entity.Size,
+            PricePerDay = entity.PricePerDay,
+            IsAvailable = entity.IsAvailable,
+            Notes = entity.Notes,
+            ExistingImagePath = entity.ImagePath
+        };
     }
 }

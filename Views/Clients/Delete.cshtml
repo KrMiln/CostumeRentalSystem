@@ -1,28 +1,70 @@
-@model CostumeRentalSystem.Models.Client
+@using CostumeRentalSystem.Data.Entities
+@model Client
+
 @{
     ViewData["Title"] = "Изтриване на клиент";
 }
 
-<h1>Изтриване на клиент</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg halloween-card border-danger">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-x-fill"></i> Премахване на клиент
+                    </h4>
+                </div>
 
-<h3>Сигурни ли сте, че искате да изтриете този клиент?</h3>
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-exclamation-triangle text-danger display-3"></i>
+                        <h3 class="text-white mt-2">Сигурни ли сте?</h3>
+                        <p class="text-muted">Това действие е необратимо и ще изтрие данните на клиента.</p>
+                    </div>
 
-<div class="mt-3">
-    <dl class="row">
-        <dt class="col-sm-2">Име</dt>
-        <dd class="col-sm-10">@Model.Name</dd>
-        <dt class="col-sm-2">Телефон</dt>
-        <dd class="col-sm-10">@Model.PhoneNumber</dd>
-        <dt class="col-sm-2">Имейл</dt>
-        <dd class="col-sm-10">@Model.Email</dd>
-        <dt class="col-sm-2">Бележки</dt>
-        <dd class="col-sm-10">@Model.Notes</dd>
-    </dl>
+                    <div class="bg-dark rounded border border-secondary p-3 mb-4">
+                        <div class="row mb-2">
+                            <div class="col-4 text-orange fw-bold">Име:</div>
+                            <div class="col-8 text-white">@Model.Name</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-orange fw-bold">Телефон:</div>
+                            <div class="col-8 text-white">@Model.PhoneNumber</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-4 text-orange fw-bold">Имейл:</div>
+                            <div class="col-8 text-white">@Model.Email</div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="row">
+                                <div class="col-4 text-orange fw-bold">Бележки:</div>
+                                <div class="col-8 text-muted small">@Model.Notes</div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="alert alert-dark border-danger text-danger d-flex align-items-center">
+                        <i class="bi bi-skull-fill fs-4 me-3"></i>
+                        <div class="small">
+                            Внимание: Ако този клиент има активни наеми, системата може да откаже изтриването поради свързани записи в базата данни.
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="d-flex justify-content-between pt-3 border-top border-secondary">
+                            <a asp-action="Index" class="btn btn-outline-light px-4">
+                                <i class="bi bi-arrow-left"></i> Отказ
+                            </a>
+                            <button type="submit" class="btn btn-danger px-5 shadow-sm fw-bold">
+                                <i class="bi bi-person-dash"></i> Изтрий Клиента
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Изтрий</button>
-    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
-</form>
-

@@ -1,39 +1,83 @@
-@model CostumeRentalSystem.Models.Costume
+@model Costume
+
 @{
     ViewData["Title"] = "Изтриване на костюм";
 }
 
-<h1>Изтриване на костюм</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg halloween-card border-danger">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-skull-fill me-2"></i> Премахване на костюм от инвентара</h4>
+                </div>
 
-<h3>Сигурни ли сте, че искате да изтриете този костюм?</h3>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="p-2 rounded bg-dark border border-dashed-orange">
+                                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                                {
+                                    <img src="@Model.ImagePath" class="img-fluid rounded shadow-sm" alt="@Model.Name" />
+                                }
+                                else
+                                {
+                                    <img src="https://via.placeholder.com/200x250?text=Няма+снимка" class="img-fluid rounded opacity-50" />
+                                }
+                            </div>
+                        </div>
 
-<div class="mt-3">
-    <dl class="row">
-        <dt class="col-sm-2">Име</dt>
-        <dd class="col-sm-10">@Model.Name</dd>
-        <dt class="col-sm-2">Категория</dt>
-        <dd class="col-sm-10">@Model.Category?.Name</dd>
-        <dt class="col-sm-2">Размер</dt>
-        <dd class="col-sm-10">@Model.Size</dd>
-        <dt class="col-sm-2">Цена на ден</dt>
-        <dd class="col-sm-10">@Model.PricePerDay.ToString("0.00") лв.</dd>
-        <dt class="col-sm-2">Наличност</dt>
-        <dd class="col-sm-10">
-            @if (Model.IsAvailable)
-            {
-                <span class="badge bg-success">Наличен</span>
-            }
-            else
-            {
-                <span class="badge bg-secondary">Зает</span>
-            }
-        </dd>
-    </dl>
+                        <div class="col-md-8">
+                            <h3 class="text-white mb-3">@Model.Name</h3>
+
+                            <div class="bg-dark rounded p-3 border border-secondary mb-4">
+                                <div class="row mb-2">
+                                    <div class="col-5 text-orange fw-bold">Категория:</div>
+                                    <div class="col-7 text-white">@(Model.Category?.Name ?? "Няма")</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-orange fw-bold">Размер:</div>
+                                    <div class="col-7 text-white"><span class="badge border border-orange text-orange">@Model.Size</span></div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-orange fw-bold">Цена на ден:</div>
+                                    <div class="col-7 text-white">@Model.PricePerDay.ToString("0.00") лв.</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-orange fw-bold">Статус:</div>
+                                    <div class="col-7">
+                                        @if (Model.IsAvailable)
+                                        {
+                                            <span class="text-success"><i class="bi bi-check-circle-fill"></i> Наличен</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-warning"><i class="bi bi-exclamation-triangle-fill"></i> В момента е нает</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-dark border-danger text-danger small">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                <strong>Важно:</strong> Изтриването на този костюм ще премахне и цялата свързана история на наемите, ако базата данни не е конфигурирана за "Restricted Delete".
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-4 mt-3 border-top border-secondary">
+                        <a asp-action="Index" class="btn btn-outline-light px-4">
+                            <i class="bi bi-arrow-left"></i> Отказ
+                        </a>
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger px-5 shadow fw-bold" @(!Model.IsAvailable ? "onclick=\"return confirm('Костюмът е нает! Сигурни ли сте?')\"" : "")>
+                                <i class="bi bi-trash3-fill me-1"></i> Потвърди изтриването
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Изтрий</button>
-    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
-</form>
-
