@@ -1,72 +1,219 @@
-﻿@model CostumeRentalSystem.Models.Rental
+﻿@model RentalFormViewModel
 
 @{
-    ViewData["Title"] = "Редакция на наем";
+    ViewData["Title"] = "Редактиране на наем";
 }
 
-<div class="container mt-4">
-    <div class="card shadow-lg border-0">
-        <div class="card-header bg-warning text-dark">
-            <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Редактиране на наем #@Model.Id</h3>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+        <div class="page-title-area">
+            <h6 class="text-orange text-uppercase tracking-widest fw-bold mb-1" style="font-size: 0.7rem; opacity: 0.8;">Система за управление</h6>
+            <h2 class="text-white fw-light mb-0">Редактиране на <span class="fw-bold">Наем #@Model.Id</span></h2>
         </div>
-        <div class="card-body bg-dark text-light">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <form asp-action="Edit" method="post" class="rental-form">
+                @* ВАЖНО: Скрити полета за Model Binder-а *@
                 <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ClientId" />
+                <input type="hidden" asp-for="CostumeId" />
+                <input type="hidden" asp-for="PricePerDay" />
+                <input type="hidden" asp-for="ClientName" />
+                <input type="hidden" asp-for="CostumeName" />
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ClientId" class="form-label">Клиент</label>
-                        <select asp-for="ClientId" class="form-select bg-secondary text-white border-0" asp-items="ViewBag.ClientId"></select>
-                        <span asp-validation-for="ClientId" class="text-danger"></span>
+                <div class="glass-panel p-4 p-md-5">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4 x-small"></div>
+
+                    <div class="row g-5">
+                        @* ЛЯВА КОЛОНА *@
+                        <div class="col-lg-6">
+                            <h5 class="section-title mb-4">Детайли на записа</h5>
+
+                            @* Клиент (Закован) *@
+                            <div class="custom-input-group mb-4">
+                                <label class="custom-label">Клиент</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="custom-control" value="@Model.ClientName" readonly style="opacity: 0.7; cursor: not-allowed; padding-right: 40px;" />
+                                    <i class="bi bi-lock-fill icon-indicator"></i>
+                                </div>
+                                <div class="validation-placeholder"></div>
+                            </div>
+
+                            @* Костюм (Закован) *@
+                            <div class="custom-input-group mb-0">
+                                <label class="custom-label">Костюм</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="custom-control" value="@Model.CostumeName" readonly style="opacity: 0.7; cursor: not-allowed; padding-right: 40px;" />
+                                    <i class="bi bi-lock-fill icon-indicator"></i>
+                                </div>
+                                <div class="validation-placeholder"></div>
+                            </div>
+                        </div>
+
+                        @* ДЯСНА КОЛОНА *@
+                        <div class="col-lg-6">
+                            <h5 class="section-title mb-4">Период и Актуализация</h5>
+
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="custom-input-group mb-0">
+                                        <label asp-for="StartDate" class="custom-label">От дата</label>
+                                        <input asp-for="StartDate" class="custom-control date-input" type="date" />
+                                        <div class="validation-placeholder">
+                                            <span asp-validation-for="StartDate" class="text-danger x-small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="custom-input-group mb-0">
+                                        <label asp-for="EndDate" class="custom-label">До дата</label>
+                                        <input asp-for="EndDate" class="custom-control date-input highlight" type="date" />
+                                        <div class="validation-placeholder">
+                                            <span asp-validation-for="EndDate" class="text-danger x-small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="custom-input-group mt-4 mb-0">
+                                <label asp-for="Status" class="custom-label">Статус на наема</label>
+                                <div class="input-wrapper">
+                                    <select asp-for="Status" class="custom-control"
+                                            asp-items="Html.GetEnumSelectList<RentalStatus>()"></select>
+                                </div>
+                                <div class="validation-placeholder">
+                                    <span asp-validation-for="Status" class="text-danger x-small"></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="CostumeId" class="form-label">Костюм</label>
-                        <select asp-for="CostumeId" class="form-select bg-secondary text-white border-0" asp-items="ViewBag.CostumeId"></select>
-                        <span asp-validation-for="CostumeId" class="text-danger"></span>
-                    </div>
-                </div>
+                    <div class="form-actions mt-5 pt-4 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small hover-white fw-bold p-0">
+                            <i class="bi bi-arrow-left me-1"></i> Назад
+                        </a>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="RentDate" class="form-label">Дата на наемане</label>
-                        <input asp-for="RentDate" type="date" class="form-control bg-secondary text-white border-0" />
-                        <span asp-validation-for="RentDate" class="text-danger"></span>
+                        <button type="submit" class="btn-submit-main">
+                            <i class="bi bi-save me-2"></i> ЗАПАЗИ ПРОМЕНИТЕ
+                        </button>
                     </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label asp-for="ReturnDate" class="form-label">Дата на връщане</label>
-                        <input asp-for="ReturnDate" type="date" class="form-control bg-secondary text-white border-0" />
-                        <span asp-validation-for="ReturnDate" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label asp-for="Status" class="form-label">Статус на наема</label>
-                        <select asp-for="Status" class="form-select bg-secondary text-white border-0"
-                                asp-items="Html.GetEnumSelectList<CostumeRentalSystem.Models.RentalStatus>()">
-                        </select>
-                        <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-warning px-4 fw-bold">
-                        <i class="bi bi-save me-1"></i> Запази промените
-                    </button>
-                    <a asp-action="Index" class="btn btn-outline-light">
-                        <i class="bi bi-arrow-left me-1"></i> Назад
-                    </a>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    :root {
+        --theme-orange: #ff851b;
+        --theme-glass: rgba(255, 255, 255, 0.02);
+        --theme-border: rgba(255, 255, 255, 0.12);
+        --theme-input-bg: #121212;
+        color-scheme: dark;
     }
+
+    .glass-panel {
+        background: var(--theme-glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .custom-input-group {
+        position: relative;
+    }
+
+    .input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-control {
+        width: 100%;
+        background: var(--theme-input-bg) !important;
+        border: 1px solid var(--theme-border);
+        color: #ffffff !important;
+        padding: 12px 15px;
+        border-radius: 10px;
+        outline: none;
+    }
+
+    .custom-label {
+        font-size: 0.7rem;
+        color: #aaa;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .section-title {
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+    }
+
+        .section-title::before {
+            content: "";
+            width: 12px;
+            height: 2px;
+            background: var(--theme-orange);
+            margin-right: 10px;
+        }
+
+    .icon-indicator {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--theme-orange);
+        pointer-events: none;
+        z-index: 10;
+        font-size: 1rem;
+    }
+
+    .validation-placeholder {
+        min-height: 20px;
+        margin-top: 4px;
+    }
+
+    .x-small {
+        font-size: 0.75rem;
+    }
+
+    .date-input::-webkit-calendar-picker-indicator {
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+    }
+
+    .btn-submit-main {
+        background: var(--theme-orange);
+        border: none;
+        color: black;
+        padding: 12px 35px;
+        border-radius: 10px;
+        font-weight: 900;
+        transition: all 0.3s;
+    }
+
+        .btn-submit-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
+        }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

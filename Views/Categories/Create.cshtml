@@ -1,22 +1,55 @@
-@model CostumeRentalSystem.Models.Category
+@using CostumeRentalSystem.ViewModels.Categories
+@model CategoryFormViewModel
+
 @{
     ViewData["Title"] = "Нова категория";
 }
 
-<h1>Нова категория</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg halloween-card">
+                <div class="card-header halloween-header-create text-white py-3">
+                    <h4 class="mb-0"><i class="bi bi-folder-plus"></i> Нова Категория</h4>
+                </div>
 
-<form asp-action="Create" method="post" class="mt-3">
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold text-orange">
+                                <i class="bi bi-tag-fill me-1"></i> Име на категорията
+                            </label>
+                            <input asp-for="Name"
+                                   class="form-control bg-dark text-white border-secondary focus-orange"
+                                   placeholder="напр. Вещици, Вампири, Зомбита..."
+                                   autofocus />
+                            <span asp-validation-for="Name" class="text-danger small mt-2 d-block"></span>
+                        </div>
+
+                        <div class="mb-4 p-3 rounded bg-dark border border-dashed-orange text-center">
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-info-circle text-orange"></i>
+                                Категориите помагат за организирането на вашия призрачен инвентар.
+                            </p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3 border-top border-secondary">
+                            <a asp-action="Index" class="btn btn-outline-light">
+                                <i class="bi bi-arrow-left"></i> Назад
+                            </a>
+                            <button type="submit" class="btn btn-spooky-orange px-5 shadow">
+                                <i class="bi bi-save me-1"></i> Запази
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Запази</button>
-    <a asp-action="Index" class="btn btn-secondary">Назад към списъка</a>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-

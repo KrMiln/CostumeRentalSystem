@@ -1,12 +1,13 @@
-@model CostumeRentalSystem.Models.Client
+@using CostumeRentalSystem.ViewModels.Clients
+@model ClientFormViewModel
 @{
-    ViewData["Title"] = "Редакция на клиент";
+    ViewData["Title"] = "Редактиране на клиент";
 }
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-7">
-            <div class="card shadow-lg border-0 spooky-card animate__animated animate__fadeInUp">
+            <div class="card shadow-lg border-0 spooky-create-card animate__animated animate__fadeInUp">
                 <div class="card-header border-bottom border-secondary border-opacity-25 bg-transparent py-4 text-center">
                     <h2 class="text-orange fw-bold mb-0">
                         <i class="bi bi-pencil-square me-2"></i>РЕДАКЦИЯ НА КЛИЕНТ
@@ -16,12 +17,14 @@
 
                 <div class="card-body p-5">
                     <form asp-action="Edit" method="post">
+                        @* Ключово: запазваме Id-то на клиента *@
                         <input type="hidden" asp-for="Id" />
+
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger small"></div>
 
                         <div class="mb-4">
                             <label asp-for="Name" class="form-label text-light fw-bold">
-                                <i class="bi bi-person me-1 text-orange"></i> Пълно име
+                                <i class="bi bi-person me-1 text-orange"></i> @Html.DisplayNameFor(m => m.Name)
                             </label>
                             <input asp-for="Name" class="form-control spooky-input" placeholder="Иван Иванов..." />
                             <span asp-validation-for="Name" class="text-danger small"></span>
@@ -29,16 +32,16 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label asp-for="PhoneNumber" class="form-label text-light fw-bold">
-                                    <i class="bi bi-telephone me-1 text-orange"></i> Телефон
+                                <label asp-for="Phone" class="form-label text-light fw-bold">
+                                    <i class="bi bi-telephone me-1 text-orange"></i> @Html.DisplayNameFor(m => m.Phone)
                                 </label>
-                                <input asp-for="PhoneNumber" class="form-control spooky-input" placeholder="08X XXX XXXX" />
-                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                <input asp-for="Phone" class="form-control spooky-input" placeholder="08X XXX XXXX" />
+                                <span asp-validation-for="Phone" class="text-danger small"></span>
                             </div>
 
                             <div class="col-md-6 mb-4">
                                 <label asp-for="Email" class="form-label text-light fw-bold">
-                                    <i class="bi bi-envelope me-1 text-orange"></i> Имейл
+                                    <i class="bi bi-envelope me-1 text-orange"></i> @Html.DisplayNameFor(m => m.Email)
                                 </label>
                                 <input asp-for="Email" class="form-control spooky-input" placeholder="example@mail.com" />
                                 <span asp-validation-for="Email" class="text-danger small"></span>
@@ -47,7 +50,7 @@
 
                         <div class="mb-4">
                             <label asp-for="Notes" class="form-label text-light fw-bold">
-                                <i class="bi bi-journal-text me-1 text-orange"></i> Бележки към клиента
+                                <i class="bi bi-journal-text me-1 text-orange"></i> @Html.DisplayNameFor(m => m.Notes)
                             </label>
                             <textarea asp-for="Notes" class="form-control spooky-input" rows="4"
                                       placeholder="Добавете нови изисквания или история..."></textarea>
@@ -76,20 +79,19 @@
 }
 
 <style>
+    /* Твоят стил е перфектен, оставих го идентичен за консистенция */
     :root {
         --halloween-orange: #ff851b;
         --dark-bg: #121212;
-    } 
+    }
 
-    /* Картата */
     .spooky-create-card {
         background: rgba(20, 20, 20, 0.95);
         backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 133, 27, 0.2) !important;
-        border-radius: 0px; /* Остри ъгли за съответствие с бутона */
+        border-radius: 0px;
     }
 
-    /* Инпути */-
     .spooky-input {
         background-color: #1a1a1a !important;
         border: 1px solid #333 !important;
@@ -105,7 +107,6 @@
             background-color: #222 !important;
         }
 
-    /* Текст */
     .text-orange {
         color: var(--halloween-orange) !important;
     }
@@ -114,7 +115,6 @@
         letter-spacing: 1px;
     }
 
-    /* Бутонът "Запази" (същия стил като в Index) */
     .btn-ghost-orange {
         background: transparent;
         color: var(--halloween-orange) !important;
@@ -135,7 +135,6 @@
         color: white !important;
     }
 
-    /* Анимация при зареждане */
     .animate__fadeInUp {
         animation: fadeInUp 0.6s ease-out;
     }

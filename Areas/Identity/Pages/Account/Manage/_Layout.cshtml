@@ -1,0 +1,68 @@
+﻿@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout != null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    }
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="manage-nav-wrapper p-3 rounded-4 border border-white border-opacity-10 bg-dark-subtle shadow-sm">
+                <h6 class="text-orange small text-uppercase fw-bold ls-1 mb-3 px-2">
+                    <i class="bi bi-slayers me-2"></i>Меню
+                </h6>
+                <partial name="_ManageNav" />
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="manage-body-wrapper position-relative">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Премахваме сините фонове по подразбиране на Identity */
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        background-color: var(--theme-orange, #ff851b) !important;
+        color: #000 !important;
+        font-weight: bold;
+    }
+
+    .nav-link {
+        color: #bbb !important;
+        transition: 0.3s;
+        border-radius: 10px !important;
+        margin-bottom: 5px;
+    }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: #fff !important;
+        }
+
+    .manage-nav-wrapper {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+    }
+
+    .ls-1 {
+        letter-spacing: 1px;
+    }
+
+    /* Скриваме стандартните HR и заглавия, ако са останали отнякъде */
+    hr {
+        border-color: rgba(255,255,255,0.1);
+    }
+</style>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

@@ -1,68 +1,54 @@
-using CostumeRentalSystem.Data; 
 using CostumeRentalSystem.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore; 
 using System.Diagnostics;
 
 namespace CostumeRentalSystem.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ICostumeService _costumeService;
+    private readonly IClientService _clientService;
 
-    public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public HomeController(ICostumeService costumeService, IClientService clientService)
     {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
+        _costumeService = costumeService;
+        _clientService = clientService;
     }
 
     public async Task<IActionResult> Index()
     {
-        // Взимаме малко статистика за началната страница
-        ViewBag.TotalCostumes = await _context.Costumes.CountAsync();
-        ViewBag.AvailableCount = await _context.Costumes.CountAsync(c => c.IsAvailable);
+        // 1. Взимаме само 3-те най-нови костюма за секция "Представени"
+        var featuredPaged = await _costumeService.GetFilteredCostumesAsync(
+            null, null, false, null, null, null, 1, 3);
 
-        // Взимаме 3 случайни налични костюма за секция "Препоръчани"
-        // (Guid.NewGuid() е трик за разбъркване в SQL)
-        var featuredCostumes = await _context.Costumes
-            .Where(c => c.IsAvailable)
-            .OrderBy(c => Guid.NewGuid())
-            .Take(3)
-            .Include(c => c.Category)
-            .ToListAsync();
+        // 2. Взимаме статистика за наличните костюми (специфична заявка)
+        // Ако още нямаш GetCountAsync, това е временно решение:
+        var availablePaged = await _costumeService.GetFilteredCostumesAsync(
+            null, null, true, null, null, null, 1, 1);
 
-        return View(featuredCostumes);
+        // 3. Взимаме общия брой клиенти
+        var clientsResult = await _clientService.GetFilteredClientsAsync(null, null, null, 1, 1);
+
+        var viewModel = new HomeViewModel
+        {
+            FeaturedCostumes = featuredPaged.Items,
+            TotalCostumes = featuredPaged.TotalItems,
+            AvailableCount = availablePaged.TotalItems,
+            TotalClients = clientsResult.TotalItems
+        };
+
+        return View(viewModel);
+    }
+
+    public IActionResult Terms()
+    {
+        return View();
     }
 
     public IActionResult Contact()
-    {
-        return View();
-    }
-
-    [Authorize]
-    public async Task<IActionResult> MyAccount()
-    {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null) return NotFound();
-
-        var roles = await _userManager.GetRolesAsync(user);
-
-        // Изпращаме данните към изгледа чрез ViewBag
-        ViewBag.Email = user.Email;
-        ViewBag.Username = user.UserName;
-        ViewBag.Id = user.Id;
-        ViewBag.Roles = roles; // Списък с ролите (Admin, Client и т.н.)
-
-        return View();
-    }
-
-    public IActionResult Privacy()
     {
         return View();
     }

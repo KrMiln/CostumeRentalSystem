@@ -1,85 +1,172 @@
-@using CostumeRentalSystem.Controllers
-@model IEnumerable<UserWithRolesViewModel>
+@model PagedResult<UserViewModel>
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Управление на потребители";
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // Extract current filter values from query string for persistence
+    var currentSearch = Context.Request.Query["searchTerm"];
+    var currentRole = Context.Request.Query["roleFilter"];
 }
 
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-            <h6 class="text-orange text-uppercase tracking-widest fw-bold mb-1" style="font-size: 0.7rem; opacity: 0.8;">Администрация</h6>
-            <h2 class="text-white fw-light mb-0">Потребителски <span class="fw-bold">Профили</span></h2>
+    @* --- Header Section --- *@
+    <div class="row align-items-end mb-4 g-4">
+        <div class="col-lg-8">
+            <h1 class="text-white fw-light mb-0" style="font-size: 2.5rem;">Системни <span class="fw-bold text-orange">Потребители</span></h1>
         </div>
-        <div class="stats-box d-flex gap-4">
-            <div class="stat">
-                <span class="text-muted d-block small uppercase">Общо потребители</span>
-                <span class="text-white fw-bold fs-5">@Model.Count()</span>
+        <div class="col-lg-4 d-flex justify-content-lg-end">
+            <div class="glass-stats px-4 py-3 shadow-lg">
+                <div class="text-end">
+                    <span class="text-muted d-block small fw-bold mb-1">ОБЩО АКАУНТИ</span>
+                    <div class="d-flex align-items-center justify-content-end">
+                        <span class="text-white fw-bold fs-4">@Model.TotalItems</span>
+                        <i class="bi bi-people text-orange ms-2" style="font-size: 1.6rem;"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="glass-panel overflow-hidden">
+    @* --- Filter Section --- *@
+    <div class="glass-panel p-4 mb-4 border-orange-soft">
+        @* Clean Header with minimal bottom margin *@
+        <div class="border-bottom border-secondary border-opacity-25 bg-transparent pb-3 mb-4">
+            <h6 class="m-0 fw-bold text-orange text-uppercase" style="letter-spacing: 1px;">
+                <i class="bi bi-filter me-2"></i>Филтриране
+            </h6>
+        </div>
+
+        <form method="get" asp-action="Index" class="row g-3 align-items-end">
+            @* Search: 5 columns for plenty of typing space *@
+            <div class="col-md-5">
+                <label class="form-label text-orange small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Име или имейл</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-black border-secondary text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" value="@currentSearch" class="form-control admin-input" placeholder="Търсене...">
+                </div>
+            </div>
+
+            @* Role: 4 columns *@
+            <div class="col-md-4">
+                <label class="form-label text-orange small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Роля</label>
+                <select name="roleFilter" class="form-select admin-select">
+                    <option value="">-- Всички роли --</option>
+                    <option value="Administrator" selected="@(currentRole == "Administrator")">Администратор</option>
+                    <option value="Employee" selected="@(currentRole == "Employee")">Служител</option>
+                    <option value="Client" selected="@(currentRole == "Client")">Клиент</option>
+                </select>
+            </div>
+
+            @* Buttons: 3 columns - No spacer div! *@
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-orange fw-bold w-100 py-2">
+                    <i class="bi bi-search me-2"></i>Приложи
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary py-2 px-3 d-flex align-items-center justify-content-center" title="Изчисти филтри">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @* --- Table Container --- *@
+    <div class="glass-panel shadow-2xl overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-dark-custom m-0">
+            <table class="table table-dark-custom m-0 align-middle">
                 <thead>
                     <tr>
-                        <th class="ps-4">Потребител</th>
-                        <th>Текуща роля</th>
-                        <th>Промяна на права</th>
-                        <th class="text-end pe-4">Действия</th>
+                        <th class="ps-4">Потребителско име</th>
+                        <th>Имейл адрес</th>
+                        <th>Роля    </th>
+                        <th>Управление</th>
+                        <th class="text-center pe-4">Изтриване</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var user in Model)
+                    @if (!Model.Items.Any())
                     {
                         <tr>
-                            <td class="ps-4 py-3">
+                            <td colspan="5" class="text-center py-5 text-muted italic">
+                                <i class="bi bi-exclamation-circle me-2"></i>Няма намерени потребители по тези критерии.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var user in Model.Items)
+                    {
+                        var isMe = user.UserId == currentUserId;
+                        var isAdmin = user.Roles.Contains("Administrator");
+
+                        <tr class="@(isMe ? "me-row" : "")">
+                            <td class="ps-4 py-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-3">
-                                        @user.Email.Substring(0, 1).ToUpper()
+                                    <div class="avatar-container me-3">
+                                        <div class="user-avatar-lg @(isAdmin ? "border-orange" : "")">
+                                            @(string.IsNullOrEmpty(user.Username) ? user.Email[0].ToString().ToUpper() : user.Username[0].ToString().ToUpper())
+                                        </div>
+                                        @if (isAdmin)
+                                        {
+                                            <div class="status-dot-admin" title="Администратор"></div>
+                                        }
                                     </div>
                                     <div>
-                                        <div class="text-white fw-bold">@user.Email</div>
-                                        <div class="text-muted small">ID: @user.UserId.Substring(0, 8)...</div>
+                                        <div class="text-white fw-bold fs-5 mb-0">
+                                            @(user.Username ?? "Няма име")
+                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                @foreach (var role in user.Roles)
-                                {
-                                    <span class="badge role-badge @(role == "Administrator" ? "bg-orange" : "bg-grey")">
-                                        @role
-                                    </span>
-                                }
+                                <div class="text-muted fw-medium">
+                                    <i class="bi bi-envelope-fill me-2 opacity-50 text-orange"></i>@user.Email
+                                </div>
                             </td>
                             <td>
-                                @if (!user.Roles.Contains("Administrator"))
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="role-pill @(role == "Administrator" ? "role-admin" : "role-user")">
+                                            <i class="bi @(role == "Administrator" ? "bi-shield-shaded" : "bi-person") me-1"></i>
+                                            @(role == "Administrator" ? "Администратор" : role == "Employee" ? "Служител" : "Клиент")
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (!isAdmin && !isMe)
                                 {
-                                    <form asp-action="SetRole" method="post" class="d-flex gap-2 align-items-center">
+                                    <form asp-action="SetRole" method="post" class="role-update-form">
                                         <input type="hidden" name="userId" value="@user.UserId" />
-                                        <select name="roleName" class="form-select-sm studio-select-sm">
-                                            <option value="Client">Client</option>
-                                            <option value="Employee">Employee</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill">
-                                            Обнови
-                                        </button>
+                                        <div class="input-group input-group-sm" style="max-width: 200px;">
+                                            <select name="roleName" class="form-select admin-select" required>
+                                                <option value="" disabled selected>Промени роля</option>
+                                                <option value="Client">Клиент</option>
+                                                <option value="Employee">Служител</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-orange-sm">
+                                                <i class="bi bi-save2"></i>
+                                            </button>
+                                        </div>
                                     </form>
                                 }
                                 else
                                 {
-                                    <span class="text-muted small italic">Системен профил</span>
+                                    <span class="badge bg-dark border border-secondary text-muted small px-3">
+                                        <i class="bi bi-lock-fill me-1"></i>Системен профил
+                                    </span>
                                 }
                             </td>
-                            <td class="text-end pe-4">
-                                @if (!user.Roles.Contains("Administrator"))
+                            <td class="pe-4 text-center">
+                                @if (!isAdmin && !isMe)
                                 {
-                                    <form asp-action="Delete" method="post" onsubmit="return confirm('Наистина ли искате да изтриете този потребител?');">
+                                    <form asp-action="Delete" method="post" onsubmit="return confirm('Изтриване на профила?');">
                                         <input type="hidden" name="userId" value="@user.UserId" />
-                                        <button type="submit" class="btn-delete-icon">
-                                            <i class="bi bi-trash3"></i>
-                                        </button>
+                                        <button type="submit" class="btn-modern-delete"><i class="bi bi-trash3"></i></button>
                                     </form>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-shield-lock-fill text-muted opacity-25 fs-4"></i>
                                 }
                             </td>
                         </tr>
@@ -88,119 +175,176 @@
             </table>
         </div>
     </div>
+
+    @* --- Pagination --- *@
+    <div class="mt-5 d-flex justify-content-center">
+        @{
+            var paginationConfig = Model.ToPaginationConfig("Users", "Index", new Dictionary<string, string?> {
+                { "searchTerm", currentSearch },
+                { "roleFilter", currentRole }
+                });
+        }
+        <partial name="_PaginationPartial" model="paginationConfig" />
+    </div>
 </div>
 
 <style>
     :root {
         --theme-orange: #ff851b;
-        --glass-bg: rgba(255, 255, 255, 0.02);
-        --glass-border: rgba(255, 255, 255, 0.08);
+        --deep-dark: #0a0a0a;
+        --glass-white: rgba(255, 255, 255, 0.05);
     }
 
-    /* Glass Panel Setup */
+    body {
+        font-size: 1.05rem;
+        background-color: #050505;
+        color: white;
+    }
+
     .glass-panel {
-        background: var(--glass-bg);
-        backdrop-filter: blur(15px);
-        border: 1px solid var(--glass-border);
+        background: rgba(18, 18, 18, 0.8);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
 
-    /* Table Styling */
-    .table-dark-custom {
-        --bs-table-bg: transparent;
-        --bs-table-color: #ddd;
-        border-collapse: separate;
-        border-spacing: 0;
+    .border-orange-soft {
+        border: 1px solid rgba(255, 133, 27, 0.2);
     }
 
-        .table-dark-custom thead th {
-            background: rgba(255,255,255,0.03);
-            color: var(--theme-orange);
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--glass-border);
-            padding: 15px;
+    /* Inputs */
+    .admin-input, .admin-select {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #333 !important;
+        padding: 0.6rem 1rem;
+    }
+
+        .admin-input:focus, .admin-select:focus {
+            border-color: var(--theme-orange) !important;
+            box-shadow: 0 0 10px rgba(255, 133, 27, 0.1);
         }
 
-        .table-dark-custom tbody tr {
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            transition: background 0.3s;
+    .btn-orange {
+        background: var(--theme-orange);
+        color: #000;
+        border: none;
+        transition: all 0.2s ease; /* Snappier transition */
+    }
+
+        /* Change this from background: #fff to a hover effect that stays orange */
+        .btn-orange:hover {
+            background: #ff9d47; /* A slightly lighter orange instead of white */
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255, 133, 27, 0.3);
         }
 
-            .table-dark-custom tbody tr:hover {
-                background: rgba(255,255,255,0.02);
-            }
+        /* This handles the "pressed" state */
+        .btn-orange:active {
+            background: #e67616 !important; /* Darker orange when clicked */
+            transform: translateY(0);
+        }
 
-    /* User Avatar */
-    .user-avatar {
-        width: 38px;
-        height: 38px;
-        background: linear-gradient(135deg, var(--theme-orange), #ff4500);
-        border-radius: 10px;
+    /* Small fix for the save button inside the table as well */
+    .btn-orange-sm {
+        background: var(--theme-orange);
+        color: #000;
+        border: none;
+        padding: 0 10px;
+        transition: 0.2s;
+    }
+
+        .btn-orange-sm:hover {
+            background: #ff9d47;
+            color: #000;
+        }
+
+    .btn-outline-secondary {
+        border: 1px solid #333;
+        color: #888;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #222;
+            color: #fff;
+        }
+
+    /* Table & Components */
+    .table-dark-custom thead th {
+        color: var(--theme-orange);
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        padding: 20px 15px;
+        border: none;
+    }
+
+    .user-avatar-lg {
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg, #1a1a1a, #000);
+        border: 2px solid rgba(255,255,255,0.15);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: black;
-        font-weight: 900;
+        color: var(--theme-orange);
+        font-weight: 800;
     }
 
-    /* Badges */
-    .role-badge {
+    .status-dot-admin {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 14px;
+        height: 14px;
+        background: var(--theme-orange);
+        border: 2px solid #111;
+        border-radius: 50%;
+    }
+
+    .role-pill {
         padding: 5px 12px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
     }
 
-    .bg-orange {
-        background: var(--theme-orange) !important;
-        color: black;
+    .role-admin {
+        background: rgba(255, 133, 27, 0.2);
+        color: var(--theme-orange);
+        border: 1px solid var(--theme-orange);
     }
 
-    .bg-grey {
-        background: rgba(255,255,255,0.1) !important;
-        color: white;
+    .role-user {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ccc;
     }
 
-    /* Custom Select & Buttons */
-    .studio-select-sm {
-        background: #000;
-        border: 1px solid var(--glass-border);
-        color: white;
-        font-size: 0.8rem;
-        border-radius: 5px;
-        padding: 2px 8px;
-        outline: none;
-    }
-
-    .btn-delete-icon {
-        background: rgba(255,77,77,0.1);
-        border: none;
+    .btn-modern-delete {
+        background: transparent;
         color: #ff4d4d;
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
+        border: 1px solid rgba(255, 77, 77, 0.3);
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
         transition: 0.3s;
     }
 
-        .btn-delete-icon:hover {
+        .btn-modern-delete:hover {
             background: #ff4d4d;
-            color: white;
-            transform: scale(1.1);
+            color: #fff;
         }
 
-    .tracking-widest {
-        letter-spacing: 3px;
+    .me-row {
+        border-left: 4px solid var(--theme-orange);
+        background: rgba(255, 133, 27, 0.03);
     }
 
-    .uppercase {
-        text-transform: uppercase;
+    .text-muted-dark {
+        color: #555;
     }
 
-    .italic {
-        font-style: italic;
-    }
 </style>

@@ -13,8 +13,11 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark navbar-halloween shadow-lg sticky-top">
             <div class="container">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-ghost me-2 text-orange"></i><span class="fw-bold">Mascot</span>Rent
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-ghost me-2 text-orange fs-4"></i>
+                    <span class="text-orange fw-bold text-uppercase" style="letter-spacing: 1px;">
+                        Mascot<span class="text-white fw-light">Rent</span>
+                    </span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -29,22 +32,31 @@
                             <a class="nav-link" asp-controller="Costumes" asp-action="Index">Каталог</a>
                         </li>
 
-                        @* Контакти - достъпни за всички *@
                         <li class="nav-item">
-                            <a class="nav-link text-warning" asp-controller="Home" asp-action="Contact">
-                                <i class="bi bi-envelope me-1"></i> Контакти
-                            </a>
+                            <a class="nav-link text-warning" asp-controller="Home" asp-action="Terms">Условия за наем</a>
                         </li>
 
-                        @* Админ Панел - вижда се от Admin и Employee *@
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" asp-controller="Home" asp-action="Contact">Контакти</a>
+                        </li>
+
+                        @if (User.IsInRole("Client"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-area="" asp-controller="Rentals" asp-action="MyRentals">
+                                    <i class="bi bi-mortal text-orange me-1"></i> Моите наеми
+                                </a>
+                            </li>
+                        }
+
+                        @* Операции - вижда се от Admin и Employee *@
                         @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrator") || User.IsInRole("Employee")))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-orange" href="#" data-bs-toggle="dropdown">
-                                    <i class="bi bi-gear-fill me-1"></i> Админ Панел
+                                    <i class="bi bi-gear-fill me-1"></i> Операции
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark border-0 shadow">
-                                    <li><h6 class="dropdown-header text-uppercase small text-muted">Операции</h6></li>
                                     <li><a class="dropdown-item" asp-controller="Rentals" asp-action="Index"><i class="bi bi-calendar-week me-2"></i>Наеми</a></li>
                                     <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index"><i class="bi bi-people me-2"></i>Клиенти</a></li>
 
@@ -64,7 +76,7 @@
                     <div class="d-flex align-items-center">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <a class="btn btn-outline-warning btn-sm me-2" asp-controller="Home" asp-action="MyAccount">
+                            <a class="btn btn-outline-warning btn-sm me-2" asp-area="Identity" asp-page="/Account/Manage/Index">
                                 <i class="bi bi-person-circle me-1"></i> Моят Профил
                             </a>
                         }
@@ -77,51 +89,83 @@
 
     <div class="container main-container mt-4 mb-5">
         <main role="main" class="pb-3">
-            @RenderBody()
+            <div class="container">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show rounded-pill px-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible border-0 shadow-lg" style="background: rgba(220, 53, 69, 0.2); color: #ff6b6b; border-radius: 12px;">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @RenderBody()
+            </div>
         </main>
     </div>
 
-    <footer class="mt-auto py-4 text-center border-top border-secondary bg-dark">
+    <footer class="footer-section mt-5 pt-5 pb-4 border-top border-white border-opacity-10">
         <div class="container">
-            <div class="mb-3">
-                <a href="#" class="text-secondary me-3 fs-5"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-secondary me-3 fs-5"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="text-secondary fs-5"><i class="bi bi-tiktok"></i></a>
+            <div class="row g-4 mb-5">
+                <div class="col-lg-4 col-md-6">
+                    <h4 class="text-orange fw-bold mb-3">MASCOT<span class="text-white fw-light">RENT</span></h4>
+
+                    <p class="text-muted small pe-lg-5">
+                        Ние сме най-големият портал за наем на тематични костюми в страната. Превръщаме всяко парти в незабравимо преживяване от 2015 г. насам.
+                    </p>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-4 text-uppercase tracking-widest small">Навигация</h6>
+                    <ul class="list-unstyled footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">Начало</a></li>
+                        <li><a asp-controller="Costumes" asp-action="Index">Каталог</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">Контакти</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-bold mb-4 text-uppercase tracking-widest small">Поддръжка</h6>
+
+                    <ul class="list-unstyled footer-links">
+                        <li><a asp-controller="Home" asp-action="Terms">Условия за наем</a></li>
+                        <li><a asp-controller="Home" asp-action="Terms">Често задавани въпроси</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="text-white fw-bold mb-4 text-uppercase tracking-widest small">Свържи се с нас</h6>
+                    <div class="contact-info-item d-flex align-items-center mb-3">
+                        <div class="icon-box me-3"><i class="bi bi-geo-alt"></i></div>
+                        <span class="text-muted small">ул. "Призрачна" 13, гр. София</span>
+                    </div>
+                    <div class="contact-info-item d-flex align-items-center mb-3">
+                        <div class="icon-box me-3"><i class="bi bi-telephone"></i></div>
+                        <span class="text-muted small">+359 888 123 456</span>
+                    </div>
+                    <div class="contact-info-item d-flex align-items-center">
+                        <div class="icon-box me-3"><i class="bi bi-envelope"></i></div>
+                        <span class="text-muted small">office@halloween-rentals.bg</span>
+                    </div>
+                </div>
             </div>
-            <p class="mb-0 text-muted small">&copy; @DateTime.Now.Year MascotRent. Подгответе се за страшно парти!</p>
+
+            <div class="text-center pt-4 border-top border-white border-opacity-5">
+                <p class="text-muted mb-0" style="font-size: 0.75rem;">
+                    &copy; @DateTime.Now.Year Halloween Rentals. Всички права запазени.
+                </p>
+            </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @* Универсален скрипт за Image Preview, който работи навсякъде *@
-    <script>
-        function handleImagePreview(input, imgElementId, labelId) {
-            const previewImage = document.getElementById(imgElementId);
-            const label = document.getElementById(labelId);
-
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    if (previewImage) {
-                        previewImage.src = e.target.result;
-                        // Ако е в Create таба, показваме контейнера ако е скрит
-                        const container = previewImage.parentElement;
-                        if (container && container.style.display === 'none') {
-                            container.style.display = 'block';
-                        }
-                    }
-                    if (label) {
-                        label.innerText = "Ново избрано изображение:";
-                        label.style.color = "#ff7518";
-                    }
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

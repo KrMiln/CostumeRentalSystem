@@ -1,4 +1,6 @@
-@model CostumeRentalSystem.Models.Costume
+@using CostumeRentalSystem.ViewModels
+@model CostumeFormViewModel
+
 @{
     ViewData["Title"] = "Нов костюм";
 }
@@ -11,7 +13,8 @@
                     <h4 class="mb-0"><i class="bi bi-ghost"></i> Добавяне на нов костюм</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @* enctype="multipart/form-data" е критично важно за качването на файлове *@
+                    <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger"></div>
 
                         <div class="mb-3">
@@ -23,24 +26,28 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="CategoryId" class="form-label fw-bold">Категория</label>
-                                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                @* Вече използваме Model.Categories вместо ViewBag *@
+                                <select asp-for="CategoryId" class="form-select" asp-items="Model.Categories">
                                     <option value="">-- избор --</option>
                                 </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Size" class="form-label fw-bold">Размер</label>
-                                <select asp-for="Size" class="form-select" asp-items="Html.GetEnumSelectList<CostumeRentalSystem.Models.Costume.CostumeSize>()">
+                                <select asp-for="Size" class="form-select" asp-items="Html.GetEnumSelectList<CostumeRentalSystem.Enums.CostumeSize>()">
                                     <option value="">-- избор --</option>
                                 </select>
+                                <span asp-validation-for="Size" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="PricePerDay" class="form-label fw-bold">Цена на ден</label>
                             <div class="input-group">
-                                <input asp-for="PricePerDay" class="form-control" type="number" step="0.01" />
+                                <input asp-for="PricePerDay" class="form-control" type="number" step="0.01" min="0"/>
                                 <span class="input-group-text bg-dark text-orange border-secondary">лв</span>
                             </div>
+                            <span asp-validation-for="PricePerDay" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3 p-4 rounded bg-dark border border-dashed-orange text-center">
@@ -49,19 +56,15 @@
                             </label>
 
                             <div class="mb-3">
-                                @* Това е мястото, където се вижда снимката *@
                                 <img id="createPreview" src="https://via.placeholder.com/200x250?text=Избери+снимка"
                                      class="img-thumbnail bg-black border-orange mb-3"
                                      style="max-height: 250px; display: block; margin: 0 auto;" />
                             </div>
 
-                            <input type="file" class="form-control" id="imageFile" name="imageFile" accept="image/*" onchange="previewCreateImage(this)" />
+                            @* asp-for="ImageFile" автоматично се свързва с IFormFile в модела *@
+                            <input asp-for="ImageFile" type="file" class="form-control" id="imageFile" accept="image/*" onchange="previewCreateImage(this)" />
+                            <span asp-validation-for="ImageFile" class="text-danger small"></span>
                             <small class="text-muted">Поддържани формати: JPG, PNG, WebP</small>
-                        </div>
-
-                        <div class="mb-3 form-check form-switch">
-                            <input asp-for="IsAvailable" class="form-check-input" type="checkbox" checked />
-                            <label asp-for="IsAvailable" class="form-check-label">В наличност</label>
                         </div>
 
                         <div class="mb-3">
@@ -73,7 +76,7 @@
 
                         <div class="d-flex justify-content-between pt-3 border-top border-secondary">
                             <a asp-action="Index" class="btn btn-outline-light">Назад</a>
-                            <button type="submit" class="btn btn-spooky-orange px-5">Запази</button>
+                            <button type="submit" class="btn btn-spooky-orange px-5"><i class="bi bi-check2-circle me-2"></i>Запази </button>
                         </div>
                     </form>
                 </div>

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using CostumeRentalSystem.Models;
+using CostumeRentalSystem.Data.Entities;
 
 namespace CostumeRentalSystem.Data
 {

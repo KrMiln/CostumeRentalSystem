@@ -1,0 +1,176 @@
+﻿@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Управление на Имейл";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+<div class="manage-content p-4 p-md-5 rounded-4 border border-white border-opacity-10 bg-halloween-card shadow-lg position-relative overflow-hidden">
+    <div class="bat-decoration"></div>
+
+    <div class="position-relative z-2">
+        <h2 class="text-white fw-black mb-1">
+            <i class="bi bi-envelope-paper-heart text-orange me-2"></i> @ViewData["Title"]
+        </h2>
+        <p class="text-muted mb-4 small text-uppercase ls-2">Къде да изпращаме нашите призрачни известия?</p>
+
+        <partial name="_StatusMessage" for="StatusMessage" />
+
+        <div class="row g-5">
+            <div class="col-xl-7">
+                <form id="email-form" method="post">
+                   
+                    <div class="form-group mb-4">
+                        <label asp-for="Email" class="label-halloween">Настоящ имейл адрес</label>
+                        <div class="input-group-halloween shadow-sm">
+                            <i class="bi bi-envelope-at icon-lead"></i>
+                            <input asp-for="Email" class="form-control-halloween pe-5" placeholder="Вашият имейл" disabled />
+                            
+                            @if (Model.IsEmailConfirmed)
+                            {
+                                <span class="position-absolute end-0 me-3 badge bg-success-subtle text-success rounded-pill border border-success border-opacity-25 py-2">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Потвърден
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Input.NewEmail" class="label-halloween">Нов имейл адрес</label>
+                        <div class="input-group-halloween">
+                            <i class="bi bi-envelope-plus-fill icon-lead text-orange"></i>
+                            <input asp-for="Input.NewEmail" class="form-control-halloween" aria-required="true" placeholder="Въведете новия имейл" />
+                        </div>
+                        <span asp-validation-for="Input.NewEmail" class="text-danger-blood small mt-2 d-block"></span>
+                    </div>
+
+                    <div class="mt-5 d-flex flex-wrap align-items-center gap-4">
+                        <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-halloween-lg shadow-orange">
+                            ПРОМЕНИ ИМЕЙЛА <i class="bi bi-arrow-right-short ms-1 fs-4"></i>
+                        </button>
+                        <a asp-page="./Index" class="link-cancel">Отказ</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-xl-5 d-none d-xl-flex flex-column align-items-center justify-content-center text-center border-start border-white border-opacity-10">
+                <div class="mail-portal mb-4">
+                    <i class="bi bi-mailbox2 text-white display-2"></i>
+                </div>
+                <div class="px-3">
+                    <h5 class="text-white fw-bold mb-1">Ние не спамим</h5>
+                    <p class="text-muted small mb-0">Вашият имейл се използва само за важни магически ритуали и потвърждения на наеми.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --theme-orange: #ff851b;
+        --glass-white: rgba(255, 255, 255, 0.03);
+    }
+
+    .fw-black { font-weight: 900; }
+    .ls-2 { letter-spacing: 2px; }
+
+    /* Карта */
+    .bg-halloween-card {
+        background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    /* Инпути */
+    .label-halloween {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--theme-orange);
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .input-group-halloween {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-control-halloween {
+        background: var(--glass-white) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        padding: 15px 15px 15px 50px !important;
+        border-radius: 12px !important;
+        width: 100%;
+        transition: 0.4s;
+    }
+
+    .form-control-halloween:focus {
+        border-color: var(--theme-orange) !important;
+        background: rgba(255, 133, 27, 0.05) !important;
+        box-shadow: 0 0 20px rgba(255, 133, 27, 0.1) !important;
+        outline: none;
+    }
+
+    .icon-lead {
+        position: absolute;
+        left: 18px;
+        font-size: 1.2rem;
+        z-index: 5;
+        color: #666;
+    }
+
+    /* Бутон */
+    /* Основен стил на бутона */
+    .btn-halloween-lg {
+        background: var(--theme-orange);
+        color: #000 !important; /* Текстът да е черен по подразбиране върху оранжевото */
+        border: none;
+        padding: 16px 40px;
+        border-radius: 50px;
+        font-weight: 900;
+        text-transform: uppercase;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        /* Стил при посочване (Hover) */
+        .btn-halloween-lg:hover {
+            background-color: #ffffff; /* Бутонът става бял */
+            color: #000000 !important; /* Текстът СТАВА ЧЕРЕН, за да се вижда на белия фон */
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 133, 27, 0.4);
+        }
+
+    /* Декорация */
+    .mail-portal {
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 133, 27, 0.05);
+        border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px dashed rgba(255, 133, 27, 0.3);
+        animation: mailMorph 12s ease-in-out infinite;
+    }
+
+    @@keyframes mailMorph {
+        0%, 100% { border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%; }
+        50% { border-radius: 60% 40% 40% 60% / 60% 60% 40% 40%; }
+    }
+
+    .link-cancel { color: #666; text-decoration: none; font-weight: 600; }
+    .link-cancel:hover { color: white; }
+    .text-danger-blood { color: #ff4d4d; font-weight: 600; }
+    
+    .btn-link:hover { color: #fff !important; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

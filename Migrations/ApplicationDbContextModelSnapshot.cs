@@ -22,7 +22,7 @@ namespace CostumeRentalSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.ApplicationUser", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -46,11 +46,6 @@ namespace CostumeRentalSystem.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -95,25 +90,7 @@ namespace CostumeRentalSystem.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("CostumeRentalSystem.Models.Client", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,12 +104,10 @@ namespace CostumeRentalSystem.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -143,7 +118,7 @@ namespace CostumeRentalSystem.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.Costume", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Costume", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,26 +129,23 @@ namespace CostumeRentalSystem.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("PricePerDay")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Size")
+                    b.Property<int?>("Size")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -183,7 +155,7 @@ namespace CostumeRentalSystem.Migrations
                     b.ToTable("Costumes");
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.Rental", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Rental", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,6 +185,23 @@ namespace CostumeRentalSystem.Migrations
                     b.HasIndex("CostumeId");
 
                     b.ToTable("Rentals");
+                });
+
+            modelBuilder.Entity("CostumeRentalSystem.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -352,7 +341,7 @@ namespace CostumeRentalSystem.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.Costume", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Costume", b =>
                 {
                     b.HasOne("CostumeRentalSystem.Models.Category", "Category")
                         .WithMany("Costumes")
@@ -363,15 +352,15 @@ namespace CostumeRentalSystem.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Models.Rental", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Rental", b =>
                 {
-                    b.HasOne("CostumeRentalSystem.Models.Client", "Client")
+                    b.HasOne("CostumeRentalSystem.Data.Entities.Client", "Client")
                         .WithMany("Rentals")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CostumeRentalSystem.Models.Costume", "Costume")
+                    b.HasOne("CostumeRentalSystem.Data.Entities.Costume", "Costume")
                         .WithMany("Rentals")
                         .HasForeignKey("CostumeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -393,7 +382,7 @@ namespace CostumeRentalSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CostumeRentalSystem.Models.ApplicationUser", null)
+                    b.HasOne("CostumeRentalSystem.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -402,7 +391,7 @@ namespace CostumeRentalSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CostumeRentalSystem.Models.ApplicationUser", null)
+                    b.HasOne("CostumeRentalSystem.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -417,7 +406,7 @@ namespace CostumeRentalSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CostumeRentalSystem.Models.ApplicationUser", null)
+                    b.HasOne("CostumeRentalSystem.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,26 +415,26 @@ namespace CostumeRentalSystem.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CostumeRentalSystem.Models.ApplicationUser", null)
+                    b.HasOne("CostumeRentalSystem.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Client", b =>
+                {
+                    b.Navigation("Rentals");
+                });
+
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Costume", b =>
+                {
+                    b.Navigation("Rentals");
+                });
+
             modelBuilder.Entity("CostumeRentalSystem.Models.Category", b =>
                 {
                     b.Navigation("Costumes");
-                });
-
-            modelBuilder.Entity("CostumeRentalSystem.Models.Client", b =>
-                {
-                    b.Navigation("Rentals");
-                });
-
-            modelBuilder.Entity("CostumeRentalSystem.Models.Costume", b =>
-                {
-                    b.Navigation("Rentals");
                 });
 #pragma warning restore 612, 618
         }
