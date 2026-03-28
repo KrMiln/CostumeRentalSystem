@@ -76,6 +76,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @if (!Model.Rentals.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted italic">
+                                <i class="bi bi-exclamation-circle me-2"></i>Няма намерени наеми по тези критерии.
+                            </td>
+                        </tr>
+                    }
                     @foreach (var item in Model.Rentals)
                     {
                         var isOverdue = item.Status == RentalStatus.Active && item.ReturnDate < DateTime.Today;

@@ -21,19 +21,14 @@ public class CategoriesController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
-        // 1. Вземаме суровите данни от услугата
         var categories = await _categoryService.GetAllAsync();
 
-        // 2. Превръщаме ги в списък от ViewModels (Мапване)
         var model = categories.Select(c => new CategoryIndexViewModel
         {
             Id = c.Id,
             Name = c.Name
-            // Ако си добавил и брой костюми във ViewModel-а:
-            // CostumesCount = c.Costumes?.Count ?? 0 
         }).ToList();
 
-        // 3. Изпращаме мапнатия списък към View-то
         return View(model);
     }
 

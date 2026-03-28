@@ -65,6 +65,14 @@
                 </tr>
             </thead>
             <tbody>
+                @if (!Model.Clients.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted italic">
+                            <i class="bi bi-exclamation-circle me-2"></i>Няма намерени клиенти по тези критерии.
+                        </td>
+                    </tr>
+                }
                 @foreach (var item in Model.Clients)
                 {
                     <tr class="border-bottom border-secondary-subtle">

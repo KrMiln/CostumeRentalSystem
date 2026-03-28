@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CostumeRentalSystem.Data.Entities
 {
@@ -13,6 +14,12 @@ namespace CostumeRentalSystem.Data.Entities
         public string Email { get; set; }
 
         public string? Notes { get; set; }
+
+        // Foreign key to ApplicationUser (optional - for users who registered)
+        [ForeignKey("ApplicationUser")]
+        public string? UserId { get; set; }
+
+        public ApplicationUser? User { get; set; }
 
         public ICollection<Rental>? Rentals { get; set; }
     }

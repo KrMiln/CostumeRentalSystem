@@ -27,7 +27,6 @@ public class CostumesController : Controller
     {
         const int pageSize = 8;
 
-        // 1. Валидация на филтрите
         if (model.MinPrice > model.MaxPrice)
         {
             TempData["Error"] = "Минималната цена не може да бъде по-висока от максималната!";
@@ -42,15 +41,12 @@ public class CostumesController : Controller
         if (!string.IsNullOrEmpty(model.SelectedSize) && Enum.TryParse<CostumeSize>(model.SelectedSize, out var parsedSize))
             selectedSize = parsedSize;
 
-        // 2. Използваме оптимизираната услуга (връща PagedResult)
         var pagedResult = await _costumeService.GetFilteredCostumesAsync(
             model.SearchName, model.CategoryId, model.OnlyAvailable, selectedSize, model.MinPrice, model.MaxPrice, page, pageSize);
 
-        // 3. Мапване на резултатите към модела
         model.Costumes = pagedResult.Items;
         model.Pagination = pagedResult.ToPaginationConfig("Costumes", nameof(Index), model.ToRouteValues());
 
-        // 4. Подготовка на Dropdowns
         model.Categories = new SelectList(await _costumeService.GetCategoriesAsync(), "Id", "Name", model.CategoryId);
         model.SizeList = new SelectList(Enum.GetValues(typeof(CostumeSize)));
 

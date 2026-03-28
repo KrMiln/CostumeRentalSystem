@@ -4,7 +4,6 @@
     ViewData["Title"] = "Управление на потребители";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    // Extract current filter values from query string for persistence
     var currentSearch = Context.Request.Query["searchTerm"];
     var currentRole = Context.Request.Query["roleFilter"];
 }
