@@ -1,4 +1,4 @@
-﻿using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
 using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Enums;
@@ -40,11 +40,11 @@ namespace CostumeRentalSystem.Services
                 .ToPagedResultAsync(page, pageSize);
         }
 
-        public async Task<PagedResult<Rental>> GetFilteredRentalsByEmailAsync(string email, int page, int pageSize)
+        public async Task<PagedResult<Rental>> GetFilteredRentalsByUserIdAsync(string userId, int page, int pageSize)
         {
             return await _context.Rentals
                 .Include(r => r.Costume)
-                .Where(r => r.Client.Email == email)
+                .Where(r => r.Client.UserId == userId)
                 .AsNoTracking()
                 .OrderBy(r => r.RentDate)
                 .ToPagedResultAsync(page, pageSize);

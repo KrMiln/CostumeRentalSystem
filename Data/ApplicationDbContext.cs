@@ -12,6 +12,7 @@ namespace CostumeRentalSystem.Data
         {
 
         }
+
         public DbSet<Costume> Costumes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Client> Clients { get; set; }
@@ -21,9 +22,26 @@ namespace CostumeRentalSystem.Data
         {
             base.OnModelCreating(builder);
 
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+            // 1. Уникалност за Категория (Име)
+            builder.Entity<Category>()
+                .HasIndex(c => c.Name)
+                .IsUnique();
+
+            // 2. Уникалност за Клиент (Имейл и Телефон)
+            builder.Entity<Client>()
+                .HasIndex(c => c.Email)
+                .IsUnique();
+
+            builder.Entity<Client>()
+                .HasIndex(c => c.PhoneNumber)
+                .IsUnique();
+
+            // 3. Правилната 1:1 връзка (както уточнихме по-рано)
+            builder.Entity<Client>()
+                .HasOne(c => c.User)
+                .WithOne(u => u.Client)
+                .HasForeignKey<Client>(c => c.UserId)
+                .IsRequired(false);
         }
     }
 }

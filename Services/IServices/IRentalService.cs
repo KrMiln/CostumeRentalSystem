@@ -1,4 +1,4 @@
-﻿using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Enums;
 using CostumeRentalSystem.ViewModels;
 
@@ -13,7 +13,7 @@ namespace CostumeRentalSystem.Abstraction
                 string? searchString, DateTime? startDate, DateTime? endDate, RentalStatus? status, int page, int pageSize);
 
             // Страницирано търсене за наеми на конкретен клиент
-            Task<PagedResult<Rental>> GetFilteredRentalsByEmailAsync(string email, int page, int pageSize);
+            Task<PagedResult<Rental>> GetFilteredRentalsByUserIdAsync(string userId, int page, int pageSize);
 
             // CRUD операции с вградена бизнес логика
             Task<Rental?> GetRentalByIdAsync(int id);

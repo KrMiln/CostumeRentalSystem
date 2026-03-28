@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Data;
 
 namespace CostumeRentalSystem.Areas.Identity.Pages.Account
 {
@@ -36,7 +37,8 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -74,6 +76,7 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "Моля, въведете потребителско име.")]
             [Display(Name = "Потребителско име")]
             public string Username { get; set; }
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -125,7 +128,8 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Потребителят създаде нов акаунт с парола.");
 
-                    await _userManager.AddToRoleAsync(user, "Client");
+                    //await _userManager.AddToRoleAsync(user, "Client");
+                    //await _userManager.UpdateAsync(user);
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

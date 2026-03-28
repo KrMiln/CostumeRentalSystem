@@ -1,10 +1,11 @@
-﻿namespace CostumeRentalSystem.ViewModels.Clients;
+namespace CostumeRentalSystem.ViewModels.Clients;
 
 using System.ComponentModel.DataAnnotations;
 
 public class ClientFormViewModel
 {
     public int Id { get; set; } 
+    public string? UserId { get; set; }
 
     [Required(ErrorMessage = "Моля, въведете име.")]
     [StringLength(100, MinimumLength = 2, ErrorMessage = "Името трябва да е между 2 и 100 символа.")]

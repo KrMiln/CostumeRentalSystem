@@ -78,6 +78,8 @@ namespace CostumeRentalSystem.Services
             var existingCostume = await _context.Costumes.AsNoTracking().FirstOrDefaultAsync(c => c.Id == costume.Id);
             if (existingCostume == null) return (false, "Костюмът не е намерен.");
 
+            costume.IsAvailable = existingCostume.IsAvailable;
+
             if (imageFile != null)
             {
                 DeleteImageInternal(existingCostume.ImagePath);

@@ -4,6 +4,7 @@ using CostumeRentalSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CostumeRentalSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260328010631_UpdateClientToUserLink")]
+    partial class UpdateClientToUserLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,6 +85,10 @@ namespace CostumeRentalSystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId")
+                        .IsUnique()
+                        .HasFilter("[ClientId] IS NOT NULL");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -103,7 +110,7 @@ namespace CostumeRentalSystem.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -114,22 +121,12 @@ namespace CostumeRentalSystem.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Clients");
                 });
@@ -213,12 +210,9 @@ namespace CostumeRentalSystem.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -360,13 +354,13 @@ namespace CostumeRentalSystem.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Client", b =>
+            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.ApplicationUser", b =>
                 {
-                    b.HasOne("CostumeRentalSystem.Data.Entities.ApplicationUser", "User")
-                        .WithOne("Client")
-                        .HasForeignKey("CostumeRentalSystem.Data.Entities.Client", "UserId");
+                    b.HasOne("CostumeRentalSystem.Data.Entities.Client", "Client")
+                        .WithOne("User")
+                        .HasForeignKey("CostumeRentalSystem.Data.Entities.ApplicationUser", "ClientId");
 
-                    b.Navigation("User");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Costume", b =>
@@ -450,14 +444,11 @@ namespace CostumeRentalSystem.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CostumeRentalSystem.Data.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("Client");
-                });
-
             modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Client", b =>
                 {
                     b.Navigation("Rentals");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("CostumeRentalSystem.Data.Entities.Costume", b =>

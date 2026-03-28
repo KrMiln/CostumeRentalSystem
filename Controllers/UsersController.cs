@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CostumeRentalSystem.Data;
 
 namespace CostumeRentalSystem.Controllers;
 
@@ -12,11 +13,13 @@ public class UsersController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ApplicationDbContext _context;
 
-    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _context = context;
     }
 
     public async Task<IActionResult> Index(string? searchTerm, string? roleFilter, int page = 1)
@@ -108,6 +111,27 @@ public class UsersController : Controller
         }
 
         await _userManager.AddToRoleAsync(user, roleName);
+
+        if (roleName == "Client" && user.ClientId == null)
+        {
+            var newClient = new Client
+            {
+                Name = user.UserName!,
+                Email = user.Email!,
+                PhoneNumber = string.IsNullOrWhiteSpace(user.PhoneNumber) ? "0888888888" : user.PhoneNumber,
+                UserId = user.Id
+            };
+            _context.Clients.Add(newClient);
+            await _context.SaveChangesAsync();
+
+            user.ClientId = newClient.Id;
+            await _userManager.UpdateAsync(user);
+        }
+        else if (roleName != "Client" && user.ClientId != null)
+        {
+            user.ClientId = null;
+            await _userManager.UpdateAsync(user);
+        }
 
         return RedirectToAction(nameof(Index));
     }

@@ -1,4 +1,4 @@
-using CostumeRentalSystem.Data.Entities;
+п»їusing CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Services.Interfaces;
 using CostumeRentalSystem.ViewModels;
 using CostumeRentalSystem.ViewModels.Clients;
@@ -60,7 +60,7 @@ public class ClientsController : Controller
 
             if (await _clientService.CreateAsync(client))
             {
-                TempData["Success"] = "Клиентът беше добавен успешно!";
+                TempData["Success"] = "РљР»РёРµРЅС‚СЉС‚ Р±РµС€Рµ РґРѕР±Р°РІРµРЅ СѓСЃРїРµС€РЅРѕ!";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -92,7 +92,7 @@ public class ClientsController : Controller
             try
             {
                 await _clientService.UpdateAsync(MapToEntity(model));
-                TempData["Success"] = "Данните на клиента бяха обновени!";
+                TempData["Success"] = "Р”Р°РЅРЅРёС‚Рµ РЅР° РєР»РёРµРЅС‚Р° Р±СЏС…Р° РѕР±РЅРѕРІРµРЅРё!";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -123,7 +123,7 @@ public class ClientsController : Controller
         var result = await _clientService.DeleteAsync(id);
         if (result.Success)
         {
-            TempData["Success"] = "Клиентът беше изтрит.";
+            TempData["Success"] = "РљР»РёРµРЅС‚СЉС‚ Р±РµС€Рµ РёР·С‚СЂРёС‚!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -141,7 +141,8 @@ public class ClientsController : Controller
             Name = model.Name,
             PhoneNumber = model.Phone,
             Email = model.Email,
-            Notes = model.Notes
+            Notes = model.Notes,
+            UserId = model.UserId
         };
     }
 
@@ -153,7 +154,8 @@ public class ClientsController : Controller
             Name = entity.Name,
             Phone = entity.PhoneNumber,
             Email = entity.Email,
-            Notes = entity.Notes
+            Notes = entity.Notes,
+            UserId = entity.UserId
         };
     }
 }

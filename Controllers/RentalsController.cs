@@ -55,7 +55,7 @@ public class RentalsController : Controller
         if (user == null) return Challenge();
 
         const int pageSize = 5;
-        var pagedResult = await _rentalService.GetFilteredRentalsByEmailAsync(user.Email!, page, pageSize);
+        var pagedResult = await _rentalService.GetFilteredRentalsByUserIdAsync(user.Id, page, pageSize);
 
         // Подаваме пагинираните данни директно към View-то
         ViewData["Pagination"] = pagedResult.ToPaginationConfig("Rentals", nameof(MyRentals), new());
@@ -73,7 +73,7 @@ public class RentalsController : Controller
         if (User.IsInRole("Client"))
         {
             var user = await _userManager.GetUserAsync(User);
-            if (rental.Client?.Email != user?.Email) return Forbid();
+            if (rental.Client?.UserId != user?.Id) return Forbid();
         }
 
         return View(rental);

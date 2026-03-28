@@ -1,4 +1,4 @@
-@using CostumeRentalSystem.ViewModels.Clients
+﻿@using CostumeRentalSystem.ViewModels.Clients
 @model ClientFormViewModel
 @{
     ViewData["Title"] = "Редактиране на клиент";
@@ -19,6 +19,7 @@
                     <form asp-action="Edit" method="post">
                         @* Ключово: запазваме Id-то на клиента *@
                         <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserId" />
 
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger small"></div>
 
