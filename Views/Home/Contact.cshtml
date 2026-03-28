@@ -1,8 +1,18 @@
-﻿@{
+﻿@model ContactFormViewModel
+@{
     ViewData["Title"] = "Свържете се с нас";
 }
 
 <div class="container py-5">
+    @* Display Success Message if exists *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show bg-dark text-orange border-orange mb-4 shadow" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="card shadow-lg halloween-card border-purple">
@@ -11,9 +21,10 @@
                 </div>
                 <div class="card-body p-5">
                     <div class="row">
+                        @* Left Side: Info *@
                         <div class="col-md-5 border-end border-secondary">
                             <h4 class="text-orange mb-4"><i class="bi bi-geo-alt"></i> Къде се намираме?</h4>
-                            <p class="mb-4">
+                            <p class="mb-4 text-white-50">
                                 ул. "Тъмна Алея" №13<br />
                                 Гробищен парк "Вечен сън"<br />
                                 София, България
@@ -35,29 +46,47 @@
                             </ul>
                         </div>
 
+                        @* Right Side: Form *@
                         <div class="col-md-7 ps-md-5 mt-4 mt-md-0">
                             <h4 class="text-purple mb-4">Изпратете ни съобщение</h4>
-                            <form>
+
+                            @* Added Form Tags *@
+                            <form asp-action="Contact" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
                                 <div class="mb-3">
                                     <label class="form-label text-white">Вашето име</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-person"></i></span>
-                                        <input type="text" class="form-control" placeholder="Иван Иванов" />
+                                        <input type="text" name="Name" class="form-control" placeholder="Иван Иванов" required />
                                     </div>
                                 </div>
+
                                 <div class="mb-3">
                                     <label class="form-label text-white">Електронна поща</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-at"></i></span>
-                                        <input type="email" class="form-control" placeholder="ivan.ivanov123@gmail.com" />
+                                        <input type="email" name="Email" class="form-control" placeholder="ivan.ivanov123@gmail.com" required />
                                     </div>
                                 </div>
+
+                                @* Added Subject field (as required by your Model) *@
+                                <div class="mb-3">
+                                    <label class="form-label text-white">Тема</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-tag"></i></span>
+                                        <input type="text" name="Subject" class="form-control" placeholder="Относно..." required />
+                                    </div>
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label text-white">Съобщение</label>
-                                    <textarea class="form-control" rows="4" placeholder="Какво ви мъчи?"></textarea>
+                                    <textarea name="Message" class="form-control" rows="4" placeholder="Какво ви мъчи?" required></textarea>
                                 </div>
-                                <button type="button" class="btn btn-spooky-purple w-100">
-                                    <i class="bi bi-send"></i> Изпрати
+
+                                @* Changed type to "submit" *@
+                                <button type="submit" class="btn btn-spooky-purple w-100">
+                                    <i class="bi bi-send me-2"></i> Изпрати
                                 </button>
                             </form>
                         </div>
