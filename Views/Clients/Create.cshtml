@@ -19,6 +19,7 @@
                     <form asp-action="Create" method="post">
                         @* Скрит Id за редакция, въпреки че тук е Create, е добра практика да го има в общата форма *@
                         <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserId" />
 
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger small"></div>
 

@@ -53,6 +53,7 @@ public class UsersController : Controller
         int totalItems = await query.CountAsync();
 
         var users = await query
+            .AsNoTracking()
             .OrderBy(u => u.UserName)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -86,53 +87,67 @@ public class UsersController : Controller
     public async Task<IActionResult> SetRole(string userId, string roleName)
     {
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(roleName))
-        {
             return RedirectToAction(nameof(Index));
-        }
 
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
+            TempData["Error"] = "Потребителят не беше намерен.";
             return RedirectToAction(nameof(Index));
         }
 
-        // Не променяме администратора
         if (await _userManager.IsInRoleAsync(user, "Administrator"))
         {
+            TempData["Error"] = "Ролята на администратор не може да бъде променяна от тук.";
             return RedirectToAction(nameof(Index));
         }
 
-        var existingRoles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, existingRoles);
-
-        if (!await _roleManager.RoleExistsAsync(roleName))
+        // СЛУЧАЙ А: ПРАВИМ ГО КЛИЕНТ
+        if (roleName == "Client")
         {
-            await _roleManager.CreateAsync(new IdentityRole(roleName));
-        }
-
-        await _userManager.AddToRoleAsync(user, roleName);
-
-        if (roleName == "Client" && user.ClientId == null)
-        {
-            var newClient = new Client
+            if (user.ClientId == null)
             {
-                Name = user.UserName!,
-                Email = user.Email!,
-                PhoneNumber = string.IsNullOrWhiteSpace(user.PhoneNumber) ? "0888888888" : user.PhoneNumber,
-                UserId = user.Id
-            };
-            _context.Clients.Add(newClient);
-            await _context.SaveChangesAsync();
-
-            user.ClientId = newClient.Id;
-            await _userManager.UpdateAsync(user);
+                // ПРАЩАМЕ ГО ДА СЪЗДАДЕ ПРОФИЛ. 
+                return RedirectToAction("Create", "Clients", new { userId = user.Id });
+            }
         }
-        else if (roleName != "Client" && user.ClientId != null)
+
+        // СЛУЧАЙ Б: ВСИЧКИ ОСТАНАЛИ РОЛИ (или ако вече е бил клиент)
+        var existingRoles = await _userManager.GetRolesAsync(user);
+        bool wasClient = existingRoles.Contains("Client");
+
+        var removeResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
+        if (!removeResult.Succeeded)
         {
-            user.ClientId = null;
-            await _userManager.UpdateAsync(user);
+            TempData["Error"] = "Грешка при премахване на старите роли.";
+            return RedirectToAction(nameof(Index));
         }
 
+        var addResult = await _userManager.AddToRoleAsync(user, roleName);
+        if (!addResult.Succeeded)
+        {
+            TempData["Error"] = $"Грешка при добавяне на роля {roleName}.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Почистване на Clients таблицата
+        if (roleName != "Client" && wasClient && user.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(user.ClientId);
+            if (client != null)
+            {
+                var hasRentals = await _context.Rentals.AnyAsync(r => r.ClientId == client.Id);
+                if (!hasRentals)
+                {
+                    _context.Clients.Remove(client);
+                    user.ClientId = null;
+                    await _context.SaveChangesAsync();
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+        }
+
+        TempData["Success"] = $"Ролята на потребителя беше променена!";
         return RedirectToAction(nameof(Index));
     }
 
@@ -140,23 +155,51 @@ public class UsersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(string userId)
     {
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            return RedirectToAction(nameof(Index));
-        }
-
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
+            TempData["Error"] = "Потребителят не беше намерен.";
             return RedirectToAction(nameof(Index));
         }
 
         if (await _userManager.IsInRoleAsync(user, "Administrator"))
         {
+            TempData["Error"] = "Администраторски акаунт не може да бъде изтрит.";
             return RedirectToAction(nameof(Index));
         }
 
-        await _userManager.DeleteAsync(user);
+        string userName = user.UserName;
+
+        // 1. Изтриваме първо записа в Clients, ако има такъв
+        if (user.ClientId != null)
+        {
+            var client = await _context.Clients.FindAsync(user.ClientId);
+            if (client != null)
+            {
+                // Проверка за наеми, преди да трием клиента (ако имаш такава бизнес логика)
+                var hasRentals = await _context.Rentals.AnyAsync(r => r.ClientId == client.Id);
+                if (hasRentals)
+                {
+                    TempData["Error"] = "Потребителят има активни наеми и не може да бъде изтрит!";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _context.Clients.Remove(client);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        // 2. Сега трием самия потребител
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            TempData["Success"] = $"Потребителят беше изтрит успешно.";
+        }
+        else
+        {
+            TempData["Error"] = "Възникна грешка при изтриването на потребителя.";
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }

@@ -85,7 +85,7 @@ public class CostumesController : Controller
 
             if (result.Success)
             {
-                TempData["Success"] = "Костюмът е създаден успешно!";
+                TempData["Success"] = "Костюмът беше създаден успешно!";
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError("", result.ErrorMessage);
@@ -125,7 +125,7 @@ public class CostumesController : Controller
 
             if (result.Success)
             {
-                TempData["Success"] = "Костюмът е обновен успешно!";
+                TempData["Success"] = "Костюмът беше обновен успешно!";
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError("", result.ErrorMessage);
@@ -159,7 +159,7 @@ public class CostumesController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        TempData["Success"] = "Костюмът е изтрит успешно!";
+        TempData["Success"] = "Костюмът беше изтрит успешно!";
         return RedirectToAction(nameof(Index));
     }
 

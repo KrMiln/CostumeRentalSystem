@@ -45,16 +45,54 @@ namespace CostumeRentalSystem.Services
             return await query.FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<bool> CreateAsync(Client client)
+        public async Task<(bool Success, string ErrorMessage)> CreateAsync(Client client)
         {
+            // Проверяваме за съществуващ UserId САМО ако той не е null или празен
+            if (!string.IsNullOrEmpty(client.UserId))
+            {
+                var alreadyHasProfile = await _context.Clients.AnyAsync(c => c.UserId == client.UserId);
+                if (alreadyHasProfile)
+                {
+                    return (false, "Този потребител вече има свързан клиентски профил.");
+                }
+            }
+
+            // Проверка за дублиран имейл
+            if (await _context.Clients.AnyAsync(c => c.Email == client.Email))
+            {
+                return (false, "Вече съществува клиент с този имейл адрес.");
+            }
+
+            // Проверка за дублиран телефон (ако телефонът не е празен)
+            if (!string.IsNullOrWhiteSpace(client.PhoneNumber) &&
+                await _context.Clients.AsNoTracking().AnyAsync(c => c.PhoneNumber == client.PhoneNumber))
+            {
+                return (false, "Вече съществува клиент с този телефонен номер.");
+            }
+
             _context.Add(client);
-            return await _context.SaveChangesAsync() > 0;
+            var saved = await _context.SaveChangesAsync() > 0;
+            return (saved, string.Empty);
         }
 
-        public async Task<bool> UpdateAsync(Client client)
+        public async Task<(bool Success, string ErrorMessage)> UpdateAsync(Client client)
         {
+            // При Update трябва да изключим текущия клиент от проверката (c.Id != client.Id)
+
+            if (await _context.Clients.AnyAsync(c => c.Email == client.Email && c.Id != client.Id))
+            {
+                return (false, "Имейлът вече се ползва от друг клиент.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(client.PhoneNumber) &&
+                await _context.Clients.AnyAsync(c => c.PhoneNumber == client.PhoneNumber && c.Id != client.Id))
+            {
+                return (false, "Телефонът вече се ползва от друг клиент.");
+            }
+
             _context.Update(client);
-            return await _context.SaveChangesAsync() > 0;
+            var saved = await _context.SaveChangesAsync() > 0;
+            return (saved, string.Empty);
         }
 
         public async Task<(bool Success, string ErrorMessage)> DeleteAsync(int id)

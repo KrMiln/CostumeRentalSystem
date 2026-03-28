@@ -52,7 +52,7 @@ public class CategoriesController : Controller
 
             if (success)
             {
-                TempData["Success"] = "Категорията е създадена успешно!";
+                TempData["Success"] = "Категорията беше създадена успешно!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -101,7 +101,7 @@ public class CategoriesController : Controller
             try
             {
                 await _categoryService.UpdateAsync(category);
-                TempData["Success"] = "Категорията е обновена успешно!";
+                TempData["Success"] = "Категорията беше обновена успешно!";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -140,7 +140,7 @@ public class CategoriesController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        TempData["Success"] = "Категорията е изтрита успешно!";
+        TempData["Success"] = "Категорията беше изтрита успешно!";
         return RedirectToAction(nameof(Index));
     }
 }

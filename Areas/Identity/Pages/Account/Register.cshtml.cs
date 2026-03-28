@@ -2,6 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
+using CostumeRentalSystem.Data;
+using CostumeRentalSystem.Data.Entities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,16 +21,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
-using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Data;
 
 namespace CostumeRentalSystem.Areas.Identity.Pages.Account
 {
@@ -27,6 +28,7 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
         private readonly IUserStore<ApplicationUser> _userStore;
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
@@ -46,6 +48,7 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         /// <summary>
@@ -82,7 +85,7 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required(ErrorMessage = "Моля, въведете имейл.")]
-            [EmailAddress(ErrorMessage = "Невалиден имейл адрес.")]
+            [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Невалиден имейл адрес!")]
             [Display(Name = "Имейл")]
             public string Email { get; set; }
 
@@ -128,8 +131,23 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("Потребителят създаде нов акаунт с парола.");
 
-                    //await _userManager.AddToRoleAsync(user, "Client");
-                    //await _userManager.UpdateAsync(user);
+                    // 1. Проверяваме дали този имейл вече съществува в таблица Clients (нерегистриран клиент)
+                    var existingClient = await _context.Clients
+                        .FirstOrDefaultAsync(c => c.Email == user.Email);
+
+                    if (existingClient != null)
+                    {
+                        // 2. Свързваме ги: Записваме UserId в Клиента и ClientId в Потребителя
+                        existingClient.UserId = user.Id;
+                        user.ClientId = existingClient.Id;
+
+                        // 3. Автоматично добавяме ролята "Client"
+                        await _userManager.AddToRoleAsync(user, "Client");
+
+                        // Запазваме промените в Identity и в Clients
+                        await _userManager.UpdateAsync(user);
+                        await _context.SaveChangesAsync();
+                    }
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

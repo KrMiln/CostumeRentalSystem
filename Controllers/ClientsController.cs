@@ -1,8 +1,9 @@
-﻿using CostumeRentalSystem.Data.Entities;
+using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Services.Interfaces;
 using CostumeRentalSystem.ViewModels;
 using CostumeRentalSystem.ViewModels.Clients;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +13,12 @@ namespace CostumeRentalSystem.Controllers;
 public class ClientsController : Controller
 {
     private readonly IClientService _clientService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ClientsController(IClientService clientService)
+    public ClientsController(IClientService clientService, UserManager<ApplicationUser> userManager)
     {
         _clientService = clientService;
+        _userManager = userManager;
     }
 
     // GET: Clients
@@ -44,9 +47,21 @@ public class ClientsController : Controller
     }
 
     // GET: Clients/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create(string? userId)
     {
-        return View(new ClientFormViewModel());
+        var viewModel = new ClientFormViewModel();
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                viewModel.UserId = user.Id;
+                viewModel.Email = user.Email;
+            }
+        }
+
+        return View(viewModel);
     }
 
     // POST: Clients/Create
@@ -54,16 +69,40 @@ public class ClientsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ClientFormViewModel model)
     {
-        if (ModelState.IsValid)
-        {
-            var client = MapToEntity(model);
+        if (!ModelState.IsValid) return View(model);
 
-            if (await _clientService.CreateAsync(client))
+        var client = MapToEntity(model);
+        var result = await _clientService.CreateAsync(client);
+
+        if (result.Success)
+        {
+            if (!string.IsNullOrEmpty(model.UserId))
             {
-                TempData["Success"] = "Клиентът беше добавен успешно!";
-                return RedirectToAction(nameof(Index));
+                var user = await _userManager.FindByIdAsync(model.UserId);
+                if (user != null)
+                {
+                    // 1. Обвързваме потребителя с новия клиент
+                    user.ClientId = client.Id;
+                    await _userManager.UpdateAsync(user);
+
+                    // 2. Сменяме ролите
+                    var currentRoles = await _userManager.GetRolesAsync(user);
+                    await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                    await _userManager.AddToRoleAsync(user, "Client");
+
+                    // 3. Опресняваме сесията (SecurityStamp)
+                    await _userManager.UpdateSecurityStampAsync(user);
+
+                    TempData["Success"] = "Клиентът беше създаден и ролята беше променена!";
+                    return RedirectToAction("Index", "Users");
+                }
             }
+
+            TempData["Success"] = "Клиентът беше създаден успешно!";
+            return RedirectToAction(nameof(Index));
         }
+
+        ModelState.AddModelError(string.Empty, result.ErrorMessage);
         return View(model);
     }
 
@@ -92,7 +131,7 @@ public class ClientsController : Controller
             try
             {
                 await _clientService.UpdateAsync(MapToEntity(model));
-                TempData["Success"] = "Данните на клиента бяха обновени!";
+                TempData["Success"] = "Данните на клиента бяха обновени успешно!";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateConcurrencyException)
@@ -101,6 +140,7 @@ public class ClientsController : Controller
                 else throw;
             }
         }
+
         return View(model);
     }
 
@@ -123,7 +163,7 @@ public class ClientsController : Controller
         var result = await _clientService.DeleteAsync(id);
         if (result.Success)
         {
-            TempData["Success"] = "Клиентът беше изтрит!";
+            TempData["Success"] = "Клиентът беше изтрит успешно!";
             return RedirectToAction(nameof(Index));
         }
 

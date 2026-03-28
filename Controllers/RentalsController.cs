@@ -142,7 +142,7 @@ public class RentalsController : Controller
 
             if (result.Success)
             {
-                TempData["Success"] = "Промените по наема бяха запазени!";
+                TempData["Success"] = "Промените по наема бяха запазени успешно!";
                 return RedirectToAction(nameof(Index));
             }
 

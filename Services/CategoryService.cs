@@ -26,7 +26,16 @@ namespace CostumeRentalSystem.Services
 
         public async Task<(bool Success, string ErrorMessage)> AddAsync(Category category)
         {
-            // 1. Проверяваме текущия брой категории
+            // 1. Проверка за уникално име (Case-insensitive)
+            bool exists = await _context.Categories
+                .AnyAsync(c => c.Name.ToLower() == category.Name.ToLower());
+
+            if (exists)
+            {
+                return (false, $"Категория с име '{category.Name}' вече съществува.");
+            }
+
+            // 2. Проверяваме текущия брой категории
             var count = await _context.Categories.CountAsync();
 
             if (count >= 10)
@@ -34,7 +43,7 @@ namespace CostumeRentalSystem.Services
                 return (false, "Максималният брой категории (10) е достигнат. Изтрийте съществуваща категория, за да добавите нова.");
             }
 
-            // 2. Ако всичко е наред, добавяме
+            // 3. Ако всичко е наред, добавяме
             _context.Add(category);
             await _context.SaveChangesAsync();
             return (true, string.Empty);
