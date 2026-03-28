@@ -1,4 +1,3 @@
-@using CostumeRentalSystem.ViewModels
 @model CostumeFormViewModel
 
 @{
@@ -44,7 +43,10 @@
                         <div class="mb-3">
                             <label asp-for="PricePerDay" class="form-label fw-bold">Цена на ден</label>
                             <div class="input-group">
-                                <input asp-for="PricePerDay" class="form-control" type="number" step="0.01" min="0"/>
+                                <input asp-for="PricePerDay" class="form-control" 
+                                data-val-number="Стойността трябва да бъде число." 
+                                data-val-range="Цената трябва да бъде по-голяма или равна на 0." 
+                                type="number" step="0.01" min="0" />
                                 <span class="input-group-text bg-dark text-orange border-secondary">лв</span>
                             </div>
                             <span asp-validation-for="PricePerDay" class="text-danger"></span>

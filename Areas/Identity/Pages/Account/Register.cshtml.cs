@@ -94,7 +94,7 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required(ErrorMessage = "Моля, въведете парола.")]
-            [StringLength(100, ErrorMessage = "{0}та трябва да бъде поне {2} и максимум {1} символа.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0}та трябва да бъде поне {2} символа.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Парола")]
             public string Password { get; set; }
@@ -171,13 +171,40 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    string errorMessage = error.Description;
+
+                    switch (error.Code)
+                    {
+                        case "DuplicateUserName":
+                            errorMessage = $"Потребителското име '{Input.Username}' вече е заето.";
+                            break;
+                        case "DuplicateEmail":
+                            errorMessage = $"Имейл адресът '{Input.Email}' вече е зает.";
+                            break;
+                        case "PasswordTooShort":
+                            errorMessage = "Паролата е твърде кратка.";
+                            break;
+                        case "PasswordRequiresLower":
+                            errorMessage = "Паролата трябва да съдържа поне една малка буква ('a'-'z').";
+                            break;
+                        case "PasswordRequiresUpper":
+                            errorMessage = "Паролата трябва да съдържа поне една главна буква ('A'-'Z').";
+                            break;
+                        case "PasswordRequiresDigit":
+                            errorMessage = "Паролата трябва да съдържа поне една цифра ('0'-'9').";
+                            break;
+                        case "PasswordRequiresNonAlphanumeric":
+                            errorMessage = "Паролата трябва да съдържа поне един специален символ (напр. @, #, !).";
+                            break;
+                    }
+
+                    ModelState.AddModelError(string.Empty, errorMessage);
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 

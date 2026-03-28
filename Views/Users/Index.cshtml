@@ -1,5 +1,5 @@
 @model PagedResult<UserViewModel>
-@using System.Security.Claims
+
 @{
     ViewData["Title"] = "Управление на потребители";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
