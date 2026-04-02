@@ -8,10 +8,7 @@ namespace CostumeRentalSystem.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-
-        }
+            : base(options) { }
 
         public DbSet<Costume> Costumes { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -22,12 +19,10 @@ namespace CostumeRentalSystem.Data
         {
             base.OnModelCreating(builder);
 
-            // 1. Уникалност за Категория (Име)
             builder.Entity<Category>()
                 .HasIndex(c => c.Name)
                 .IsUnique();
 
-            // 2. Уникалност за Клиент (Имейл и Телефон)
             builder.Entity<Client>()
                 .HasIndex(c => c.Email)
                 .IsUnique();
@@ -36,7 +31,6 @@ namespace CostumeRentalSystem.Data
                 .HasIndex(c => c.PhoneNumber)
                 .IsUnique();
 
-            // 3. Правилната 1:1 връзка (както уточнихме по-рано)
             builder.Entity<Client>()
                 .HasOne(c => c.User)
                 .WithOne(u => u.Client)

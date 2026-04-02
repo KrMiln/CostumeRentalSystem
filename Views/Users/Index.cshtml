@@ -1,11 +1,9 @@
-@model PagedResult<UserViewModel>
+@using CostumeRentalSystem.ViewModels.Users
+@model UserIndexViewModel
 
 @{
     ViewData["Title"] = "Управление на потребители";
     var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    var currentSearch = Context.Request.Query["searchTerm"];
-    var currentRole = Context.Request.Query["roleFilter"];
 }
 
 <div class="container py-5">
@@ -19,7 +17,8 @@
                 <div class="text-end">
                     <span class="text-muted d-block small fw-bold mb-1">ОБЩО АКАУНТИ</span>
                     <div class="d-flex align-items-center justify-content-end">
-                        <span class="text-white fw-bold fs-4">@Model.TotalItems</span>
+                        @* Използваме директното свойство от модела *@
+                        <span class="text-white fw-bold fs-4">@Model.TotalUsersCount</span>
                         <i class="bi bi-people text-orange ms-2" style="font-size: 1.6rem;"></i>
                     </div>
                 </div>
@@ -29,7 +28,6 @@
 
     @* --- Filter Section --- *@
     <div class="glass-panel p-4 mb-4 border-orange-soft">
-        @* Clean Header with minimal bottom margin *@
         <div class="border-bottom border-secondary border-opacity-25 bg-transparent pb-3 mb-4">
             <h6 class="m-0 fw-bold text-orange text-uppercase" style="letter-spacing: 1px;">
                 <i class="bi bi-filter me-2"></i>Филтриране
@@ -37,27 +35,24 @@
         </div>
 
         <form method="get" asp-action="Index" class="row g-3 align-items-end">
-            @* Search: 5 columns for plenty of typing space *@
             <div class="col-md-5">
-                <label class="form-label text-orange small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Име или имейл</label>
+                <label class="form-label text-orange small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Потребителско име или имейл</label>
                 <div class="input-group">
                     <span class="input-group-text bg-black border-secondary text-muted"><i class="bi bi-search"></i></span>
-                    <input type="text" name="searchTerm" value="@currentSearch" class="form-control admin-input" placeholder="Търсене...">
+                    <input type="text" asp-for="SearchTerm" class="form-control admin-input" placeholder="Търсене...">
                 </div>
             </div>
 
-            @* Role: 4 columns *@
             <div class="col-md-4">
                 <label class="form-label text-orange small fw-bold text-uppercase mb-2" style="letter-spacing: 1px;">Роля</label>
-                <select name="roleFilter" class="form-select admin-select">
+                <select asp-for="RoleFilter" class="form-select admin-select">
                     <option value="">-- Всички роли --</option>
-                    <option value="Administrator" selected="@(currentRole == "Administrator")">Администратор</option>
-                    <option value="Employee" selected="@(currentRole == "Employee")">Служител</option>
-                    <option value="Client" selected="@(currentRole == "Client")">Клиент</option>
+                    <option value="Administrator">Администратор</option>
+                    <option value="Employee">Служител</option>
+                    <option value="Client">Клиент</option>
                 </select>
             </div>
 
-            @* Buttons: 3 columns - No spacer div! *@
             <div class="col-md-3 d-flex gap-2">
                 <button type="submit" class="btn btn-orange fw-bold w-100 py-2">
                     <i class="bi bi-search me-2"></i>Приложи
@@ -77,13 +72,13 @@
                     <tr>
                         <th class="ps-4">Потребителско име</th>
                         <th>Имейл адрес</th>
-                        <th>Роля    </th>
+                        <th>Роля</th>
                         <th>Управление</th>
                         <th class="text-center pe-4">Изтриване</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (!Model.Items.Any())
+                    @if (!Model.Users.Any())
                     {
                         <tr>
                             <td colspan="5" class="text-center py-5 text-muted italic">
@@ -91,28 +86,24 @@
                             </td>
                         </tr>
                     }
-                    @foreach (var user in Model.Items)
+                    @foreach (var user in Model.Users)
                     {
                         var isMe = user.UserId == currentUserId;
-                        var isAdmin = user.Roles.Contains("Administrator");
+                        var isAdmin = user.Role == "Administrator";
 
                         <tr class="@(isMe ? "me-row" : "")">
                             <td class="ps-4 py-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar-container me-3">
+                                    <div class="avatar-container me-3 position-relative">
                                         <div class="user-avatar-lg @(isAdmin ? "border-orange" : "")">
-                                            @(string.IsNullOrEmpty(user.Username) ? user.Email[0].ToString().ToUpper() : user.Username[0].ToString().ToUpper())
+                                            @user.Username[0].ToString().ToUpper()
                                         </div>
                                         @if (isAdmin)
                                         {
                                             <div class="status-dot-admin" title="Администратор"></div>
                                         }
                                     </div>
-                                    <div>
-                                        <div class="text-white fw-bold fs-5 mb-0">
-                                            @(user.Username ?? "Няма име")
-                                        </div>
-                                    </div>
+                                    <div class="text-white fw-bold fs-5 mb-0">@user.Username</div>
                                 </div>
                             </td>
                             <td>
@@ -121,15 +112,11 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <span class="role-pill @(role == "Administrator" ? "role-admin" : "role-user")">
-                                            <i class="bi @(role == "Administrator" ? "bi-shield-shaded" : "bi-person") me-1"></i>
-                                            @(role == "Administrator" ? "Администратор" : role == "Employee" ? "Служител" : "Клиент")
-                                        </span>
-                                    }
-                                </div>
+                                <span class="role-pill @(isAdmin ? "role-admin" : "role-user")">
+                                    <i class="bi @(isAdmin ? "bi-shield-shaded" : "bi-person") me-1"></i>
+                                    @* Тук можеш да използваш директно user.Role или твоя switch *@
+                                    @(user.Role == "Administrator" ? "Администратор" : user.Role == "Employee" ? "Служител" : user.Role == "Client" ? "Клиент" : "Няма роля")
+                                </span>
                             </td>
                             <td>
                                 @if (!isAdmin && !isMe)
@@ -151,14 +138,14 @@
                                 else
                                 {
                                     <span class="badge bg-dark border border-secondary text-muted small px-3">
-                                        <i class="bi bi-lock-fill me-1"></i>Системен профил
+                                        <i class="bi bi-lock-fill me-1"></i>Защитен профил
                                     </span>
                                 }
                             </td>
                             <td class="pe-4 text-center">
                                 @if (!isAdmin && !isMe)
                                 {
-                                    <form asp-action="Delete" method="post" onsubmit="return confirm('Изтриване на профила?');">
+                                    <form asp-action="Delete" method="post" onsubmit="return confirm('Наистина ли искате да изтриете този потребител?');">
                                         <input type="hidden" name="userId" value="@user.UserId" />
                                         <button type="submit" class="btn-modern-delete"><i class="bi bi-trash3"></i></button>
                                     </form>
@@ -177,13 +164,7 @@
 
     @* --- Pagination --- *@
     <div class="mt-5 d-flex justify-content-center">
-        @{
-            var paginationConfig = Model.ToPaginationConfig("Users", "Index", new Dictionary<string, string?> {
-                { "searchTerm", currentSearch },
-                { "roleFilter", currentRole }
-                });
-        }
-        <partial name="_PaginationPartial" model="paginationConfig" />
+        <partial name="_PaginationPartial" model="Model.Pagination" />
     </div>
 </div>
 

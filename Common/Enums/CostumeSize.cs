@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CostumeRentalSystem.Enums
+namespace CostumeRentalSystem.Common.Enums
 {
     public enum CostumeSize
     {

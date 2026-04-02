@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
 
 namespace CostumeRentalSystem.ViewModels
 {

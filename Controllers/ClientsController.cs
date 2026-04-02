@@ -1,5 +1,5 @@
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels;
 using CostumeRentalSystem.ViewModels.Clients;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +30,8 @@ public class ClientsController : Controller
             model.SearchName, model.SearchPhone, model.SearchEmail, page, pageSize);
 
         model.Clients = pagedResult.Items;
-        model.Pagination = pagedResult.ToPaginationConfig("Clients", nameof(Index), model.ToRouteValues());
+        model.Pagination = pagedResult.ToPaginationConfig(
+            "Clients", nameof(Index), model.ToRouteValues());
 
         return View(model);
     }
@@ -160,10 +161,27 @@ public class ClientsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
+        // 1. Първо намираме клиента, за да вземем UserId преди да го изтрием
+        var client = await _clientService.GetByIdAsync(id);
+        string? associatedUserId = client?.UserId;
+
+        // 2. Изтриваме клиента
         var result = await _clientService.DeleteAsync(id);
+
         if (result.Success)
         {
-            TempData["Success"] = "Клиентът беше изтрит успешно!";
+            // 3. АКО клиентът е бил свързан с потребител, трябва да нулираме ClientId на потребителя
+            if (!string.IsNullOrEmpty(associatedUserId))
+            {
+                var user = await _userManager.FindByIdAsync(associatedUserId);
+                if (user != null)
+                {
+                    user.ClientId = null; // Прекъсваме връзката в AspNetUsers
+                    await _userManager.UpdateAsync(user);
+                }
+            }
+
+            TempData["Success"] = "Клиентът беше изтрит успешно и връзката с потребителя беше прекъсната!";
             return RedirectToAction(nameof(Index));
         }
 

@@ -9,6 +9,7 @@ namespace CostumeRentalSystem.Models
 
         public string Name { get; set; }
 
-        public ICollection<Costume> Costumes { get; set; } = new List<Costume>();
+        public ICollection<Costume> Costumes { get; set; } 
+            = new List<Costume>();
     }
 }

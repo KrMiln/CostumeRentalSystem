@@ -1,5 +1,5 @@
+using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
 using CostumeRentalSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,6 @@ public static class SeedData
 
         await context.Database.MigrateAsync();
 
-        // 1. Създаване на Роли
         foreach (var roleName in Enum.GetNames(typeof(Role)))
         {
             if (!await roleManager.RoleExistsAsync(roleName))
@@ -28,7 +27,6 @@ public static class SeedData
             }
         }
 
-        // 2. Създаване на администратор
         var adminEmail = "admin@costumes.local";
         var adminUsername = "admin1234";
         var adminUser = await userManager.FindByEmailAsync(adminEmail);
@@ -39,33 +37,14 @@ public static class SeedData
                 UserName = adminUsername,
                 Email = adminEmail,
                 EmailConfirmed = true,
-                UserRole = Role.Administrator  
             };
 
             await userManager.CreateAsync(adminUser, "Admin123!");
             await userManager.AddToRoleAsync(adminUser, "Administrator");
         }
 
-        // 3. Създаване на двама служители
-        var employeeEmail = "employee1@costumes.local";
-        var employeeUsername = "employee1";
-        var employeeUser = await userManager.FindByEmailAsync(employeeEmail);
-        if (employeeUser == null)
-        {
-            employeeUser = new ApplicationUser
-            {
-                UserName = employeeUsername,
-                Email = employeeEmail,
-                EmailConfirmed = true,
-                UserRole = Role.Employee  
-            };
-
-            await userManager.CreateAsync(employeeUser, "Employee123!");
-            await userManager.AddToRoleAsync(employeeUser, "Employee");
-        }
-
-        var e1Email = "employee2@costumes.local";
-        var e1Username = "employee2";
+        var e1Email = "employee1@costumes.local";
+        var e1Username = "employee1";
         var e1User = await userManager.FindByEmailAsync(e1Email);
         if (e1User == null)
         {
@@ -74,14 +53,28 @@ public static class SeedData
                 UserName = e1Username,
                 Email = e1Email,
                 EmailConfirmed = true,
-                UserRole = Role.Employee   
             };
 
             await userManager.CreateAsync(e1User, "Employee123!");
             await userManager.AddToRoleAsync(e1User, "Employee");
         }
 
-        // 4. Категории
+        var e2Email = "employee2@costumes.local";
+        var e2Username = "employee2";
+        var e2User = await userManager.FindByEmailAsync(e2Email);
+        if (e2User == null)
+        {
+            e2User = new ApplicationUser
+            {
+                UserName = e2Username,
+                Email = e2Email,
+                EmailConfirmed = true,  
+            };
+
+            await userManager.CreateAsync(e2User, "Employee123!");
+            await userManager.AddToRoleAsync(e2User, "Employee");
+        }
+
         if (!context.Categories.Any())
         {
             context.Categories.AddRange(
@@ -92,7 +85,6 @@ public static class SeedData
             await context.SaveChangesAsync();
         }
 
-        // 5. Костюми
         if (!context.Costumes.Any())
         {
             var carnival = await context.Categories.FirstAsync(c => c.Name == "Карнавални");
@@ -121,7 +113,6 @@ public static class SeedData
             await context.SaveChangesAsync();
         }
 
-        // 6. Клиенти (за таблицата Clients)
         if (!context.Clients.Any())
         {
             context.Clients.AddRange(
@@ -142,7 +133,6 @@ public static class SeedData
             await context.SaveChangesAsync();
         }
 
-        // 7. Наеми
         if (!context.Rentals.Any())
         {
             var client = await context.Clients.FirstAsync();

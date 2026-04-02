@@ -1,8 +1,9 @@
-﻿using CostumeRentalSystem.Data.Entities;
+﻿using CostumeRentalSystem.Common;
+using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Models;
 using CostumeRentalSystem.ViewModels;
 
-namespace CostumeRentalSystem.Services.Interfaces
+namespace CostumeRentalSystem.Services.IServices
 {
     public interface IClientService
     {

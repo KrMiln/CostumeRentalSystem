@@ -1,6 +1,6 @@
+using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
-using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels;
 using CostumeRentalSystem.ViewModels.Rentals;
 using Microsoft.AspNetCore.Authorization;

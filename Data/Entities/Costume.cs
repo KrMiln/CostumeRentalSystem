@@ -1,4 +1,4 @@
-using CostumeRentalSystem.Enums;
+using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Models;
 using System.ComponentModel.DataAnnotations;
 

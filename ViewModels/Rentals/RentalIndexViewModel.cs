@@ -1,5 +1,5 @@
-﻿using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
+﻿using CostumeRentalSystem.Common.Enums;
+using CostumeRentalSystem.Data.Entities;
 
 namespace CostumeRentalSystem.ViewModels
 {
@@ -12,6 +12,5 @@ namespace CostumeRentalSystem.ViewModels
 
         public IEnumerable<Rental> Rentals { get; set; } = [];
         public PaginationViewModel Pagination { get; set; } = null!;
-        public string? Subtitle { get; set; }
     }
 }

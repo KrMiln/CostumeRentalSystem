@@ -1,6 +1,6 @@
 using CostumeRentalSystem.Models;
-using CostumeRentalSystem.Services.Abstraction;
-using CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Services.IServices;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
@@ -21,17 +21,14 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        // 1. Взимаме само 3-те най-нови костюма за секция "Представени"
         var featuredPaged = await _costumeService.GetFilteredCostumesAsync(
             null, null, false, null, null, null, 1, 3);
 
-        // 2. Взимаме статистика за наличните костюми (специфична заявка)
-        // Ако още нямаш GetCountAsync, това е временно решение:
         var availablePaged = await _costumeService.GetFilteredCostumesAsync(
             null, null, true, null, null, null, 1, 1);
 
-        // 3. Взимаме общия брой клиенти
-        var clientsResult = await _clientService.GetFilteredClientsAsync(null, null, null, 1, 1);
+        var clientsResult = await _clientService.GetFilteredClientsAsync(
+            null, null, null, 1, 1);
 
         var viewModel = new HomeViewModel
         {
@@ -43,6 +40,7 @@ public class HomeController : Controller
 
         return View(viewModel);
     }
+
     public IActionResult Contact()
     {
         return View(new ContactFormViewModel());

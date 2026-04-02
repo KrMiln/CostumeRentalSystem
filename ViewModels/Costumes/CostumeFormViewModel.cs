@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
+using CostumeRentalSystem.Common.Enums;
 
 namespace CostumeRentalSystem.ViewModels
 {

@@ -1,9 +1,10 @@
-﻿using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
+﻿using CostumeRentalSystem.Common;
+using CostumeRentalSystem.Common.Enums;
+using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.Models;
 using CostumeRentalSystem.ViewModels;
 
-namespace CostumeRentalSystem.Services.Abstraction
+namespace CostumeRentalSystem.Services.IServices
 {
     public interface ICostumeService
     {
@@ -15,6 +16,5 @@ namespace CostumeRentalSystem.Services.Abstraction
         Task<(bool Success, string ErrorMessage)> UpdateAsync(Costume costume, IFormFile? imageFile);
         Task<(bool Success, string ErrorMessage)> DeleteAsync(int id);
         Task<IEnumerable<Category>> GetCategoriesAsync();
-
     }
 }

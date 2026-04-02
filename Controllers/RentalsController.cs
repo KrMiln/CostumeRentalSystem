@@ -1,6 +1,6 @@
-using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
 using CostumeRentalSystem.Data.Entities;
 using CostumeRentalSystem.ViewModels;
+using CostumeRentalSystem.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,28 +20,22 @@ public class RentalsController : Controller
         _userManager = userManager;
     }
 
-    // --- READ OPERATIONS ---
-
     [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Index(RentalIndexViewModel model, int page = 1)
     {
         const int pageSize = 6;
 
-        // 1. Валидация на датите (подобно на MinPrice > MaxPrice)
         if (model.StartDate.HasValue && model.EndDate.HasValue && model.StartDate > model.EndDate)
         {
             TempData["Error"] = "Началната дата не може да бъде след крайната дата!";
 
-            // Изчистваме проблемните филтри, за да не се зацикли в грешката
             model.StartDate = null;
             model.EndDate = null;
         }
 
-        // 2. Извикваме услугата (тя ще работи с изчистените дати, ако е имало грешка)
         var pagedResult = await _rentalService.GetFilteredRentalsAsync(
             model.SearchString, model.StartDate, model.EndDate, model.Status, page, pageSize);
 
-        // 3. Мапване на резултатите към модела
         model.Rentals = pagedResult.Items;
         model.Pagination = pagedResult.ToPaginationConfig("Rentals", nameof(Index), model.ToRouteValues());
 
@@ -54,10 +48,9 @@ public class RentalsController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
-        const int pageSize = 5;
+        const int pageSize = 6;
         var pagedResult = await _rentalService.GetFilteredRentalsByUserIdAsync(user.Id, page, pageSize);
 
-        // Подаваме пагинираните данни директно към View-то
         ViewData["Pagination"] = pagedResult.ToPaginationConfig("Rentals", nameof(MyRentals), new());
 
         return View(pagedResult.Items);
@@ -78,8 +71,6 @@ public class RentalsController : Controller
 
         return View(rental);
     }
-
-    // --- CREATE OPERATIONS ---
 
     [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Create(int? costumeId)
@@ -113,8 +104,6 @@ public class RentalsController : Controller
         await PopulateDropDowns(model.ClientId, model.CostumeId);
         return View(model);
     }
-
-    // --- UPDATE OPERATIONS ---
 
     [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Edit(int? id)
@@ -153,8 +142,6 @@ public class RentalsController : Controller
         return View(model);
     }
 
-    // --- DELETE OPERATIONS ---
-
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -177,8 +164,6 @@ public class RentalsController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
-    // --- PRIVATE HELPERS ---
 
     private async Task PopulateDropDowns(int? selectedClient = null, int? selectedCostume = null)
     {

@@ -1,5 +1,5 @@
 using CostumeRentalSystem.Models;
-using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +47,6 @@ public class CategoriesController : Controller
         {
             var category = new Category { Name = model.Name };
 
-            // Взимаме резултата от услугата
             var (success, errorMessage) = await _categoryService.AddAsync(category);
 
             if (success)
@@ -56,7 +55,6 @@ public class CategoriesController : Controller
                 return RedirectToAction(nameof(Index));
             }
 
-            // Ако не е успешно, добавяме грешката към ModelState, за да се покаже във View-то
             ModelState.AddModelError(string.Empty, errorMessage);
         }
 

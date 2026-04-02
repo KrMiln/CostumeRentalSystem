@@ -1,7 +1,8 @@
-﻿using CostumeRentalSystem.Data;
+﻿using CostumeRentalSystem.Common;
+using CostumeRentalSystem.Common.Enums;
+using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
-using CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,6 @@ namespace CostumeRentalSystem.Services
         {
             _context = context;
         }
-
         public async Task<PagedResult<Client>> GetFilteredClientsAsync(
             string? searchName, string? searchPhone, string? searchEmail, int page, int pageSize)
         {
@@ -47,7 +47,6 @@ namespace CostumeRentalSystem.Services
 
         public async Task<(bool Success, string ErrorMessage)> CreateAsync(Client client)
         {
-            // Проверяваме за съществуващ UserId САМО ако той не е null или празен
             if (!string.IsNullOrEmpty(client.UserId))
             {
                 var alreadyHasProfile = await _context.Clients.AnyAsync(c => c.UserId == client.UserId);
@@ -57,13 +56,11 @@ namespace CostumeRentalSystem.Services
                 }
             }
 
-            // Проверка за дублиран имейл
             if (await _context.Clients.AnyAsync(c => c.Email == client.Email))
             {
                 return (false, "Вече съществува клиент с този имейл адрес.");
             }
 
-            // Проверка за дублиран телефон (ако телефонът не е празен)
             if (!string.IsNullOrWhiteSpace(client.PhoneNumber) &&
                 await _context.Clients.AsNoTracking().AnyAsync(c => c.PhoneNumber == client.PhoneNumber))
             {
@@ -77,15 +74,15 @@ namespace CostumeRentalSystem.Services
 
         public async Task<(bool Success, string ErrorMessage)> UpdateAsync(Client client)
         {
-            // При Update трябва да изключим текущия клиент от проверката (c.Id != client.Id)
-
-            if (await _context.Clients.AnyAsync(c => c.Email == client.Email && c.Id != client.Id))
+            if (await _context.Clients
+                .AnyAsync(c => c.Email == client.Email && c.Id != client.Id))
             {
                 return (false, "Имейлът вече се ползва от друг клиент.");
             }
 
             if (!string.IsNullOrWhiteSpace(client.PhoneNumber) &&
-                await _context.Clients.AnyAsync(c => c.PhoneNumber == client.PhoneNumber && c.Id != client.Id))
+                await _context.Clients
+                .AnyAsync(c => c.PhoneNumber == client.PhoneNumber && c.Id != client.Id))
             {
                 return (false, "Телефонът вече се ползва от друг клиент.");
             }
@@ -103,12 +100,12 @@ namespace CostumeRentalSystem.Services
 
             if (client == null) return (false, "Клиентът не е намерен.");
 
-            // Бизнес логика: Проверка за активни наеми
             bool hasActiveRentals = client.Rentals.Any(r =>
                 r.Status != RentalStatus.Returned && r.Status != RentalStatus.Lost);
 
             if (hasActiveRentals)
-                return (false, "Клиентът не може да бъде изтрит, докато не върне всички наети костюми!");
+                return (false, "Клиентът не може да бъде изтрит," +
+                    " докато не върне всички наети костюми!");
 
             _context.Clients.Remove(client);
             await _context.SaveChangesAsync();

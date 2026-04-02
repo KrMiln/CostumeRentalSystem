@@ -1,10 +1,12 @@
+using CostumeRentalSystem.Common;
+using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.ViewModels;
+using CostumeRentalSystem.ViewModels.NewFolder;
+using CostumeRentalSystem.ViewModels.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CostumeRentalSystem.Data;
 
 namespace CostumeRentalSystem.Controllers;
 
@@ -22,62 +24,55 @@ public class UsersController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index(string? searchTerm, string? roleFilter, int page = 1)
+    public async Task<IActionResult> Index(UserIndexViewModel model, int page = 1)
     {
         const int pageSize = 6;
-
-        // 1. Стартираме заявката
         var query = _userManager.Users.AsQueryable();
 
-        // 2. Филтриране по текст (Username или Email)
-        if (!string.IsNullOrWhiteSpace(searchTerm))
+        // 1. Филтриране (вече използваме стойностите директно от обекта 'model')
+        if (!string.IsNullOrWhiteSpace(model.SearchTerm))
         {
-            searchTerm = searchTerm.Trim().ToLower();
-            query = query.Where(u => u.UserName.ToLower().Contains(searchTerm) ||
-                                     u.Email.ToLower().Contains(searchTerm));
+            var term = model.SearchTerm.Trim().ToLower();
+            query = query.Where(u => u.UserName.ToLower().Contains(term) || u.Email.ToLower().Contains(term));
         }
 
-        // 3. Филтриране по роля (Това е по-сложно при Identity, затова използваме Join)
-        if (!string.IsNullOrWhiteSpace(roleFilter))
+        if (!string.IsNullOrWhiteSpace(model.RoleFilter))
         {
-            // Намираме ID-то на ролята
-            var role = await _roleManager.FindByNameAsync(roleFilter);
+            var role = await _roleManager.FindByNameAsync(model.RoleFilter);
             if (role != null)
             {
-                // Взимаме само потребителите, които са в тази роля
-                query = query.Where(u => _userManager.GetUsersInRoleAsync(roleFilter).Result.Select(r => r.Id).Contains(u.Id));
+                query = query.Where(u => _context.UserRoles.Any(ur => ur.RoleId == role.Id && ur.UserId == u.Id));
             }
         }
 
-        // 4. Изчисляване на общия брой СЛЕД филтрацията
-        int totalItems = await query.CountAsync();
-
-        var users = await query
-            .AsNoTracking()
+        // 2. Изпълнение на заявката с пагинация
+        var pagedUsers = await query
             .OrderBy(u => u.UserName)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
+            .ToPagedResultAsync(page, pageSize);
 
-        var userViewModels = new List<UserViewModel>();
-        foreach (var user in users)
+        // 3. Мапване на детайлите
+        var userList = new List<UserDetailsViewModel>();
+        foreach (var user in pagedUsers.Items)
         {
-            userViewModels.Add(new UserViewModel
+            var roles = await _userManager.GetRolesAsync(user);
+            userList.Add(new UserDetailsViewModel
             {
                 UserId = user.Id,
-                Username = user.UserName!,
-                Email = user.Email!,
-                Roles = (await _userManager.GetRolesAsync(user)).ToList()
+                Username = user.UserName ?? "Няма име",
+                Email = user.Email ?? "Няма имейл",
+                Role = roles.FirstOrDefault() ?? "Няма роля"
             });
         }
 
-        var model = new PagedResult<UserViewModel>
-        {
-            Items = userViewModels,
-            CurrentPage = page,
-            TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize),
-            TotalItems = totalItems
-        };
+        // 4. Попълване на модела за View-то
+        model.Users = userList;
+        model.TotalUsersCount = pagedUsers.TotalItems; // Общият брой за брояча
+
+        // Настройваме пагинацията чрез твоя PaginationViewModel
+        model.Pagination = pagedUsers.ToPaginationConfig(
+            "Users",
+            nameof(Index),
+            model.ToRouteValues());
 
         return View(model);
     }
@@ -96,58 +91,35 @@ public class UsersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        // Защита на администратора
         if (await _userManager.IsInRoleAsync(user, "Administrator"))
         {
-            TempData["Error"] = "Ролята на администратор не може да бъде променяна от тук.";
+            TempData["Error"] = "Ролята на администратор не може да бъде променяна.";
             return RedirectToAction(nameof(Index));
         }
 
-        // СЛУЧАЙ А: ПРАВИМ ГО КЛИЕНТ
-        if (roleName == "Client")
+        // Специална логика за Клиенти
+        if (roleName == "Client" && user.ClientId == null)
         {
-            if (user.ClientId == null)
-            {
-                // ПРАЩАМЕ ГО ДА СЪЗДАДЕ ПРОФИЛ. 
-                return RedirectToAction("Create", "Clients", new { userId = user.Id });
-            }
+            return RedirectToAction("Create", "Clients", new { userId = user.Id });
         }
 
-        // СЛУЧАЙ Б: ВСИЧКИ ОСТАНАЛИ РОЛИ (или ако вече е бил клиент)
         var existingRoles = await _userManager.GetRolesAsync(user);
-        bool wasClient = existingRoles.Contains("Client");
 
-        var removeResult = await _userManager.RemoveFromRolesAsync(user, existingRoles);
-        if (!removeResult.Succeeded)
-        {
-            TempData["Error"] = "Грешка при премахване на старите роли.";
-            return RedirectToAction(nameof(Index));
-        }
-
+        // Изтриваме всички стари роли и добавяме новата
+        await _userManager.RemoveFromRolesAsync(user, existingRoles);
         var addResult = await _userManager.AddToRoleAsync(user, roleName);
+
         if (!addResult.Succeeded)
         {
-            TempData["Error"] = $"Грешка при добавяне на роля {roleName}.";
+            TempData["Error"] = $"Грешка при добавяне на роля.";
             return RedirectToAction(nameof(Index));
         }
 
-        // Почистване на Clients таблицата
-        if (roleName != "Client" && wasClient && user.ClientId != null)
-        {
-            var client = await _context.Clients.FindAsync(user.ClientId);
-            if (client != null)
-            {
-                var hasRentals = await _context.Rentals.AnyAsync(r => r.ClientId == client.Id);
-                if (!hasRentals)
-                {
-                    _context.Clients.Remove(client);
-                    user.ClientId = null;
-                    await _context.SaveChangesAsync();
-                    await _userManager.UpdateAsync(user);
-                }
-            }
-        }
+        // Забележка: Тук НЕ трием нищо от таблица Clients, за да избегнем 
+        // конфликти с референции (Rentals). Потребителят просто получава нова роля.
 
-        TempData["Success"] = $"Ролята на потребителя беше променена!";
+        TempData["Success"] = $"Ролята беше успешно променена!";
         return RedirectToAction(nameof(Index));
     }
 
@@ -168,40 +140,27 @@ public class UsersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        string userName = user.UserName;
+        // 1. Намираме клиента, свързан с този потребител
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
 
-        // 1. Изтриваме първо записа в Clients, ако има такъв
-        if (user.ClientId != null)
+        if (client != null)
         {
-            var client = await _context.Clients.FindAsync(user.ClientId);
-            if (client != null)
-            {
-                // Проверка за наеми, преди да трием клиента (ако имаш такава бизнес логика)
-                var hasRentals = await _context.Rentals.AnyAsync(r => r.ClientId == client.Id);
-                if (hasRentals)
-                {
-                    TempData["Error"] = "Потребителят има активни наеми и не може да бъде изтрит!";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                _context.Clients.Remove(client);
-                await _context.SaveChangesAsync();
-            }
+            // ВАЖНО: Вместо да трием клиента, просто премахваме връзката към User.
+            // Така клиентът остава в базата с всичките си наеми, но вече няма акаунт за влизане.
+            client.UserId = null;
+            _context.Clients.Update(client);
+            await _context.SaveChangesAsync();
         }
 
-        // 2. Сега трием самия потребител
+        // 2. Сега изтриваме само Identity потребителя. 
+        // Това вече няма да хвърли SqlException, защото разкачихме UserId в таблица Clients.
         var result = await _userManager.DeleteAsync(user);
+
         if (result.Succeeded)
-        {
-            TempData["Success"] = $"Потребителят беше изтрит успешно.";
-        }
+            TempData["Success"] = "Потребителският акаунт беше изтрит. Данните за клиента бяха запазени.";
         else
-        {
-            TempData["Error"] = "Възникна грешка при изтриването на потребителя.";
-        }
+            TempData["Error"] = "Грешка при изтриване на акаунта.";
 
         return RedirectToAction(nameof(Index));
     }
 }
-
-

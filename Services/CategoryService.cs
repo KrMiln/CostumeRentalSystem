@@ -1,6 +1,6 @@
 ﻿using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Models;
-using CostumeRentalSystem.Services.Abstraction;
+using CostumeRentalSystem.Services.IServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace CostumeRentalSystem.Services
@@ -26,7 +26,6 @@ namespace CostumeRentalSystem.Services
 
         public async Task<(bool Success, string ErrorMessage)> AddAsync(Category category)
         {
-            // 1. Проверка за уникално име (Case-insensitive)
             bool exists = await _context.Categories
                 .AnyAsync(c => c.Name.ToLower() == category.Name.ToLower());
 
@@ -35,24 +34,41 @@ namespace CostumeRentalSystem.Services
                 return (false, $"Категория с име '{category.Name}' вече съществува.");
             }
 
-            // 2. Проверяваме текущия брой категории
             var count = await _context.Categories.CountAsync();
 
             if (count >= 10)
             {
-                return (false, "Максималният брой категории (10) е достигнат. Изтрийте съществуваща категория, за да добавите нова.");
+                return (false, "Максималният брой категории (10) е достигнат. " +
+                    "Изтрийте съществуваща категория, за да добавите нова.");
             }
 
-            // 3. Ако всичко е наред, добавяме
             _context.Add(category);
             await _context.SaveChangesAsync();
             return (true, string.Empty);
         }
 
-        public async Task UpdateAsync(Category category)
+        public async Task<(bool Success, string ErrorMessage)> UpdateAsync(Category category)
         {
-            _context.Update(category);
-            await _context.SaveChangesAsync();
+            // 1. Проверка дали новото име вече се ползва от ДРУГА категория
+            // (Изключваме текущата категория по Id, за да можем да запишем, ако името не е променено)
+            bool exists = await _context.Categories
+                .AnyAsync(c => c.Name.ToLower() == category.Name.ToLower() && c.Id != category.Id);
+
+            if (exists)
+            {
+                return (false, $"Категория с име '{category.Name}' вече съществува.");
+            }
+
+            try
+            {
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+                return (true, string.Empty);
+            }
+            catch (Exception)
+            {
+                return (false, "Възникна грешка при обновяване на категорията.");
+            }
         }
 
         public async Task<(bool Success, string ErrorMessage)> DeleteAsync(int id)

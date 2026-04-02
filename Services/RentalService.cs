@@ -1,7 +1,8 @@
-using CostumeRentalSystem.Abstraction.CostumeRentalSystem.Services.Interfaces;
+using CostumeRentalSystem.Common;
+using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Data.Entities;
-using CostumeRentalSystem.Enums;
+using CostumeRentalSystem.Services.IServices;
 using CostumeRentalSystem.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -82,14 +83,12 @@ namespace CostumeRentalSystem.Services
             var currentCostume = await _context.Costumes.FindAsync(rental.CostumeId);
             var busyStatuses = new[] { RentalStatus.Active, RentalStatus.Lost, RentalStatus.Damaged };
 
-            // Логика за защита на наличността
             if (busyStatuses.Contains(rental.Status) && oldRental.Status == RentalStatus.Returned)
             {
                 if (currentCostume != null && !currentCostume.IsAvailable)
                     return (false, "Костюмът вече е зает от друг клиент!");
             }
 
-            // Синхронизация на статуса на костюма
             if (currentCostume != null)
             {
                 currentCostume.IsAvailable = (rental.Status == RentalStatus.Returned);
