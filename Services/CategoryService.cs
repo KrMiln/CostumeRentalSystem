@@ -49,8 +49,6 @@ namespace CostumeRentalSystem.Services
 
         public async Task<(bool Success, string ErrorMessage)> UpdateAsync(Category category)
         {
-            // 1. Проверка дали новото име вече се ползва от ДРУГА категория
-            // (Изключваме текущата категория по Id, за да можем да запишем, ако името не е променено)
             bool exists = await _context.Categories
                 .AnyAsync(c => c.Name.ToLower() == category.Name.ToLower() && c.Id != category.Id);
 
@@ -82,7 +80,6 @@ namespace CostumeRentalSystem.Services
                 return (false, "Категорията не беше намерена.");
             }
 
-            // ПРОВЕРКА: Има ли костюми в тази категория?
             if (category.Costumes != null && category.Costumes.Any())
             {
                 return (false, $"Категорията '{category.Name}' не може да бъде изтрита, защото съдържа {category.Costumes.Count} костюма. Първо преместете или изтрийте костюмите.");

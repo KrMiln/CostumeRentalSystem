@@ -1,0 +1,80 @@
+﻿@using CostumeRentalSystem.ViewModels.Users
+@model UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Изтриване на потребител";
+
+    // Дефиниране на преводите и стиловете спрямо твоите роли
+    var roleInfo = Model.Role.ToLower() switch
+    {
+        "admin" => new { Text = "Администратор", Class = "role-admin" },
+        "employee" => new { Text = "Служител", Class = "role-user" },
+        "client" => new { Text = "Клиент", Class = "role-user" },
+        _ => new { Text = Model.Role, Class = "role-user" }
+    };
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+
+            <div class="glass-panel p-5 text-center shadow-lg border-danger border-opacity-25">
+
+                <div class="mb-4">
+                    <i class="bi bi-exclamation-octagon text-danger" style="font-size: 4.5rem;"></i>
+                </div>
+
+                <h2 class="text-white fw-black text-uppercase ls-5 mb-3">
+                    Внимание!
+                </h2>
+
+                <p class="text-white-50 mb-4 px-3">
+                    На път сте да изтриете акаунта на <span class="text-orange fw-bold">@Model.Username</span>.
+                    Това действие е необратимо.
+                </p>
+
+                @* ПОТРЕБИТЕЛСКА КАРТА *@
+                <div class="category-item-row mb-5 text-start d-flex align-items-center p-3">
+
+                    <div class="position-relative me-4 flex-shrink-0">
+                        <div class="user-avatar-lg shadow-sm">
+                            @Model.Username[0].ToString().ToUpper()
+                        </div>
+                        @if (Model.Role.ToLower() == "admin")
+                        {
+                            <div class="status-dot-admin"></div>
+                        }
+                    </div>
+
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h4 class="item-title mb-0 text-truncate fw-bold">@Model.Username</h4>
+                            <span class="role-pill @roleInfo.Class ms-2 flex-shrink-0">
+                                @roleInfo.Text
+                            </span>
+                        </div>
+
+                        <div class="mt-2 d-flex align-items-center">
+                            <i class="bi bi-envelope text-muted-dark me-2"></i>
+                            <span class="text-white-50 text-truncate x-small tracking-widest">@Model.Email</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" name="userId" value="@Model.UserId" />
+
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-danger-soft py-3 fw-bold text-uppercase tracking-widest">
+                            <i class="bi bi-trash3-fill me-2"></i>Изтрий Акаунта
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-ghost-white py-2 d-flex align-items-center justify-content-center text-uppercase x-small">
+                            Отказ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

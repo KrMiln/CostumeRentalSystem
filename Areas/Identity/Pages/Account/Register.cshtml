@@ -79,15 +79,13 @@
         color: #6c757d;
         font-size: 1.2rem;
         display: none;
-        /* Добавяме малко време за изчакване преди скриване */
         transition: opacity 0.2s;
     }
 
-        /* 1. Показваме при фокус на инпута */
         .password-container:focus-within .password-toggle-icon,
-        /* 2. Показваме, ако паролата е вече видима (клас active от JS) */
+
         .password-toggle-icon.active,
-        /* 3. КРИТИЧНО: Показваме, когато мишката е върху самата икона */
+
         .password-toggle-icon:hover {
             display: block;
         }
@@ -97,8 +95,8 @@
     }
 
     .border-1 {
-        border: 1px solid #6a0dad !important; /* Deep Purple to match your header */
-        box-shadow: 0 0 15px rgba(142, 68, 173, 0.2); /* Soft purple glow */
+        border: 1px solid #6a0dad !important;
+        box-shadow: 0 0 15px rgba(142, 68, 173, 0.2); 
     }
 </style>
 
@@ -113,12 +111,12 @@
                 passwordInput.type = "text";
                 eyeIcon.classList.remove("bi-eye-slash");
                 eyeIcon.classList.add("bi-eye");
-                eyeIcon.classList.add("active"); // Остава видима дори без фокус
+                eyeIcon.classList.add("active");
             } else {
                 passwordInput.type = "password";
                 eyeIcon.classList.remove("bi-eye");
                 eyeIcon.classList.add("bi-eye-slash");
-                eyeIcon.classList.remove("active"); // Ще се скрие, ако няма фокус
+                eyeIcon.classList.remove("active"); 
             }
         }
     </script>

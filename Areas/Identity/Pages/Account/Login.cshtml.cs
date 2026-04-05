@@ -94,7 +94,6 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -110,12 +109,10 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // 1. Търсим потребителя по имейл
                 var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
 
                 if (user != null)
                 {
-                    // 2. Влизаме, като ползваме неговия UserName, който Identity разбира
                     var result = await _signInManager.PasswordSignInAsync(
                         user.UserName,
                         Input.Password,
@@ -138,7 +135,6 @@ namespace CostumeRentalSystem.Areas.Identity.Pages.Account
                     }
                 }
 
-                // Ако стигнем тук, значи или потребителят не съществува, или паролата е грешна
                 ModelState.AddModelError(string.Empty, "Невалиден имейл или парола.");
                 return Page();
             }

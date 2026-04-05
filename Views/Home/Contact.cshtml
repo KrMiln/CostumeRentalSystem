@@ -4,7 +4,6 @@
 }
 
 <div class="container py-5">
-    @* Display Success Message if exists *@
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show bg-dark text-orange border-orange mb-4 shadow" role="alert">
@@ -15,42 +14,46 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card shadow-lg halloween-card border-purple">
+            <div class="card shadow-lg halloween-card">
                 <div class="card-header halloween-header-create text-white text-center py-4">
                     <h2 class="mb-0"><i class="bi bi-envelope-paper-heart"></i> Свържете се с нас</h2>
                 </div>
                 <div class="card-body p-5">
                     <div class="row">
-                        @* Left Side: Info *@
                         <div class="col-md-5 border-end border-secondary">
                             <h4 class="text-orange mb-4"><i class="bi bi-geo-alt"></i> Къде се намираме?</h4>
                             <p class="mb-4 text-white-50">
-                                ул. "Тъмна Алея" №13<br />
-                                Гробищен парк "Вечен сън"<br />
-                                София, България
-                            </p>
-
-                            <h4 class="text-orange mb-4"><i class="bi bi-telephone"></i> Позвънете ни</h4>
-                            <p class="mb-4">
-                                <a href="tel:+359666666" class="text-decoration-none text-white fs-5">
-                                    0888 666 999
-                                </a>
-                                <br />
-                                <small class="text-muted">(Линията е отворена само по пълнолуние)</small>
+                                бул. "Княз Александър Дондуков" №13<br />
+                                1000 София, България
                             </p>
 
                             <h4 class="text-orange mb-4"><i class="bi bi-clock"></i> Работно време</h4>
                             <ul class="list-unstyled text-muted">
-                                <li>Пон - Пет: 08:00 - 17:00</li>
-                                <li>Събота - Неделя: 09:00 - 15:00</li>
+                                <li>Понеделник - Петък: 08:00 - 17:00</li>
+                                <li>Събота: 09:00 - 15:00</li>
+                                <li>Неделя: Почивен ден</li>
                             </ul>
+
+                            <h4 class="text-orange mb-4"><i class="bi bi-telephone"></i> Позвънете ни</h4>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <a href="tel:+359888666999" class="text-decoration-none text-white fs-5">
+                                        088 923 4728
+                                    </a>
+                                </div>
+
+                                <div class="d-flex align-items-center">
+                                    <a href="tel:+359888111222" class="text-decoration-none text-white fs-5">
+                                        087 891 7654
+                                    </a>
+                                </div>
+                                <small class="text-muted d-block mt-1">(При спешни поръчки извън работно време)</small>
+                            </div>
                         </div>
 
-                        @* Right Side: Form *@
                         <div class="col-md-7 ps-md-5 mt-4 mt-md-0">
                             <h4 class="text-purple mb-4">Изпратете ни съобщение</h4>
 
-                            @* Added Form Tags *@
                             <form asp-action="Contact" method="post">
                                 <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
@@ -58,7 +61,7 @@
                                     <label class="form-label text-white">Вашето име</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-person"></i></span>
-                                        <input type="text" name="Name" class="form-control" placeholder="Иван Иванов" required />
+                                        <input type="text" name="Name" class="form-control" placeholder="Георги Георгиев" required />
                                     </div>
                                 </div>
 
@@ -66,25 +69,28 @@
                                     <label class="form-label text-white">Електронна поща</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-at"></i></span>
-                                        <input type="email" name="Email" class="form-control" placeholder="ivan.ivanov123@gmail.com" required />
+                                        <input type="email" name="Email" class="form-control" placeholder="g.georgiev@email.bg" required />
                                     </div>
                                 </div>
 
-                                @* Added Subject field (as required by your Model) *@
                                 <div class="mb-3">
                                     <label class="form-label text-white">Тема</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-dark border-secondary text-purple"><i class="bi bi-tag"></i></span>
-                                        <input type="text" name="Subject" class="form-control" placeholder="Относно..." required />
+                                        <input type="text" name="Subject" class="form-control" placeholder="Запитване за наличност на костюм" required />
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label text-white">Съобщение</label>
-                                    <textarea name="Message" class="form-control" rows="4" placeholder="Какво ви мъчи?" required></textarea>
+                                    <textarea name="Message"
+                                              class="form-control bg-dark border-secondary text-white"
+                                              rows="4"
+                                              placeholder="Здравейте, интересувам се от костюма..."
+                                              style="resize: none;"
+                                              required></textarea>
                                 </div>
 
-                                @* Changed type to "submit" *@
                                 <button type="submit" class="btn btn-spooky-purple w-100">
                                     <i class="bi bi-send me-2"></i> Изпрати
                                 </button>

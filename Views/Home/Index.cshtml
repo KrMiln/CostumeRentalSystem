@@ -32,21 +32,18 @@
 <div class="row g-4 mb-5 text-center">
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            @* ИЗПОЛЗВАМЕ МОДЕЛА ВМЕСТО VIEWBAG *@
             <h2 class="display-4 fw-bold text-orange">@Model.TotalCostumes</h2>
             <p class="text-uppercase small letter-spacing-2 mb-0">Общо Костюма</p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            @* ИЗПОЛЗВАМЕ МОДЕЛА ВМЕСТО VIEWBAG *@
             <h2 class="display-4 fw-bold text-success">@Model.AvailableCount</h2>
             <p class="text-uppercase small letter-spacing-2 mb-0">Свободни Сега</p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="p-4 rounded-4 spooky-card">
-            @* МОЖЕШ ДА ДОБАВИШ И КЛИЕНТИТЕ ТУК, АКО ЖЕЛАЕШ *@
             <h2 class="display-4 fw-bold text-purple">@Model.TotalClients</h2>
             <p class="text-uppercase small letter-spacing-2 mb-0">Наши Клиенти</p>
         </div>
@@ -103,133 +100,96 @@
         </div>
     }
 </div>
-
-@* СЕКЦИЯТА "КАК ДА НАЕМЕШ" И <STYLE> ОСТАВАТ СЪЩИТЕ *@
-
 <div class="py-5 my-5 border-top border-white border-opacity-5">
     <div class="text-center mb-5">
-        <h2 class="display-5 fw-bold text-white">Как да наемеш?</h2>
+        <h2 class="display-5 fw-bold text-white mb-3">Как да наемеш?</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">Целият процес отнема само няколко минути. Следвай стъпките и се приготви за купона!</p>
     </div>
     <div class="row g-4 text-center">
         <div class="col-md-4">
-            <div class="step-blob mb-4 mx-auto"><i class="bi bi-search fs-2"></i></div>
-            <h5 class="fw-bold">Избери костюм</h5>
-            <p class="text-muted small px-lg-5">Разгледай каталога и избери перфектната визия за твоето събитие.</p>
+            <div class="mb-4 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-lg"
+                 style="width: 100px; height: 100px; background: rgba(253, 126, 20, 0.1); border: 2px dashed #fd7e14;">
+                <i class="bi bi-search fs-1 text-orange"></i>
+            </div>
+            <h4 class="fw-bold text-white">1. Избери модел</h4>
+            <p class="text-muted small px-lg-5">Разгледай богатия ни каталог и намери костюма, който най-добре пасва на твоя характер.</p>
         </div>
+
         <div class="col-md-4">
-            <div class="step-blob mb-4 mx-auto"><i class="bi bi-calendar-event fs-2"></i></div>
-            <h5 class="fw-bold">Резервирай</h5>
-            <p class="text-muted small px-lg-5">Избери дати и попълни данните си. Ние ще подготвим всичко за теб.</p>
+            <div class="mb-4 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-lg"
+                 style="width: 100px; height: 100px; background: rgba(111, 66, 193, 0.1); border: 2px dashed #6f42c1;">
+                <i class="bi bi-calendar-check fs-1 text-purple"></i>
+            </div>
+            <h4 class="fw-bold text-white">2. Резервирай</h4>
+            <p class="text-muted small px-lg-5">Избери дати през календара и попълни данните си. Ние ще потвърдим наличността веднага.</p>
         </div>
+
         <div class="col-md-4">
-            <div class="step-blob mb-4 mx-auto"><i class="bi bi-mask fs-2"></i></div>
-            <h5 class="fw-bold">Парти време!</h5>
-            <p class="text-muted small px-lg-5">Вземи костюма от магазина и бъди звездата на вечерта.</p>
+            <div class="mb-4 mx-auto d-flex align-items-center justify-content-center rounded-circle shadow-lg"
+                 style="width: 100px; height: 100px; background: rgba(25, 135, 84, 0.1); border: 2px dashed #198754;">
+                <i class="bi bi-mask fs-1 text-success"></i>
+            </div>
+            <h4 class="fw-bold text-white">3. Парти време!</h4>
+            <p class="text-muted small px-lg-5">Вземи готовия костюм от нашия магазин и се превърни в звездата на вечерта.</p>
         </div>
     </div>
 </div>
 
-<style>
-    .bg-purple {
-        background-color: var(--witch-purple) !important;
-    }
+<div class="row g-4 mb-5 pt-5 border-top border-white border-opacity-5">
+    <div class="col-12 text-center mb-4">
+        <h2 class="fw-bold text-white">Къде да ни намериш?</h2>
+        <p class="text-muted small">Лесен достъп в центъра на града и удобен паркинг за клиенти.</p>
+    </div>
 
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
+    <div class="col-lg-4">
+        <div class="p-4 rounded-4 spooky-card h-100 bg-dark border border-secondary border-opacity-25 shadow-lg d-flex flex-column">
+            <div class="mb-4">
+                <h5 class="text-orange fw-bold mb-2"><i class="bi bi-geo-alt-fill text-orange me-2"></i>Нашият адрес</h5>
+                <p class="text-white opacity-75 mb-0">
+                    бул. "Княз Александър Дондуков" №13,<br />
+                    <span>1000 София, България</span>
+                </p>
+            </div>
 
-    :root {
-        --theme-orange: #ff851b;
-        --witch-purple: #6f42c1;
-    }
+            <div class="mb-4">
+                <h5 class="text-purple fw-bold mb-3"><i class="bi bi-clock-history me-2"></i>Работно време</h5>
+                <div class="small">
+                    <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-10 py-2">
+                        <span class="text-white-50">Пон - Пет</span>
+                        <span class="text-white">08:00 - 17:00</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-10 py-2">
+                        <span class="text-white-50">Събота</span>
+                        <span class="text-white">09:00 - 15:00</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2">
+                        <span class="text-white-50">Неделя</span>
+                        <span class="text-white">Почивен ден</span>
+                    </div>
+                </div>
+            </div>
 
-    /* Анимация за героя */
-    .bi-emoji-grimace {
-        animation: float 6s ease-in-out infinite;
-    }
+            <div class="mt-auto">
+                <a href="https://maps.google.com" target="_blank" class="btn btn-outline-orange w-100 rounded-pill btn-sm py-2">
+                    <i class="bi bi-arrow-up-right-circle me-2"></i>Навигация до нас
+                </a>
+            </div>
+        </div>
+    </div>
 
-    @@keyframes float {
-        0%, 100%
-
-    {
-        transform: translateY(0) rotate(0);
-    }
-
-    50% {
-        transform: translateY(-20px) rotate(8deg);
-    }
-
-    }
-
-    /* Блобове за стъпките */
-    .step-blob {
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 133, 27, 0.1);
-        color: var(--theme-orange);
-        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.5s ease;
-    }
-
-    /* Социални линкове */
-    .social-link {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
-        border-radius: 50%;
-        text-decoration: none;
-        transition: all 0.3s;
-    }
-
-        .social-link:hover {
-            background: var(--theme-orange);
-            color: black;
-            transform: translateY(-3px);
-        }
-
-    /* Ховър ефект за картите с костюми */
-    .spooky-card {
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
-    }
-
-        .spooky-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(255, 133, 27, 0.15) !important;
-        }
-
-    .testimonial-card {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: all 0.3s ease;
-    }
-
-        .testimonial-card:hover {
-            background: rgba(111, 66, 193, 0.05); /* Леко лилаво */
-            border-color: var(--witch-purple);
-        }
-
-    /* Стил за акордеона */
-    .accordion-button:not(.collapsed) {
-        background-color: transparent;
-        color: var(--theme-orange);
-        box-shadow: none;
-    }
-
-    .accordion-button::after {
-        filter: invert(1); /* Прави стрелката на акордеона бяла */
-    }
-
-    .italic {
-        font-style: italic;
-    }
-</style>
+    <div class="col-lg-8">
+        <div class="rounded-4 overflow-hidden border border-secondary border-opacity-25 shadow-lg h-100" style="min-height: 400px;">
+            <iframe width="100%"
+                    height="100%"
+                    frameborder="0"
+                    scrolling="no"
+                    marginheight="0"
+                    marginwidth="0"
+                    src="https://maps.google.com/maps?q=Sofia,Dondukov%2013&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    style="filter: grayscale(1) invert(92%) contrast(1.1) brightness(0.9); border:0; min-height: 400px;"
+                    allowfullscreen=""
+                    loading="lazy">
+            </iframe>
+        </div>
+    </div>
+</div>

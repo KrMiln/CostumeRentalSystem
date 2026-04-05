@@ -4,10 +4,9 @@
     {
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        public string PageAction { get; set; } // e.g., "Index"
-        public string PageController { get; set; } // e.g., "Costumes"
+        public string PageAction { get; set; } 
+        public string PageController { get; set; } 
 
-        // For keeping search filters while paging
         public Dictionary<string, string> RouteValues { get; set; } = new();
     }
 }

@@ -15,7 +15,6 @@
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <form asp-action="Edit" method="post" class="rental-form">
-                @* ВАЖНО: Скрити полета за Model Binder-а *@
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="ClientId" />
                 <input type="hidden" asp-for="CostumeId" />
@@ -27,11 +26,9 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-4 x-small"></div>
 
                     <div class="row g-5">
-                        @* ЛЯВА КОЛОНА *@
                         <div class="col-lg-6">
                             <h5 class="section-title mb-4">Детайли на записа</h5>
 
-                            @* Клиент (Закован) *@
                             <div class="custom-input-group mb-4">
                                 <label class="custom-label">Клиент</label>
                                 <div class="input-wrapper">
@@ -41,7 +38,6 @@
                                 <div class="validation-placeholder"></div>
                             </div>
 
-                            @* Костюм (Закован) *@
                             <div class="custom-input-group mb-0">
                                 <label class="custom-label">Костюм</label>
                                 <div class="input-wrapper">
@@ -52,7 +48,6 @@
                             </div>
                         </div>
 
-                        @* ДЯСНА КОЛОНА *@
                         <div class="col-lg-6">
                             <h5 class="section-title mb-4">Период и Актуализация</h5>
 
@@ -106,113 +101,7 @@
     </div>
 </div>
 
-<style>
-    :root {
-        --theme-orange: #ff851b;
-        --theme-glass: rgba(255, 255, 255, 0.02);
-        --theme-border: rgba(255, 255, 255, 0.12);
-        --theme-input-bg: #121212;
-        color-scheme: dark;
-    }
 
-    .glass-panel {
-        background: var(--theme-glass);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--theme-border);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-
-    .custom-input-group {
-        position: relative;
-    }
-
-    .input-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .custom-control {
-        width: 100%;
-        background: var(--theme-input-bg) !important;
-        border: 1px solid var(--theme-border);
-        color: #ffffff !important;
-        padding: 12px 15px;
-        border-radius: 10px;
-        outline: none;
-    }
-
-    .custom-label {
-        font-size: 0.7rem;
-        color: #aaa;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    .section-title {
-        color: white;
-        font-size: 0.85rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-    }
-
-        .section-title::before {
-            content: "";
-            width: 12px;
-            height: 2px;
-            background: var(--theme-orange);
-            margin-right: 10px;
-        }
-
-    .icon-indicator {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--theme-orange);
-        pointer-events: none;
-        z-index: 10;
-        font-size: 1rem;
-    }
-
-    .validation-placeholder {
-        min-height: 20px;
-        margin-top: 4px;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    .date-input::-webkit-calendar-picker-indicator {
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        cursor: pointer;
-        width: 20px;
-        height: 20px;
-    }
-
-    .btn-submit-main {
-        background: var(--theme-orange);
-        border: none;
-        color: black;
-        padding: 12px 35px;
-        border-radius: 10px;
-        font-weight: 900;
-        transition: all 0.3s;
-    }
-
-        .btn-submit-main:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
-        }
-</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

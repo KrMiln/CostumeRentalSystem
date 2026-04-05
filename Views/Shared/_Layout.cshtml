@@ -49,7 +49,6 @@
                             </li>
                         }
 
-                        @* Операции - вижда се от Admin и Employee *@
                         @if (User.Identity.IsAuthenticated && (User.IsInRole("Administrator") || User.IsInRole("Employee")))
                         {
                             <li class="nav-item dropdown">
@@ -60,7 +59,6 @@
                                     <li><a class="dropdown-item" asp-controller="Rentals" asp-action="Index"><i class="bi bi-calendar-week me-2"></i>Наеми</a></li>
                                     <li><a class="dropdown-item" asp-controller="Clients" asp-action="Index"><i class="bi bi-people me-2"></i>Клиенти</a></li>
 
-                                    @* САМО за Администратор *@
                                     @if (User.IsInRole("Administrator"))
                                     {
                                         <li><hr class="dropdown-divider bg-secondary"></li>
@@ -72,9 +70,6 @@
                         }
                     </ul>
 
-
-
-                    @* Дясна част: Акаунт и Логин *@
                     <div class="d-flex align-items-center">
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -118,7 +113,7 @@
                     <h4 class="text-orange fw-bold mb-3">MASCOT<span class="text-white fw-light">RENT</span></h4>
 
                     <p class="text-muted small pe-lg-5">
-                        Ние сме най-големият портал за наем на тематични костюми в страната. Превръщаме всяко парти в незабравимо преживяване от 2015 г. насам.
+                        Нашият сайт предлага богат избор от тематични костюми под наем, подходящи за различни празници, партита и събития.
                     </p>
                 </div>
 
@@ -144,22 +139,22 @@
                     <h6 class="text-white fw-bold mb-4 text-uppercase tracking-widest small">Свържи се с нас</h6>
                     <div class="contact-info-item d-flex align-items-center mb-3">
                         <div class="icon-box me-3"><i class="bi bi-geo-alt"></i></div>
-                        <span class="text-muted small">ул. "Призрачна" 13, гр. София</span>
+                        <span class="text-muted small">бул. "Княз Александър Дондуков" №13, гр. София</span>
                     </div>
                     <div class="contact-info-item d-flex align-items-center mb-3">
                         <div class="icon-box me-3"><i class="bi bi-telephone"></i></div>
-                        <span class="text-muted small">+359 888 123 456</span>
+                        <span class="text-muted small">+359 88 923 4728</span>
                     </div>
                     <div class="contact-info-item d-flex align-items-center">
                         <div class="icon-box me-3"><i class="bi bi-envelope"></i></div>
-                        <span class="text-muted small">office@halloween-rentals.bg</span>
+                        <span class="text-muted small">halloween-rentals@abv.bg</span>
                     </div>
                 </div>
             </div>
 
             <div class="text-center pt-4 border-top border-white border-opacity-5">
                 <p class="text-muted mb-0" style="font-size: 0.75rem;">
-                    &copy; @DateTime.Now.Year Halloween Rentals. Всички права запазени.
+                    &copy; @DateTime.Now.Year MascotRent. Всички права запазени.
                 </p>
             </div>
         </div>

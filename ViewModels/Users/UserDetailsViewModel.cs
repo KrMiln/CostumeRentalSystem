@@ -1,4 +1,4 @@
-﻿namespace CostumeRentalSystem.ViewModels.NewFolder
+﻿namespace CostumeRentalSystem.ViewModels.Users
 {
     public class UserDetailsViewModel
     {

@@ -26,7 +26,6 @@ namespace CostumeRentalSystem.Services
                 .AsNoTracking()
                 .AsQueryable();
 
-            // Филтрация
             if (!string.IsNullOrWhiteSpace(searchString))
             {
                 query = query.Where(r => r.Client.Name.Contains(searchString) || r.Costume.Name.Contains(searchString));

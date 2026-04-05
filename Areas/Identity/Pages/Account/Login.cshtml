@@ -67,12 +67,10 @@
 </div>
 
 <style>
-    /* Контейнер за паролата */
     .password-container {
         position: relative;
     }
 
-    /* Иконата за окото */
     .password-toggle-icon {
         position: absolute;
         right: 15px;
@@ -81,18 +79,16 @@
         z-index: 10;
         color: #6c757d;
         font-size: 1.2rem;
-        display: none; /* Скрита по подразбиране */
+        display: none; 
         transition: opacity 0.2s;
     }
 
-        /* Показване при фокус, ховър или когато е активна */
         .password-container:focus-within .password-toggle-icon,
         .password-toggle-icon.active,
         .password-toggle-icon:hover {
             display: block;
         }
 
-    /* Уеднаквяване на височината на полетата */
     .form-control-halloween {
         height: 65px !important;
     }

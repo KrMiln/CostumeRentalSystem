@@ -5,12 +5,10 @@
     var prevDisabled = Model.CurrentPage <= 1 ? "disabled" : "";
     var nextDisabled = Model.CurrentPage >= Model.TotalPages ? "disabled" : "";
 
-    // Параметри за прозореца
     int maxVisiblePages = 3;
     int startPage = Math.Max(1, Model.CurrentPage - 2);
     int endPage = Math.Min(Model.TotalPages, startPage + maxVisiblePages - 1);
 
-    // Коригиране на старта, ако сме близо до края
     if (endPage - startPage < maxVisiblePages - 1)
     {
         startPage = Math.Max(1, endPage - maxVisiblePages + 1);
@@ -19,7 +17,6 @@
     <nav aria-label="Page navigation" class="mt-4">
         <ul class="pagination justify-content-center border-0">
 
-            @* Бутон Назад *@
             <li class="page-item @prevDisabled mx-1">
                 <a class="page-link glass-pagination border-secondary text-orange"
                    asp-action="@Model.PageAction"
@@ -30,7 +27,6 @@
                 </a>
             </li>
 
-            @* Първа страница и многоточие *@
             @if (startPage > 1)
             {
                 <li class="page-item mx-1">
@@ -43,7 +39,6 @@
                 }
             }
 
-            @* Основен прозорец от страници *@
             @for (int i = startPage; i <= endPage; i++)
             {
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "") mx-1">
@@ -57,7 +52,6 @@
                 </li>
             }
 
-            @* Последна страница и многоточие *@
             @if (endPage < Model.TotalPages)
             {
                 @if (endPage < Model.TotalPages - 1)
@@ -70,7 +64,6 @@
                 </li>
             }
 
-            @* Бутон Напред *@
             <li class="page-item @nextDisabled mx-1">
                 <a class="page-link glass-pagination border-secondary text-orange"
                    asp-action="@Model.PageAction"
@@ -84,39 +77,3 @@
     </nav>
 }
 
-<style>
-    .glass-pagination {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        transition: all 0.3s ease;
-        border-radius: 8px !important;
-        min-width: 40px;
-        text-align: center;
-    }
-
-        .glass-pagination:hover {
-            background: rgba(255, 133, 27, 0.2) !important;
-            border-color: #ff851b !important;
-            color: #ff851b !important;
-        }
-
-    .bg-orange {
-        background-color: #ff851b !important;
-    }
-
-    .border-orange {
-        border-color: #ff851b !important;
-    }
-
-    .shadow-orange {
-        box-shadow: 0 0 15px rgba(255, 133, 27, 0.4);
-    }
-
-    .page-item.disabled .page-link {
-        background: rgba(255, 255, 255, 0.02) !important;
-        color: rgba(255, 255, 255, 0.2) !important;
-        border-color: rgba(255, 255, 255, 0.05) !important;
-        pointer-events: none;
-    }
-</style>

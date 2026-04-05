@@ -72,6 +72,7 @@ public class RentalsController : Controller
         return View(rental);
     }
 
+    [HttpGet]
     [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Create(int? costumeId)
     {
@@ -105,6 +106,7 @@ public class RentalsController : Controller
         return View(model);
     }
 
+    [HttpGet]
     [Authorize(Roles = "Administrator,Employee")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -142,6 +144,7 @@ public class RentalsController : Controller
         return View(model);
     }
 
+    [HttpGet]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(int? id)
     {

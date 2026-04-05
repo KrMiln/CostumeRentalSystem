@@ -33,6 +33,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Create
+    [HttpGet]
     public IActionResult Create()
     {
         return View();
@@ -62,6 +63,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Edit/5
+    [HttpGet]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -114,6 +116,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Delete/5
+    [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();

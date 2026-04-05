@@ -20,8 +20,6 @@ public class CostumesController : Controller
         _costumeService = costumeService;
     }
 
-    // --- READ OPERATIONS ---
-
     [AllowAnonymous]
     public async Task<IActionResult> Index(CostumeIndexViewModel model, int page = 1)
     {
@@ -61,8 +59,7 @@ public class CostumesController : Controller
         return costume == null ? NotFound() : View(costume);
     }
 
-    // --- CREATE OPERATIONS ---
-
+    [HttpGet]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Create()
     {
@@ -95,8 +92,7 @@ public class CostumesController : Controller
         return View(model);
     }
 
-    // --- UPDATE OPERATIONS ---
-
+    [HttpGet]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -135,8 +131,7 @@ public class CostumesController : Controller
         return View(model);
     }
 
-    // --- DELETE OPERATIONS ---
-
+    [HttpGet]
     [Authorize(Roles = "Administrator")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -162,8 +157,6 @@ public class CostumesController : Controller
         TempData["Success"] = "Костюмът беше изтрит успешно!";
         return RedirectToAction(nameof(Index));
     }
-
-    // --- HELPERS ---
 
     private async Task<SelectList> GetCategoriesSelectList(object? selected = null)
     {

@@ -1,4 +1,4 @@
-﻿using CostumeRentalSystem.Common; // Добави това за достъп до ImageHelper
+﻿using CostumeRentalSystem.Common;
 using CostumeRentalSystem.Common.Enums;
 using CostumeRentalSystem.Data;
 using CostumeRentalSystem.Data.Entities;
@@ -58,7 +58,6 @@ namespace CostumeRentalSystem.Services
         {
             if (imageFile != null)
             {
-                // Използваме ImageHelper
                 var imagePath = await ImageHelper.UploadImageAsync(imageFile, _webHostEnvironment.WebRootPath);
 
                 if (imagePath == null)
@@ -83,10 +82,8 @@ namespace CostumeRentalSystem.Services
 
             if (imageFile != null)
             {
-                // 1. Изтриваме старата снимка чрез ImageHelper
                 ImageHelper.DeleteImage(existingCostume.ImagePath, _webHostEnvironment.WebRootPath);
 
-                // 2. Качваме новата
                 var newPath = await ImageHelper.UploadImageAsync(imageFile, _webHostEnvironment.WebRootPath);
 
                 if (newPath == null) return (false, "Грешка при качването на новата снимка.");
@@ -113,7 +110,6 @@ namespace CostumeRentalSystem.Services
             if (costume.Rentals.Any(r => r.Status != RentalStatus.Returned))
                 return (false, "Костюмът не може да бъде изтрит, защото още не е върнат!");
 
-            // Използваме ImageHelper преди да изтрием записа от базата
             ImageHelper.DeleteImage(costume.ImagePath, _webHostEnvironment.WebRootPath);
 
             _context.Costumes.Remove(costume);

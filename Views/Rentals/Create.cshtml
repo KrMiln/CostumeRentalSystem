@@ -8,18 +8,15 @@
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <form asp-action="Create" method="post" class="rental-form">
-                @* Скрити полета за Model Binder-а *@
                 <input type="hidden" asp-for="PricePerDay" />
                 <input type="hidden" asp-for="CostumeName" />
                 <input type="hidden" asp-for="CostumeImagePath" />
 
                 <div class="glass-panel p-4 p-md-5">
                     <div class="row g-5">
-                        @* ЛЯВА КОЛОНА: Основна информация *@
                         <div class="col-lg-6">
                             <h5 class="section-title mb-4">Информация за наема</h5>
 
-                            @* Валидация за целия модел *@
                             <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
 
                             <div class="custom-input-group mb-4">
@@ -47,7 +44,6 @@
                             </div>
                         </div>
 
-                        @* ДЯСНА КОЛОНА: Период и Статус *@
                         <div class="col-lg-6">
                             <h5 class="section-title mb-4">Период и Актуализация</h5>
 
@@ -76,11 +72,9 @@
                             <div class="custom-input-group mt-4 mb-0">
                                 <label asp-for="Status" class="custom-label">Статус на наема</label>
                                 <div class="input-wrapper">
-                                    @* Визуален прочит на статуса *@
                                     <input type="text" class="custom-control" value="Нает" readonly style="opacity: 0.7; cursor: not-allowed; padding-right: 40px;" />
                                     <i class="bi bi-lock-fill icon-indicator"></i>
 
-                                    @* Реална стойност за изпращане *@
                                     <input type="hidden" asp-for="Status" value="@((int)RentalStatus.Active)" />
                                 </div>
                                 <div class="validation-placeholder"></div>
@@ -88,7 +82,6 @@
                         </div>
                     </div>
 
-                    @* Бутони *@
                     <div class="form-actions mt-5 pt-4 border-top border-white border-opacity-10 d-flex justify-content-between align-items-center">
                         <a asp-action="Index" class="btn btn-link text-muted text-decoration-none small hover-white fw-bold p-0">
                             <i class="bi bi-arrow-left me-1"></i> Назад
@@ -103,139 +96,6 @@
     </div>
 </div>
 
-<style>
-    :root {
-        --theme-orange: #ff851b;
-        --theme-glass: rgba(255, 255, 255, 0.02);
-        --theme-border: rgba(255, 255, 255, 0.12);
-        --theme-input-bg: #121212;
-    }
-
-    /* Основен панел */
-    .glass-panel {
-        background: var(--theme-glass);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--theme-border);
-        border-radius: 20px;
-    }
-
-    /* Контроли */
-    .custom-control {
-        width: 100%;
-        background: var(--theme-input-bg) !important;
-        border: 1px solid var(--theme-border);
-        color: #fff !important;
-        padding: 12px 15px;
-        border-radius: 10px;
-        outline: none;
-    }
-
-    .custom-label {
-        font-size: 0.7rem;
-        color: #aaa;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    /* Заглавия */
-    .section-title {
-        color: white;
-        font-size: 0.85rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-    }
-
-        .section-title::before {
-            content: "";
-            width: 12px;
-            height: 2px;
-            background: var(--theme-orange);
-            margin-right: 10px;
-        }
-
-    /* Бутон за запис */
-    .btn-submit-main {
-        background: var(--theme-orange);
-        border: none;
-        color: black;
-        padding: 12px 35px;
-        border-radius: 10px;
-        font-weight: 900;
-        transition: all 0.3s;
-    }
-
-        .btn-submit-main:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
-        }
-
-    /* Подравняване и икони */
-    .input-wrapper {
-        position: relative;
-        width: 100%;
-    }
-
-    .icon-indicator {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--theme-orange);
-        pointer-events: none;
-        z-index: 10;
-        opacity: 0.8;
-    }
-
-    .validation-placeholder {
-        min-height: 20px; /* Фиксира височината, за да не се мести формата при грешка */
-        margin-top: 4px;
-    }
-
-    .x-small {
-        font-size: 0.75rem;
-    }
-
-    /* Оранжев календар за Chrome/Edge/Safari */
-    .date-input::-webkit-calendar-picker-indicator {
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        cursor: pointer;
-        width: 20px;
-        height: 20px;
-    }
-
-    /* Select2 Стилизация */
-    .select2-container--default .select2-selection--single {
-        background-color: var(--theme-input-bg) !important;
-        border: 1px solid var(--theme-border) !important;
-        border-radius: 10px !important;
-        height: 50px !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            color: #fff !important;
-            padding-left: 15px !important;
-            line-height: 50px !important;
-        }
-
-    .select2-dropdown {
-        background-color: #1a1a1a !important;
-        border: 1px solid var(--theme-orange) !important;
-    }
-
-    .select2-results__option--highlighted[aria-selected] {
-        background-color: var(--theme-orange) !important;
-        color: #000 !important;
-    }
-</style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

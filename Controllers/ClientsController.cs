@@ -48,6 +48,7 @@ public class ClientsController : Controller
     }
 
     // GET: Clients/Create
+    [HttpGet]
     public async Task<IActionResult> Create(string? userId)
     {
         var viewModel = new ClientFormViewModel();
@@ -82,16 +83,13 @@ public class ClientsController : Controller
                 var user = await _userManager.FindByIdAsync(model.UserId);
                 if (user != null)
                 {
-                    // 1. Обвързваме потребителя с новия клиент
                     user.ClientId = client.Id;
                     await _userManager.UpdateAsync(user);
 
-                    // 2. Сменяме ролите
                     var currentRoles = await _userManager.GetRolesAsync(user);
                     await _userManager.RemoveFromRolesAsync(user, currentRoles);
                     await _userManager.AddToRoleAsync(user, "Client");
 
-                    // 3. Опресняваме сесията (SecurityStamp)
                     await _userManager.UpdateSecurityStampAsync(user);
 
                     TempData["Success"] = "Клиентът беше създаден и ролята беше променена!";
@@ -108,6 +106,7 @@ public class ClientsController : Controller
     }
 
     // GET: Clients/Edit/5
+    [HttpGet]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null) return NotFound();
@@ -146,6 +145,7 @@ public class ClientsController : Controller
     }
 
     // GET: Clients/Delete/5
+    [HttpGet]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null) return NotFound();
@@ -161,22 +161,19 @@ public class ClientsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        // 1. Първо намираме клиента, за да вземем UserId преди да го изтрием
         var client = await _clientService.GetByIdAsync(id);
         string? associatedUserId = client?.UserId;
 
-        // 2. Изтриваме клиента
         var result = await _clientService.DeleteAsync(id);
 
         if (result.Success)
         {
-            // 3. АКО клиентът е бил свързан с потребител, трябва да нулираме ClientId на потребителя
             if (!string.IsNullOrEmpty(associatedUserId))
             {
                 var user = await _userManager.FindByIdAsync(associatedUserId);
                 if (user != null)
                 {
-                    user.ClientId = null; // Прекъсваме връзката в AspNetUsers
+                    user.ClientId = null; 
                     await _userManager.UpdateAsync(user);
                 }
             }
@@ -188,8 +185,6 @@ public class ClientsController : Controller
         TempData["Error"] = result.ErrorMessage;
         return RedirectToAction(nameof(Index));
     }
-
-    // --- HELPERS ---
 
     private Client MapToEntity(ClientFormViewModel model)
     {
@@ -203,7 +198,6 @@ public class ClientsController : Controller
             UserId = model.UserId
         };
     }
-
     private ClientFormViewModel MapToViewModel(Client entity)
     {
         return new ClientFormViewModel

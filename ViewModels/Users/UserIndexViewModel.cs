@@ -1,5 +1,4 @@
-﻿using CostumeRentalSystem.ViewModels; // Където се намира PaginationViewModel
-using CostumeRentalSystem.ViewModels.NewFolder;
+﻿using CostumeRentalSystem.ViewModels.Users;
 
 namespace CostumeRentalSystem.ViewModels.Users
 {
@@ -7,14 +6,9 @@ namespace CostumeRentalSystem.ViewModels.Users
     {
         public string? SearchTerm { get; set; }
         public string? RoleFilter { get; set; }
-
-        // Данните за таблицата
-        public IEnumerable<UserDetailsViewModel> Users { get; set; } = [];
-
-        // Броячът, който искаше за всички акаунти
         public int TotalUsersCount { get; set; }
 
-        // Новият стандартен обект за пагинация
+        public IEnumerable<UserDetailsViewModel> Users { get; set; } = [];
         public PaginationViewModel Pagination { get; set; } = null!;
     }
 }

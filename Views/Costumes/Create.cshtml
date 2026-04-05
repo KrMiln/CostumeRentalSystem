@@ -13,7 +13,6 @@
                     <h4 class="mb-0"><i class="bi bi-ghost"></i> Добавяне на нов костюм</h4>
                 </div>
                 <div class="card-body p-4">
-                    @* enctype="multipart/form-data" е критично важно за качването на файлове *@
                     <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger bg-dark border-danger text-danger"></div>
 
@@ -26,7 +25,6 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="CategoryId" class="form-label fw-bold">Категория</label>
-                                @* Вече използваме Model.Categories вместо ViewBag *@
                                 <select asp-for="CategoryId" class="form-select" asp-items="Model.Categories">
                                     <option value="">-- избор --</option>
                                 </select>
@@ -64,7 +62,6 @@
                                      style="max-height: 250px; display: block; margin: 0 auto;" />
                             </div>
 
-                            @* asp-for="ImageFile" автоматично се свързва с IFormFile в модела *@
                             <input asp-for="ImageFile" type="file" class="form-control" id="imageFile" accept="image/*" onchange="previewCreateImage(this)" />
                             <span asp-validation-for="ImageFile" class="text-danger small"></span>
                             <small class="text-muted">Поддържани формати: JPG, PNG, WebP</small>
@@ -73,7 +70,7 @@
                         <div class="mb-3">
                             <label asp-for="Notes" class="form-label fw-bold"><i class="bi bi-sticky me-1"></i> Бележки / Описание</label>
                             <textarea asp-for="Notes" class="form-control bg-dark text-white border-secondary"
-                                      rows="3" placeholder="Добавете информация за аксесоари, състояние или специфики..."></textarea>
+                                      rows="4" style="resize: none;" placeholder="Добавете информация за аксесоари, състояние или специфики..."></textarea>
                             <span asp-validation-for="Notes" class="text-danger"></span>
                         </div>
 
@@ -90,16 +87,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        function previewCreateImage(input) {
-            const preview = document.getElementById('createPreview');
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
 }

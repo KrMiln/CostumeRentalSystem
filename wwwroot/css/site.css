@@ -386,3 +386,1011 @@ footer {
 .input-group > .form-floating {
     flex: 1 1 auto;
 }
+/* =========================================
+   9. SHARED BUTTON VARIANTS (from views)
+   ========================================= */
+
+/* Ghost Orange - used across Clients, Rentals */
+/* Already defined above as .btn-ghost-orange - no duplicate needed */
+
+/* Ghost White Button */
+.btn-ghost-white {
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    transition: all 0.25s ease-in-out;
+    border-radius: 8px;
+}
+
+    .btn-ghost-white:hover {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-ghost-white:active {
+        background: #e0e0e0 !important;
+        transform: translateY(0);
+    }
+
+    .btn-ghost-white:hover i {
+        color: #000000;
+    }
+
+/* Hover White - subtle link-style */
+.hover-white:hover {
+    color: white !important;
+}
+
+/* Submit Main (Rentals Create/Edit) */
+.btn-submit-main {
+    background: var(--pumpkin-orange);
+    border: none;
+    color: black;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 900;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+    .btn-submit-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
+    }
+
+/* Btn Action Outline Large (Rentals Details) */
+.btn-action-outline-large {
+    padding: 12px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #888;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+    .btn-action-outline-large:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border-color: #fff;
+    }
+
+/* Btn Action Primary Large (Rentals Details) */
+.btn-action-primary-large {
+    padding: 12px 35px;
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(255, 133, 27, 0.2);
+}
+
+    .btn-action-primary-large:hover {
+        background: #fff;
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 133, 27, 0.3);
+    }
+
+/* Btn Outline Orange (MyRentals) */
+.btn-outline-orange {
+    color: var(--pumpkin-orange);
+    border-color: var(--pumpkin-orange);
+}
+
+    .btn-outline-orange:hover {
+        background-color: var(--pumpkin-orange);
+        color: #000;
+    }
+
+/* Halloween Edit/Delete card buttons (Costumes/Index) */
+.btn-halloween-edit {
+    background: rgba(255, 133, 27, 0.1);
+    border: 1px solid var(--theme-orange, #ff851b);
+    color: var(--theme-orange, #ff851b) !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+    .btn-halloween-edit:hover {
+        background: rgba(255, 133, 27, 0.3) !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 20px rgba(255, 133, 27, 0.4);
+    }
+
+.btn-halloween-delete {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
+    color: #dc3545 !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+    .btn-halloween-delete:hover {
+        background: #dc3545;
+        color: white !important;
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+    }
+
+/* Halloween action (Costumes Details) */
+.btn-halloween-action {
+    background: var(--pumpkin-orange);
+    color: black !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: none;
+    transition: 0.3s;
+}
+
+    .btn-halloween-action:hover {
+        background: #ffa04d;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 133, 27, 0.4) !important;
+    }
+
+/* Outline Spooky (Costumes Details back button) */
+.btn-outline-spooky {
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+}
+
+    .btn-outline-spooky:hover {
+        border-color: var(--pumpkin-orange);
+        color: var(--pumpkin-orange);
+        background: rgba(255, 133, 27, 0.05);
+    }
+
+/* Warning Soft (Costumes Detail edit) */
+.btn-warning-soft {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .btn-warning-soft:hover {
+        background: #ffc107;
+        color: black !important;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-warning-soft:hover i {
+        color: black !important;
+    }
+
+/* Danger Soft (Costumes Detail delete) */
+.btn-danger-soft {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .btn-danger-soft:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-danger-soft:hover i {
+        color: white !important;
+    }
+
+/* New Category Button (Categories/Index) */
+.btn-new-category {
+    background: transparent;
+    color: var(--pumpkin-orange);
+    border: 2px solid var(--pumpkin-orange);
+    padding: 8px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+    .btn-new-category:hover {
+        background: var(--pumpkin-orange);
+        color: #000;
+        box-shadow: 0 0 20px rgba(255, 133, 27, 0.4);
+    }
+
+/* Modern Delete (Users/Index) */
+.btn-modern-delete {
+    background: transparent;
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+    .btn-modern-delete:hover {
+        background: #ff4d4d;
+        color: #fff;
+    }
+
+/* =========================================
+   10. GLASS PANELS & CARDS
+   ========================================= */
+
+/* Shared glass panel - Rentals Create, Edit, Details, and Users */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+}
+
+/* Rental card detail header */
+.glass-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Large avatar (Clients Details) */
+.avatar-circle-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #6f42c1, var(--witch-purple));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(111, 66, 193, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Costume card image zoom */
+.transition-img {
+    transition: transform 0.5s ease;
+}
+
+.costume-card:hover .transition-img {
+    transform: scale(1.1);
+}
+
+/* Costume Details image/price cards */
+.main-image-container {
+    position: relative;
+    background: #1a1a1a;
+    transition: transform 0.3s ease;
+}
+
+.status-overlay {
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: #ff4136;
+    color: white;
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.status-overlay-spooky {
+    position: absolute;
+    top: 20px;
+    right: -10px;
+    background: rgba(220, 53, 69, 0.85);
+    color: white;
+    padding: 8px 25px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transform: rotate(5deg);
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.price-card {
+    background: linear-gradient(145deg, rgba(255, 133, 27, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 133, 27, 0.2);
+}
+
+.size-badge {
+    background: white;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.bg-purple-soft {
+    background: rgba(187, 134, 252, 0.1);
+}
+
+/* Photo frame (Home/Index, Home/Contact) */
+.photo-frame {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.5s ease;
+}
+
+    .photo-frame:hover {
+        transform: rotate(0) scale(1.02);
+        border-color: var(--pumpkin-orange);
+    }
+
+.rotate-3 { transform: rotate(3deg); }
+.rotate-n3 { transform: rotate(-3deg); }
+
+.grayscale-hover {
+    filter: grayscale(0.5);
+    transition: filter 0.5s;
+}
+
+.photo-frame:hover .grayscale-hover {
+    filter: grayscale(0);
+}
+
+/* Hover zoom (Costumes Details) */
+.hover-zoom img {
+    transition: 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hover-zoom:hover img {
+    transform: scale(1.05);
+}
+
+/* Spooky Create Card (Clients/Create) */
+.spooky-create-card {
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 133, 27, 0.2) !important;
+    border-radius: 0px;
+}
+
+/* =========================================
+   11. STATUS BADGES (custom-badge system)
+   ========================================= */
+
+/* Used in Clients/Details and Rentals/Index */
+.custom-badge {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .custom-badge .dot {
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+        margin-right: 6px;
+    }
+
+.badge-active {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+    .badge-active .dot {
+        background: #0d6efd;
+        box-shadow: 0 0 5px #0d6efd;
+    }
+
+.badge-returned {
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+}
+
+    .badge-returned .dot {
+        background: #198754;
+    }
+
+.badge-lost {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+    .badge-lost .dot {
+        background: #dc3545;
+        box-shadow: 0 0 5px #dc3545;
+    }
+
+.badge-damaged {
+    background: rgba(142, 68, 173, 0.15);
+    color: #a34dff;
+    border: 1px solid rgba(163, 77, 255, 0.3);
+}
+
+    .badge-damaged .dot {
+        background: #a34dff;
+        box-shadow: 0 0 8px #a34dff;
+    }
+
+/* =========================================
+   12. STATUS PILLS (Rentals Detail view)
+   ========================================= */
+
+.status-pill-internal {
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+    .status-pill-internal.active {
+        color: #007bff;
+        border: 1px solid rgba(0, 123, 255, 0.3);
+    }
+
+    .status-pill-internal.returned {
+        color: #28a745;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+
+    .status-pill-internal.lost {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    .status-pill-internal.damaged {
+        background: rgba(142, 68, 173, 0.15);
+        color: #a34dff;
+        border: 1px solid rgba(163, 77, 255, 0.3);
+    }
+
+/* =========================================
+   13. RENTAL CARD (MyRentals)
+   ========================================= */
+
+.rental-card {
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.status-corner {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 6px 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 20px;
+    box-shadow: -2px -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rental-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.rental-img-placeholder {
+    height: 200px;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pumpkin-orange);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.status-badge-active { background: #0d6efd; color: white; }
+.status-badge-returned { background: #198754; color: white; }
+.status-badge-damaged { background: #ffc107; color: black; }
+.status-badge-lost { background: #dc3545; color: white; }
+
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* =========================================
+   14. FORM INPUTS (Rentals Create/Edit)
+   ========================================= */
+
+.custom-input-group {
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-control {
+    width: 100%;
+    background: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff !important;
+    padding: 12px 15px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.custom-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.section-title {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+}
+
+    .section-title::before {
+        content: "";
+        width: 12px;
+        height: 2px;
+        background: var(--pumpkin-orange);
+        margin-right: 10px;
+    }
+
+.icon-indicator {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pumpkin-orange);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+.validation-placeholder {
+    min-height: 20px;
+    margin-top: 4px;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+/* Orange calendar icon for date inputs */
+.date-input::-webkit-calendar-picker-indicator {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+/* =========================================
+   15. CATEGORY LIST (Categories/Index)
+   ========================================= */
+
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.category-item-row {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px 24px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+}
+
+    .category-item-row:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(1.005);
+        border-color: rgba(255, 133, 27, 0.3);
+    }
+
+.mini-icon-box {
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pumpkin-orange);
+    font-size: 1.2rem;
+}
+
+.item-title {
+    color: white;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.item-subtitle {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+    .btn-action.edit { color: #ffc107; }
+
+    .btn-action.edit:hover {
+        background: #ffc107;
+        color: black;
+        border-color: #ffc107;
+    }
+
+    .btn-action.delete { color: #ff4d4d; }
+
+    .btn-action.delete:hover {
+        background: #ff4d4d;
+        color: white;
+        border-color: #ff4d4d;
+    }
+
+/* =========================================
+   16. COSTUMES DETAIL SPECS
+   ========================================= */
+
+.spec-list li {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.spec-list i {
+    color: var(--pumpkin-orange);
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.feature-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px 5px;
+    border-radius: 15px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+    .feature-box i {
+        display: block;
+        color: var(--pumpkin-orange);
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+
+    .feature-box span {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 1px;
+    }
+
+/* =========================================
+   17. USERS INDEX
+   ========================================= */
+
+.border-orange-soft {
+    border: 1px solid rgba(255, 133, 27, 0.2);
+}
+
+.admin-input,
+.admin-select {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #333 !important;
+    padding: 0.6rem 1rem;
+}
+
+    .admin-input:focus,
+    .admin-select:focus {
+        border-color: var(--pumpkin-orange) !important;
+        box-shadow: 0 0 10px rgba(255, 133, 27, 0.1);
+    }
+
+.btn-orange {
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+    .btn-orange:hover {
+        background: #ff9d47;
+        color: #000;
+        box-shadow: 0 4px 15px rgba(255, 133, 27, 0.3);
+    }
+
+    .btn-orange:active {
+        background: #e67616 !important;
+        transform: translateY(0);
+    }
+
+.btn-orange-sm {
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    padding: 0 10px;
+    transition: 0.2s;
+}
+
+    .btn-orange-sm:hover {
+        background: #ff9d47;
+        color: #000;
+    }
+
+.table-dark-custom thead th {
+    color: var(--pumpkin-orange);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 20px 15px;
+    border: none;
+}
+
+.user-avatar-lg {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #1a1a1a, #000);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pumpkin-orange);
+    font-weight: 800;
+}
+
+.status-dot-admin {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--pumpkin-orange);
+    border: 2px solid #111;
+    border-radius: 50%;
+}
+
+.role-pill {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: rgba(255, 133, 27, 0.2);
+    color: var(--pumpkin-orange);
+    border: 1px solid var(--pumpkin-orange);
+}
+
+.role-user {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+}
+
+.me-row {
+    border-left: 4px solid var(--pumpkin-orange);
+    background: rgba(255, 133, 27, 0.03);
+}
+
+.text-muted-dark {
+    color: #555;
+}
+
+/* =========================================
+   18. HOME PAGE UTILITIES
+   ========================================= */
+
+.fw-black { font-weight: 900; }
+.ls-5 { letter-spacing: 5px; }
+.mb-6 { margin-bottom: 7rem; }
+
+.text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+}
+
+.faq-item-simple {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 15px;
+}
+
+.step-blob {
+    background: rgba(255, 133, 27, 0.1);
+    color: var(--pumpkin-orange);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================
+   19. RENTALS INDEX FILTER BUTTONS
+   ========================================= */
+
+.btn-filter-active {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd !important;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter-active:hover {
+        background: #0d6efd;
+        color: #fff !important;
+        box-shadow: 0 0 15px rgba(13, 110, 253, 0.5);
+        transform: translateY(-1px);
+    }
+
+.btn-filter-late {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545 !important;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter-late:hover {
+        background: #dc3545;
+        color: #fff !important;
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+        transform: translateY(-1px);
+    }
+
+.overdue-row {
+    background: rgba(220, 53, 69, 0.03) !important;
+}
+
+/* =========================================
+   20. ANIMATIONS
+   ========================================= */
+
+.pulse {
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.animate__fadeInUp {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   21. MISC UTILITIES
+   ========================================= */
+
+/* Text truncate 2 lines */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tracking-wider { letter-spacing: 1px; }
+.min-vh-15 { min-height: 150px; }
+.italic { font-style: italic; }
+.letter-spacing-1 { letter-spacing: 1px; }
+.cursor-help { cursor: help; }
+
+/* Select2 theming (Rentals Create/Edit) */
+.select2-container--default .select2-selection--single {
+    background-color: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #fff !important;
+        padding-left: 15px !important;
+        line-height: 50px !important;
+    }
+
+.select2-dropdown {
+    background-color: #1a1a1a !important;
+    border: 1px solid var(--pumpkin-orange) !important;
+}
+
+.select2-results__option--highlighted[aria-selected] {
+    background-color: var(--pumpkin-orange) !important;
+    color: #000 !important;
+}
+
+@media (max-width: 991px) {
+    .rotate-3, .rotate-n3 { transform: rotate(0); }
+    .mb-6 { margin-bottom: 4rem; }
+    .display-2 { font-size: 3rem; }
+}
