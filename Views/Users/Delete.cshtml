@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "Изтриване на потребител";
 
-    // Дефиниране на преводите и стиловете спрямо твоите роли
     var roleInfo = Model.Role.ToLower() switch
     {
         "admin" => new { Text = "Администратор", Class = "role-admin" },
@@ -33,7 +32,6 @@
                     Това действие е необратимо.
                 </p>
 
-                @* ПОТРЕБИТЕЛСКА КАРТА *@
                 <div class="category-item-row mb-5 text-start d-flex align-items-center p-3">
 
                     <div class="position-relative me-4 flex-shrink-0">

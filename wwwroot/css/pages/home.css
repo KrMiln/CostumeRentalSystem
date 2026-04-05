@@ -1,0 +1,27 @@
+/* =========================================
+   18. HOME PAGE UTILITIES
+   ========================================= */
+
+.fw-black { font-weight: 900; }
+.ls-5 { letter-spacing: 5px; }
+.mb-6 { margin-bottom: 7rem; }
+
+.text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+}
+
+.faq-item-simple {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 15px;
+}
+
+.step-blob {
+    background: rgba(255, 133, 27, 0.1);
+    color: var(--pumpkin-orange);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

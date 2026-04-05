@@ -1,0 +1,112 @@
+/* =========================================
+   6. FORMS & INPUTS
+   ========================================= */
+.form-control, .form-select, .spooky-input {
+    background-color: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    color: var(--ghost-white) !important;
+    border-radius: 0px; /* Остри ъгли */
+    padding: 10px 15px;
+}
+
+    .form-control:focus, .form-select:focus, .spooky-input:focus {
+        border-color: var(--pumpkin-orange) !important;
+        box-shadow: 0 0 10px rgba(255, 117, 24, 0.3) !important;
+        background-color: #222 !important;
+        outline: none;
+    }
+
+/* Placeholder цвят */
+::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Валидация */
+.text-danger {
+    color: #ff4444 !important;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+}
+
+
+/* =========================================
+   14. FORM INPUTS (Rentals Create/Edit)
+   ========================================= */
+
+.custom-input-group {
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-control {
+    width: 100%;
+    background: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff !important;
+    padding: 12px 15px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.custom-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.section-title {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+}
+
+    .section-title::before {
+        content: "";
+        width: 12px;
+        height: 2px;
+        background: var(--pumpkin-orange);
+        margin-right: 10px;
+    }
+
+.icon-indicator {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pumpkin-orange);
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.8;
+}
+
+.validation-placeholder {
+    min-height: 20px;
+    margin-top: 4px;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+/* Orange calendar icon for date inputs */
+.date-input::-webkit-calendar-picker-indicator {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ff851b" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+

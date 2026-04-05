@@ -1,0 +1,16 @@
+/* =========================================
+   1. VARIABLES & THEME SETUP
+   ========================================= */
+:root {
+    --halloween-bg: #120d18; /* Дълбоко черно-лилаво */
+    --halloween-card: #1e1628; /* Малко по-светло за картите */
+    --pumpkin-orange: #ff7518; /* Тиквено оранжево */
+    --slime-green: #39ff14; /* Токсично зелено */
+    --ghost-white: #f0f0f0; /* Почти бяло */
+    --witch-purple: #8e44ad; /* Вещерско лилаво */
+    --dark-accent: #0a070e; /* Много тъмен акцент (за footer) */
+    /* Bootstrap Overrides */
+    --bs-body-bg: var(--halloween-bg);
+    --bs-body-color: var(--ghost-white);
+}
+

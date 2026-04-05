@@ -1,0 +1,115 @@
+/* =========================================
+   17. USERS INDEX
+   ========================================= */
+
+.border-orange-soft {
+    border: 1px solid rgba(255, 133, 27, 0.2);
+}
+
+.admin-input,
+.admin-select {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #333 !important;
+    padding: 0.6rem 1rem;
+}
+
+    .admin-input:focus,
+    .admin-select:focus {
+        border-color: var(--pumpkin-orange) !important;
+        box-shadow: 0 0 10px rgba(255, 133, 27, 0.1);
+    }
+
+.btn-orange {
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+    .btn-orange:hover {
+        background: #ff9d47;
+        color: #000;
+        box-shadow: 0 4px 15px rgba(255, 133, 27, 0.3);
+    }
+
+    .btn-orange:active {
+        background: #e67616 !important;
+        transform: translateY(0);
+    }
+
+.btn-orange-sm {
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    padding: 0 10px;
+    transition: 0.2s;
+}
+
+    .btn-orange-sm:hover {
+        background: #ff9d47;
+        color: #000;
+    }
+
+.table-dark-custom thead th {
+    color: var(--pumpkin-orange);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 20px 15px;
+    border: none;
+}
+
+.user-avatar-lg {
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #1a1a1a, #000);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pumpkin-orange);
+    font-weight: 800;
+}
+
+.status-dot-admin {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    background: var(--pumpkin-orange);
+    border: 2px solid #111;
+    border-radius: 50%;
+}
+
+.role-pill {
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: rgba(255, 133, 27, 0.2);
+    color: var(--pumpkin-orange);
+    border: 1px solid var(--pumpkin-orange);
+}
+
+.role-user {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+}
+
+.me-row {
+    border-left: 4px solid var(--pumpkin-orange);
+    background: rgba(255, 133, 27, 0.03);
+}
+
+.text-muted-dark {
+    color: #555;
+}
+

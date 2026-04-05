@@ -1,0 +1,309 @@
+/* =========================================
+   5. BUTTONS
+   ========================================= */
+
+/* A. THE NEON BUTTON (Primary Action) */
+.btn-ghost-orange {
+    background: transparent;
+    color: var(--pumpkin-orange) !important;
+    border: 2px solid var(--pumpkin-orange);
+    border-radius: 0px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-ghost-orange:hover {
+        background: var(--pumpkin-orange);
+        color: #000 !important;
+        box-shadow: 0 0 20px var(--pumpkin-orange), 0 0 40px rgba(255, 117, 24, 0.3);
+        transform: scale(1.02);
+    }
+
+/* B. SOLID ORANGE (Secondary Action) */
+.btn-halloween, .btn-spooky-orange {
+    background-color: var(--pumpkin-orange);
+    color: #000;
+    font-weight: 700;
+    border: none;
+    border-radius: 0px;
+    box-shadow: 0 0 15px rgba(255, 117, 24, 0.4);
+    transition: all 0.3s ease;
+}
+
+    .btn-halloween:hover, .btn-spooky-orange:hover {
+        background-color: #e66000;
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(255, 117, 24, 0.7);
+        color: #fff;
+    }
+
+/* C. PURPLE OUTLINE (Tertiary Action) */
+.btn-outline-halloween, .btn-spooky-purple {
+    border: 2px solid var(--witch-purple);
+    background: transparent;
+    color: var(--witch-purple);
+    font-weight: 600;
+    border-radius: 0px;
+    transition: all 0.3s;
+}
+
+    .btn-outline-halloween:hover, .btn-spooky-purple:hover {
+        background-color: var(--witch-purple);
+        color: #fff;
+        box-shadow: 0 0 15px rgba(142, 68, 173, 0.5);
+    }
+
+
+/* =========================================
+   9. SHARED BUTTON VARIANTS (from views)
+   ========================================= */
+
+/* Ghost Orange - used across Clients, Rentals */
+/* Already defined above as .btn-ghost-orange - no duplicate needed */
+
+/* Ghost White Button */
+.btn-ghost-white {
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    font-weight: 600;
+    transition: all 0.25s ease-in-out;
+    border-radius: 8px;
+}
+
+    .btn-ghost-white:hover {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-ghost-white:active {
+        background: #e0e0e0 !important;
+        transform: translateY(0);
+    }
+
+    .btn-ghost-white:hover i {
+        color: #000000;
+    }
+
+/* Hover White - subtle link-style */
+.hover-white:hover {
+    color: white !important;
+}
+
+/* Submit Main (Rentals Create/Edit) */
+.btn-submit-main {
+    background: var(--pumpkin-orange);
+    border: none;
+    color: black;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 900;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+    .btn-submit-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 133, 27, 0.4);
+    }
+
+/* Btn Action Outline Large (Rentals Details) */
+.btn-action-outline-large {
+    padding: 12px 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #888;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+    .btn-action-outline-large:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        border-color: #fff;
+    }
+
+/* Btn Action Primary Large (Rentals Details) */
+.btn-action-primary-large {
+    padding: 12px 35px;
+    background: var(--pumpkin-orange);
+    color: #000;
+    border: none;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(255, 133, 27, 0.2);
+}
+
+    .btn-action-primary-large:hover {
+        background: #fff;
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 133, 27, 0.3);
+    }
+
+/* Btn Outline Orange (MyRentals) */
+.btn-outline-orange {
+    color: var(--pumpkin-orange);
+    border-color: var(--pumpkin-orange);
+}
+
+    .btn-outline-orange:hover {
+        background-color: var(--pumpkin-orange);
+        color: #000;
+    }
+
+/* Halloween Edit/Delete card buttons (Costumes/Index) */
+.btn-halloween-edit {
+    background: rgba(255, 133, 27, 0.1);
+    border: 1px solid var(--theme-orange, #ff851b);
+    color: var(--theme-orange, #ff851b) !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+    .btn-halloween-edit:hover {
+        background: rgba(255, 133, 27, 0.3) !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 20px rgba(255, 133, 27, 0.4);
+    }
+
+.btn-halloween-delete {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
+    color: #dc3545 !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+    .btn-halloween-delete:hover {
+        background: #dc3545;
+        color: white !important;
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
+    }
+
+/* Halloween action (Costumes Details) */
+.btn-halloween-action {
+    background: var(--pumpkin-orange);
+    color: black !important;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: none;
+    transition: 0.3s;
+}
+
+    .btn-halloween-action:hover {
+        background: #ffa04d;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(255, 133, 27, 0.4) !important;
+    }
+
+/* Outline Spooky (Costumes Details back button) */
+.btn-outline-spooky {
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+}
+
+    .btn-outline-spooky:hover {
+        border-color: var(--pumpkin-orange);
+        color: var(--pumpkin-orange);
+        background: rgba(255, 133, 27, 0.05);
+    }
+
+/* Warning Soft (Costumes Detail edit) */
+.btn-warning-soft {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .btn-warning-soft:hover {
+        background: #ffc107;
+        color: black !important;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
+    }
+
+    .btn-warning-soft:hover i {
+        color: black !important;
+    }
+
+/* Danger Soft (Costumes Detail delete) */
+.btn-danger-soft {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .btn-danger-soft:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-danger-soft:hover i {
+        color: white !important;
+    }
+
+/* New Category Button (Categories/Index) */
+.btn-new-category {
+    background: transparent;
+    color: var(--pumpkin-orange);
+    border: 2px solid var(--pumpkin-orange);
+    padding: 8px 24px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+    .btn-new-category:hover {
+        background: var(--pumpkin-orange);
+        color: #000;
+        box-shadow: 0 0 20px rgba(255, 133, 27, 0.4);
+    }
+
+/* Modern Delete (Users/Index) */
+.btn-modern-delete {
+    background: transparent;
+    color: #ff4d4d;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+    .btn-modern-delete:hover {
+        background: #ff4d4d;
+        color: #fff;
+    }
+

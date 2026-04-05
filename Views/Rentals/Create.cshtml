@@ -106,7 +106,15 @@
         $(document).ready(function() {
             $('.select-search').select2({
                 width: '100%',
-                placeholder: "Изберете..."
+                placeholder: "Изберете...",
+                language: {
+                    noResults: function() {
+                        return "Няма намерени резултати";
+                    },
+                    searching: function() {
+                        return "Търсене...";
+                    }
+                }
             });
         });
     </script>

@@ -1,0 +1,308 @@
+/* =========================================
+   2. GLOBAL LAYOUT & RESET
+   ========================================= */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--halloween-bg);
+    background-image: radial-gradient(circle at 10% 20%, rgba(142, 68, 173, 0.1) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(255, 117, 24, 0.1) 0%, transparent 20%);
+    color: var(--ghost-white);
+    min-height: 100vh;
+    overflow-x: hidden; /* Предотвратява хоризонтален скрол */
+}
+
+/* Custom Scrollbar (Webkit) */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--halloween-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border: 1px solid var(--halloween-bg);
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--pumpkin-orange);
+    }
+
+/* Page Fade-In Animation */
+main, .main-content {
+    animation: fadeInPage 0.6s ease-out;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================
+   3. NAVBAR & FOOTER
+   ========================================= */
+.navbar-halloween {
+    background: rgba(30, 22, 40, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--pumpkin-orange);
+    z-index: 1050 !important;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    color: var(--pumpkin-orange) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(255, 117, 24, 0.5);
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.8) !important;
+    transition: all 0.3s;
+}
+
+    .nav-link:hover {
+        color: var(--pumpkin-orange) !important;
+        transform: translateY(-1px);
+    }
+
+footer {
+    background-color: var(--dark-accent) !important;
+    border-top: 1px solid #333;
+    color: #888;
+    margin-top: auto; /* Push footer to bottom */
+}
+
+/* Премахваме синия цвят и добавяме плавен преход */
+.footer-links li a {
+    color: #6c757d !important; /* Сиво (text-muted) */
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    padding: 3px 0;
+}
+
+    /* Стил при посочване (Hover) */
+    .footer-links li a:hover {
+        color: var(--theme-orange, #ff851b) !important; /* Оранжево */
+        transform: translateX(5px); /* Леко помръдване надясно */
+        text-shadow: 0 0 8px rgba(255, 133, 27, 0.5); /* Лек призрачен сияен ефект */
+    }
+
+/* Стилизиране на иконките в контактите, за да са в тон */
+.icon-box i {
+    color: var(--theme-orange, #ff851b);
+}
+
+.tracking-widest {
+    letter-spacing: 2px;
+}
+
+
+/* =========================================
+   8. UTILITIES & ICONS
+   ========================================= */
+.text-orange {
+    color: var(--pumpkin-orange) !important;
+}
+
+.text-purple {
+    color: var(--witch-purple) !important;
+}
+
+/* Аватари */
+.avatar-circle, .icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--witch-purple), #6f42c1);
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(142, 68, 173, 0.3);
+}
+
+/* По-голям кръг за Hero секции */
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 2rem;
+    margin: 0 auto 1rem;
+}
+
+/* Badges */
+.badge-active {
+    background-color: rgba(57, 255, 20, 0.15);
+    color: var(--slime-green);
+    border: 1px solid var(--slime-green);
+}
+
+.badge-returned {
+    background-color: rgba(142, 68, 173, 0.15);
+    color: var(--witch-purple);
+    border: 1px solid var(--witch-purple);
+}
+
+/* Z-Index Fixes */
+.dropdown-menu {
+    z-index: 1100 !important;
+}
+
+.sticky-top {
+    z-index: 1050 !important;
+}
+
+/* Halloween / Costume Theme Gradients */
+.bg-halloween-purple {
+    background: linear-gradient(135deg, #4a148c, #7b1fa2); /* Deep Purple */
+    color: white;
+}
+
+.bg-halloween-orange {
+    background: linear-gradient(135deg, #e65100, #ff9800); /* Pumpkin Orange */
+    color: white;
+}
+
+.btn-halloween-orange {
+    background-color: #ff6d00;
+    border-color: #e65100;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .btn-halloween-orange:hover {
+        background-color: #e65100;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(230, 81, 0, 0.4);
+        color: white;
+    }
+
+.btn-halloween-purple {
+    background-color: #6a1b9a;
+    border-color: #4a148c;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .btn-halloween-purple:hover {
+        background-color: #4a148c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(74, 20, 140, 0.4);
+        color: white;
+    }
+
+.form-floating input:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 0.25rem rgba(255, 152, 0, 0.25);
+}
+
+/* Styling for the password toggle button */
+.input-group-text-halloween {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 152, 0, 0.3) !important;
+    border-left: none !important; /* Merge with the input */
+    color: rgba(255, 152, 0, 0.8) !important;
+    cursor: pointer;
+}
+
+    .input-group-text-halloween:hover {
+        color: #ff9800 !important;
+    }
+
+/* Fix for floating label when inside input-group */
+.input-group > .form-floating {
+    flex: 1 1 auto;
+}
+
+/* =========================================
+   20. ANIMATIONS
+   ========================================= */
+
+.pulse {
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.animate__fadeInUp {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================
+   21. MISC UTILITIES
+   ========================================= */
+
+/* Text truncate 2 lines */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tracking-wider { letter-spacing: 1px; }
+.min-vh-15 { min-height: 150px; }
+.italic { font-style: italic; }
+.letter-spacing-1 { letter-spacing: 1px; }
+.cursor-help { cursor: help; }
+
+/* Select2 theming (Rentals Create/Edit) */
+.select2-container--default .select2-selection--single {
+    background-color: #121212 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #fff !important;
+        padding-left: 15px !important;
+        line-height: 50px !important;
+    }
+
+.select2-dropdown {
+    background-color: #1a1a1a !important;
+    border: 1px solid var(--pumpkin-orange) !important;
+}
+
+.select2-results__option--highlighted[aria-selected] {
+    background-color: var(--pumpkin-orange) !important;
+    color: #000 !important;
+}
+
+@media (max-width: 991px) {
+    .rotate-3, .rotate-n3 { transform: rotate(0); }
+    .mb-6 { margin-bottom: 4rem; }
+    .display-2 { font-size: 3rem; }
+}

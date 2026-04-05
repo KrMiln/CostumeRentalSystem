@@ -1,0 +1,229 @@
+/* =========================================
+   4. CARDS & CONTAINERS
+   ========================================= */
+.hero-section {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509557965875-b88c97052f0e?q=80&w=1920&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #333;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    z-index: 1;
+    position: relative;
+}
+
+/* Обединена логика за картите - Spooky Glassmorphism */
+.spooky-card, .halloween-card {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(10px); /* Ефект на замъглено стъкло */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: var(--ghost-white);
+    border-radius: 0px; /* Остри ъгли за модерна визия */
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+    .spooky-card:hover, .halloween-card:hover {
+        border-color: var(--pumpkin-orange) !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        /* transform: translateY(-5px); - Махаме го, ако искате статични форми */
+    }
+
+
+/* =========================================
+   10. GLASS PANELS & CARDS
+   ========================================= */
+
+/* Shared glass panel - Rentals Create, Edit, Details, and Users */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+}
+
+/* Rental card detail header */
+.glass-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Large avatar (Clients Details) */
+.avatar-circle-large {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #6f42c1, var(--witch-purple));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 0 20px rgba(111, 66, 193, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Costume card image zoom */
+.transition-img {
+    transition: transform 0.5s ease;
+}
+
+.costume-card:hover .transition-img {
+    transform: scale(1.1);
+}
+
+/* Costume Details image/price cards */
+.main-image-container {
+    position: relative;
+    background: #1a1a1a;
+    transition: transform 0.3s ease;
+}
+
+.status-overlay {
+    position: absolute;
+    top: 20px;
+    right: -35px;
+    background: #ff4136;
+    color: white;
+    padding: 5px 40px;
+    transform: rotate(45deg);
+    font-size: 10px;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.status-overlay-spooky {
+    position: absolute;
+    top: 20px;
+    right: -10px;
+    background: rgba(220, 53, 69, 0.85);
+    color: white;
+    padding: 8px 25px;
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transform: rotate(5deg);
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.price-card {
+    background: linear-gradient(145deg, rgba(255, 133, 27, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 133, 27, 0.2);
+}
+
+.size-badge {
+    background: white;
+    color: black;
+    padding: 8px 15px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.bg-purple-soft {
+    background: rgba(187, 134, 252, 0.1);
+}
+
+/* Photo frame (Home/Index, Home/Contact) */
+.photo-frame {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.5s ease;
+}
+
+    .photo-frame:hover {
+        transform: rotate(0) scale(1.02);
+        border-color: var(--pumpkin-orange);
+    }
+
+.rotate-3 { transform: rotate(3deg); }
+.rotate-n3 { transform: rotate(-3deg); }
+
+.grayscale-hover {
+    filter: grayscale(0.5);
+    transition: filter 0.5s;
+}
+
+.photo-frame:hover .grayscale-hover {
+    filter: grayscale(0);
+}
+
+/* Hover zoom (Costumes Details) */
+.hover-zoom img {
+    transition: 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hover-zoom:hover img {
+    transform: scale(1.05);
+}
+
+/* Spooky Create Card (Clients/Create) */
+.spooky-create-card {
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 133, 27, 0.2) !important;
+    border-radius: 0px;
+}
+
+
+/* =========================================
+   13. RENTAL CARD (MyRentals)
+   ========================================= */
+
+.rental-card {
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.status-corner {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 6px 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 20px;
+    box-shadow: -2px -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rental-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.rental-img-placeholder {
+    height: 200px;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pumpkin-orange);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.status-badge-active { background: #0d6efd; color: white; }
+.status-badge-returned { background: #198754; color: white; }
+.status-badge-damaged { background: #ffc107; color: black; }
+.status-badge-lost { background: #dc3545; color: white; }
+
+.border-white-10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+

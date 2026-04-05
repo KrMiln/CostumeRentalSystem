@@ -1,0 +1,38 @@
+/* =========================================
+   19. RENTALS INDEX FILTER BUTTONS
+   ========================================= */
+
+.btn-filter-active {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd !important;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter-active:hover {
+        background: #0d6efd;
+        color: #fff !important;
+        box-shadow: 0 0 15px rgba(13, 110, 253, 0.5);
+        transform: translateY(-1px);
+    }
+
+.btn-filter-late {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545 !important;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+    .btn-filter-late:hover {
+        background: #dc3545;
+        color: #fff !important;
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+        transform: translateY(-1px);
+    }
+
+.overdue-row {
+    background: rgba(220, 53, 69, 0.03) !important;
+}
+
